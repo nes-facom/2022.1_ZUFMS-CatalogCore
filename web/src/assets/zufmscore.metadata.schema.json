@@ -1,0 +1,86 @@
+{
+  "$id": "https://inbio.ufms.br/zufms/zufmscore.metadata.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ZUFMS Darwin Core Subset Metadata",
+  "type": "object",
+  "required": ["$zufmscore:termclass"],
+  "properties": {
+    "$zufmscore:autocomplete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Define se um campo terá sugestões baseadas na recorrência de valores para ele no banco de dados"
+    },
+    "$zufmscore:repeat": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se, quando alterado, o valor deverá ser repetido para as demais linhas"
+    },
+    "$zufmscore:highestoccurence": {
+      "type": "boolean",
+      "default": false,
+      "description": "Define se um campo exibirá como valor default a maior ocorrência do banco"
+    },
+    "$zufmscore:termclass": {
+      "type": "string",
+      "enum": [
+        "recordLevel",
+        "zufmscore:management",
+        "occurrence",
+        "organism",
+        "event",
+        "measurementOrFact",
+        "location",
+        "identification",
+        "taxon",
+        "resourceRelationship"
+      ],
+      "description": "Classe do termo",
+      "$zufmscore:termclassDescription": {
+        "recordLevel": {
+          "title": "Nível de Registro",
+          "description": "Termos genéricos aplicáveis a qualquer tipo de registro"
+        },
+        "zufmscore:management": {
+          "title": "Gerenciamento",
+          "description": "Termos relacionados ao gerenciamento interno da ZUFMS"
+        },
+        "occurrence": {
+          "title": "Ocorrência",
+          "description": "Uma existência de um Organismo em um determinado lugar em um determinado momento"
+        },
+        "organism": {
+          "title": "Organismo",
+          "description": "Um organismo particular ou grupo definido de organismos considerados taxonomicamente homogêneos"
+        },
+        "event": {
+          "title": "Evento",
+          "description": "Uma ação que ocorre em algum local durante algum tempo"
+        },
+        "measurementOrFact": {
+          "title": "Medições ou Fatos",
+          "description": "Uma medida ou fato sobre um recurso"
+        },
+        "location": {
+          "title": "Localização",
+          "description": "Uma região espacial ou lugar nomeado"
+        },
+        "identification": {
+          "title": "Identificação",
+          "description": "Uma determinação taxonômica (por exemplo, a atribuição a um táxon)"
+        },
+        "taxon": {
+          "title": "Táxon",
+          "description": "Um grupo de organismos considerados pelos taxonomistas como uma unidade homogênea"
+        },
+        "resourceRelationship": {
+          "title": "Relações do Recurso",
+          "description": "Um relacionamento de um recurso com outro"
+        }
+      }
+    },
+    "$zufmscore:dynamic": {
+      "type": "string",
+      "description": "Se o seu valor deve ser gerado dinamicamente"
+    }
+  }
+}

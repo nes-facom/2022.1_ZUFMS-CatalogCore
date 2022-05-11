@@ -1,0 +1,61 @@
+name: Issue template 
+description: Solicitação de alterações/correções no projeto.
+
+body:
+  - type: dropdown
+    id: issue-type
+    attributes:
+      label: Estou submetendo um(a)
+      options:
+        - Descoberta de bug
+        - Solicitação de funcionalidade
+        - Solicitação ou correção de documentação
+    validations:
+      required: true
+
+  - type: dropdown
+    id: is-regression
+    attributes:
+      label: [No caso de *Descoberta de bug*] Funcionava em uma versão anterior e deixou de funcionar?
+      options:
+        - 'Sim'
+        - 'Não'
+    validations:
+      required: false
+
+  - type: textarea
+    id: current-behavior
+    attributes:
+      label: Comportamento atual
+      placeholder: |
+        A rota `GET /foo/bar` retorna o valor Z para o caso Y   
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected-behavior
+    attributes:
+      label: Comportamento esperado
+      placeholder: |
+        A rota `GET /foo/bar` deveria retornar o valor X para o caso Y   
+    validations:
+      required: true
+
+  - type: textarea
+    id: reproduction-steps
+    attributes:
+      label: Passos para reproduzir o problema
+      placeholder: |
+        Com a aplicação em operação:
+        1. Autenticar-se na aplicação
+        2. Realizar uma requisição `POST` à rota `/foo/bar` com o corpo `{ "foo": "bar" }`
+        3. Analisar o erro retornado
+    validations:
+      required: true
+
+  - type: textarea
+    id: possible-solution
+    attributes:
+      label: Possível solução
+      placeholder: | 
+        Fazer XYZ no controller da rota

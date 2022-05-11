@@ -1,0 +1,602 @@
+{
+  "$id": "https://inbio.ufms.br/zufms/zufmscore.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ZUFMS Darwin Core Subset",
+  "type": "object",
+  "properties": {
+    "artificial:section": {
+      "title": "Seção",
+      "description": "Grupo ao qual o registro faz parte",
+      "examples": [
+        "Amphibia",
+        "Chelicerata",
+        "Chiroptera",
+        "Crustacea",
+        "Diptera",
+        "Fósseis",
+        "Hemiptera",
+        "Hymenoptera",
+        "Mollusca",
+        "Nematoda",
+        "Odonata",
+        "Orthoptera",
+        "Peixes",
+        "Reptilia",
+        "Tecidos"
+      ],
+      "oneOf": [
+        { "const": "Amphibia", "$zufmscore:initials": "AMP" },
+        { "const": "Chelicerata", "$zufmscore:initials": "CHE" },
+        { "const": "Chiroptera", "$zufmscore:initials": "CHI" },
+        { "const": "Crustacea", "$zufmscore:initials": "CRU" },
+        { "const": "Diptera", "$zufmscore:initials": "DIP" },
+        { "const": "Fósseis", "$zufmscore:initials": "FOS" },
+        { "const": "Hemiptera", "$zufmscore:initials": "HEM" },
+        { "const": "Hymenoptera", "$zufmscore:initials": "HYM" },
+        { "const": "Mollusca", "$zufmscore:initials": "MOL" },
+        { "const": "Nematoda", "$zufmscore:initials": "NEM" },
+        { "const": "Odonata", "$zufmscore:initials": "ODO" },
+        { "const": "Orthoptera", "$zufmscore:initials": "ORT" },
+        { "const": "Peixes", "$zufmscore:initials": "PIS" },
+        { "const": "Reptilia", "$zufmscore:initials": "REP" },
+        { "const": "Tecidos", "$zufmscore:initials": "TEC" }
+      ],
+      "$zufmscore:autocomplete": true,
+      "$zufmscore:termclass": "zufmscore:management"
+    },
+    "dcterms:modified": {
+      "type": "string",
+      "description": "data que o registro foi criado ou alterado, no padrão AAAA-MM-DD",
+      "title": "Data da Última Modificação",
+      "format": "date",
+      "examples": ["2017-08-28"],
+      "$zufmscore:dynamic": "currentdate",
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "informationWithheld": {
+      "type": "string",
+      "description": "informação que falta em uma das colunas e deve ser procurada",
+      "title": "Informação Retida",
+      "examples": ["verificar amostra de tecido"],
+      "default": "nenhuma",
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "basisOfRecord": {
+      "type": "string",
+      "description": "A natureza específica do registro de dados",
+      "title": "Base do Registro",
+      "examples": [
+        "PreservedSpecimen",
+        "LivingSpecimen",
+        "HumanObservation",
+        "MachineObservation",
+        "Sample"
+      ],
+      "$zufmscore:autocomplete": true,
+      "$zufmscore:highestoccurrence": true,
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "institutionCode": {
+      "type": "string",
+      "description": "sigla da instituição",
+      "title": "Código da Instituição",
+      "default": "UFMS",
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "collectionCode": {
+      "type": "string",
+      "description": "sigla da coleção",
+      "title": "Código da Coleção",
+      "default": "ZUFMS",
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "dcterms:bibliographicCitation": {
+      "type": "string",
+      "description": "citação do artigo em que este exemplar foi utilizado, concatenar com \";\"",
+      "title": "Citação Bibliográfica",
+      "examples": [
+        "Oliver P. Pearson. 1985. Los tuco-tucos (genera Ctenomys) de los Parques Nacionales Lanin y Nahuel Huapi, Argentina Historia Natural, 5(37):337-343."
+      ],
+      "default": "",
+      "$zufmscore:repeat": true,
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "datasetName": {
+      "type": "string",
+      "description": "o título do projeto no qual houve envolvimento de coletas",
+      "title": "Nome do Conjunto de Dados",
+      "examples": ["Projeto Jauru"],
+      "default": "",
+      "$zufmscore:repeat": true,
+      "$zufmscore:termclass": "recordLevel"
+    },
+    "artificial:shelfLocation": {
+      "type": "string",
+      "description": "local numerado onde o exemplar está armazenado (utilize ALT+0150 para inserir a \"meia-risca\" se forem várias prateleiras)",
+      "title": "Localização na Coleção (Prateleira)",
+      "examples": ["P001"],
+      "default": "",
+      "$zufmscore:repeat": true,
+      "$zufmscore:termclass": "zufmscore:management"
+    },
+    "artificial:flaskLocation": {
+      "type": "string",
+      "description": "acronímia da seção (ex.: AMP) que agrupa alfabeticamente vários tombos, desde que sejam mesmo táxon, local e ano de coleta",
+      "title": "Localização na Coleção (Frasco)",
+      "examples": ["AMPAA"],
+      "default": "",
+      "$zufmscore:repeat": true,
+      "$zufmscore:termclass": "zufmscore:management"
+    },
+    "artificial:shippingGuide": {
+      "type": "string",
+      "description": "exemplar não disponível",
+      "title": "Guia de Remessa",
+      "examples": ["GR07/2017"],
+      "default": "",
+      "$zufmscore:termclass": "zufmscore:management"
+    },
+    "catalogNumber": {
+      "type": "string",
+      "description": "número de tombo do exemplar",
+      "title": "Número de Catálogo",
+      "$zufmscore:termclass": "occurrence",
+      "examples": ["ZUFMS-AMP00001", "ZUFMS-BLA00001"]
+    },
+    "otherCatalogNumbers": {
+      "type": "string",
+      "description": "quando proveniente de outra coleção",
+      "title": "Número de Catálogo Anterior",
+      "default": "",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "recordedBy": {
+      "type": "string",
+      "description": "nome do coletor abreviado seguindo o exemplo \"SOBRENOME, N.\"",
+      "title": "Coletor",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "recordNumber": {
+      "type": "string",
+      "description": "número da etiqueta de campo, associada ao coletor",
+      "title": "Número da Etiqueta de Campo",
+      "examples": ["CH381", "SF454"],
+      "$zufmscore:termclass": "occurrence"
+    },
+    "preparations": {
+      "type": "string",
+      "description": "tipo de preparação concatenado com \";\"",
+      "title": "Tipo de Preparação",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "individualCount": {
+      "type": "string,integer",
+      "description": "se for em lote, informar a quantidade",
+      "title": "Número de Indivíduos",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "sex": {
+      "type": "string",
+      "description": "campo informado com vocabulário: \"irreconhecível\", \"indeterminado\", \"macho\", \"fêmea\", \"hermafrodita\", \"ginandromorfo\", etc.",
+      "title": "Sexo",
+      "$zufmscore:autocomplete": true,
+      "$zufmscore:highestoccurrence": true,
+      "$zufmscore:termclass": "occurrence"
+    },
+    "lifeStage": {
+      "type": "string",
+      "description": "o estágio de vida: \"zigoto\", \"embrião\", \"adulto\", \"juvenil\", \"ovo\", \"larva\", \"pupa\", etc.",
+      "title": "Fase da Vida",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "reproductiveCondition": {
+      "type": "string",
+      "description": "informa que fase reprodutiva se encontra (ex. \"não reprodutivo\", \"grávida\", etc.)",
+      "title": "Condição Reprodutiva",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "establishmentMeans": {
+      "type": "string",
+      "description": "informa a real origem com vocabulário: \"nativa\", \"introduzida\", \"naturalizada\", \"manejada\", \"incerto\", \"selvagem\", etc.",
+      "title": "Modo de Estabelecimento",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "behavior": {
+      "type": "string",
+      "description": "a ação que o espécime realizava quando ainda vivo: \"forrageando\", \"correndo\", etc.",
+      "title": "Comportamento",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "occurrenceRemarks": {
+      "type": "string",
+      "description": "observação ou comentário do espécime na hora da coleta",
+      "title": "Observações de Ocorrência",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "disposition": {
+      "type": "string",
+      "description": "informação do registro na coleção",
+      "title": "Disposição",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "associatedReferences": {
+      "type": "string",
+      "description": "bibliografia relacionada ou direta",
+      "title": "Referências Associadas",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "associatedMedia": {
+      "type": "string",
+      "description": "o link ou pasta onde está a mídia associada",
+      "title": "Mídia Associada",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "occurrenceID": {
+      "type": "string",
+      "description": "identidade do exemplar, utilizado para evitar duplicações",
+      "title": "ID da Ocorrência",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "associatedOccurrences": {
+      "type": "string",
+      "description": "espécime tombado que tenha relação com o registro",
+      "title": "Item Relacionado ao Catálogo",
+      "$zufmscore:termclass": "organism"
+    },
+    "previousIdentifications": {
+      "type": "string",
+      "description": "identificações anteriores, informando táxon, determinador, data e método utilizado",
+      "title": "Identificações Anteriores",
+      "$zufmscore:termclass": "occurrence"
+    },
+    "fieldNumber": {
+      "type": "string",
+      "description": "",
+      "title": "Número do Campo",
+      "$zufmscore:termclass": "event"
+    },
+    "day": {
+      "type": "integer",
+      "description": "dia em algarismo arábico",
+      "title": "Dia da Coleta",
+      "$zufmscore:termclass": "event"
+    },
+    "month": {
+      "type": "integer",
+      "description": "mês em algarismo arábico",
+      "title": "Mês da Coleta",
+      "$zufmscore:termclass": "event"
+    },
+    "year": {
+      "type": "integer",
+      "description": "ano em algarismo arábico",
+      "title": "Ano da Coleta",
+      "$zufmscore:termclass": "event"
+    },
+    "eventTime": {
+      "type": "string",
+      "description": "hora única (hh:mm) ou intervalo (hh:mm/hh:mm)",
+      "title": "Hora/Intervalo do Evento",
+      "$zufmscore:termclass": "event"
+    },
+    "eventDate": {
+      "type": "string",
+      "format": "date",
+      "description": "data (aaaa-mm-dd) ou intervalo (aaaa-mm-dd/aaaa-mm-dd), mas se não houver todas informações informar apenas mês (aaaa-mm) ou ano (aaaa)",
+      "title": "Data/Intervalo do Evento",
+      "$zufmscore:termclass": "event"
+    },
+    "verbatimEventDate": {
+      "type": "string",
+      "description": "data clássica com mês em formato romano",
+      "title": "Data Coleta Textual",
+      "$zufmscore:termclass": "event"
+    },
+    "samplingProtocol": {
+      "type": "string",
+      "description": "descrição sucinta do método de coleta",
+      "title": "Método de Coleta",
+      "$zufmscore:termclass": "event"
+    },
+    "habitat": {
+      "type": "string",
+      "description": "pode ser bioma, ecorregião que caracterize o ambiente natural do espécime",
+      "title": "Habitat",
+      "$zufmscore:termclass": "event"
+    },
+    "eventRemarks": {
+      "type": "string",
+      "description": "comentários sobre o evento",
+      "title": "Observações do Evento",
+      "$zufmscore:termclass": "event"
+    },
+    "fieldNotes": {
+      "type": "string",
+      "description": "pode ser um indicador da existencia de, b) uma referência a (publicação, link), ou c) texto das notas tomadas no campo sobre o evento",
+      "title": "Anotações de Campo",
+      "$zufmscore:termclass": "event"
+    },
+    "measurementRemarks": {
+      "type": "string",
+      "description": "comentários ou notas que acompanham medições ou fatos; medidas concatenadas com \";\" informando unidade",
+      "title": "Medidas",
+      "$zufmscore:termclass": "measurementOrFact"
+    },
+    "continent": {
+      "type": "string",
+      "description": "apenas se for um divisão válida",
+      "title": "Continente/Oceano",
+      "$zufmscore:termclass": "location"
+    },
+    "country": {
+      "type": "string",
+      "description": "nome do país",
+      "title": "País",
+      "$zufmscore:termclass": "location"
+    },
+    "countryCode": {
+      "type": "string",
+      "description": "codificação de acordo com ISO3166-1 e código alfa-3",
+      "title": "Código do País",
+      "$zufmscore:termclass": "location"
+    },
+    "verbatimLocality": {
+      "type": "string",
+      "description": "utilizar quando se trata de organismos aquáticos",
+      "title": "Bacia Hidrográfica",
+      "$zufmscore:termclass": "location"
+    },
+    "stateProvince": {
+      "type": "string",
+      "description": "escrito por extenso, utilizar região quando são áreas de divisa entre estados",
+      "title": "Estado/Província/Região",
+      "$zufmscore:termclass": "location"
+    },
+    "county": {
+      "type": "string",
+      "description": "o nome do município válido",
+      "title": "Município",
+      "$zufmscore:termclass": "location"
+    },
+    "municipality": {
+      "type": "string",
+      "description": "quando há necessidade de informar distrito ou sub-região (ex.: Pantanal da Nhecolândia)",
+      "title": "Sub-Região/Distrito",
+      "$zufmscore:termclass": "location"
+    },
+    "locality": {
+      "type": "string",
+      "description": "a localidade abaixo de município ou distrito",
+      "title": "Localidade",
+      "$zufmscore:termclass": "location"
+    },
+    "decimalLatitude": {
+      "type": "number",
+      "minimum": -90,
+      "maximum": 90,
+      "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
+      "title": "Latitude Decimal",
+      "$zufmscore:termclass": "location"
+    },
+    "decimalLongitude": {
+      "type": "number",
+      "minimum": -180,
+      "maximum": 180,
+      "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
+      "title": "Longitude Decimal",
+      "$zufmscore:termclass": "location"
+    },
+    "verbatimLatitude": {
+      "type": "string",
+      "description": "informar se não houver decimal",
+      "title": "Latitude",
+      "$zufmscore:termclass": "location"
+    },
+    "verbatimLongitude": {
+      "type": "string",
+      "description": "informar se não houver decimal",
+      "title": "Longitude",
+      "$zufmscore:termclass": "location"
+    },
+    "coordinatePrecision": {
+      "type": "number",
+      "description": "precisão em metros",
+      "title": "Precisão da Coordenada (m)",
+      "$zufmscore:termclass": "location"
+    },
+    "geodeticDatum": {
+      "type": "string",
+      "description": "informar somente se decimal",
+      "title": "Datum",
+      "$zufmscore:termclass": "location"
+    },
+    "footprintWKT": {
+      "type": "string",
+      "description": "quando não se sabe a coordenada exata; acesse http://boundingbox.klokantech.com/ para estimar o quadrante",
+      "title": "Retângulo Envolvente",
+      "$zufmscore:termclass": "location"
+    },
+    "minimumElevationInMeters": {
+      "type": "number",
+      "description": "limite inferior do intervalo da elevação",
+      "title": "Altitude Mínima (m)",
+      "$zufmscore:termclass": "location"
+    },
+    "maximumElevationInMeters": {
+      "type": "number",
+      "description": "limite superior do intervalo da elevação",
+      "title": "Altitude Máxima (m)",
+      "$zufmscore:termclass": "location"
+    },
+    "waterBody": {
+      "type": "string",
+      "description": "o nome do corpo d'água lótico/lêntico onde foi coletado; mais detalhes acesse http://www.getty.edu/research/tools/vocabularies/tgn/",
+      "title": "Corpo D'Água",
+      "$zufmscore:termclass": "location"
+    },
+    "minimumDepthInMeters": {
+      "type": "number",
+      "description": "a menor profundidade de um intervalo de profundidades abaixo da superfície do local, em metros",
+      "title": "Profundidade Mínima (m)",
+      "$zufmscore:termclass": "location"
+    },
+    "maximumDepthInMeters": {
+      "type": "number",
+      "description": "a maior profundidade de um intervalo de profundidades abaixo da superfície do local, em metros",
+      "title": "Profundidade Máxima (m)",
+      "$zufmscore:termclass": "location"
+    },
+    "locationRemarks": {
+      "type": "string",
+      "description": "comentários sobre o local onde foi coletado",
+      "title": "Observações do Local",
+      "$zufmscore:termclass": "location"
+    },
+    "identificationQualifier": {
+      "type": "string",
+      "description": "quando não se sabe ao certo a identificação (ex.: aff., sp., gr., fo., cf., etc.)",
+      "title": "Imprecisão",
+      "$zufmscore:termclass": "identification"
+    },
+    "identifiedBy": {
+      "type": "string",
+      "description": "o sobrenome e nome abreviado em caixa alta segundo o exemplo de quem identificou o material",
+      "title": "Determinado Por",
+      "$zufmscore:termclass": "identification"
+    },
+    "dateIdentified": {
+      "type": "string",
+      "description": "data da determinação no formato aaaa-mm-dd",
+      "title": "Data da Determinação",
+      "format": "date",
+      "$zufmscore:termclass": "identification"
+    },
+    "typeStatus": {
+      "type": "string",
+      "description": "informa se é tipo nomenclatural ou apenas voucher, se necessário concatenar com \";\"",
+      "title": "Tipo Nomenclatural",
+      "$zufmscore:termclass": "identification"
+    },
+    "scientificName": {
+      "type": "string",
+      "description": "similar ao Nome Científico Aceito, mas aqui utilizamos sem autoria",
+      "title": "Nome Científico",
+      "$zufmscore:termclass": "taxon"
+    },
+    "scientificNameAuthorship": {
+      "type": "string",
+      "description": "autor e ano, segundo o código de nomenclatura seguido",
+      "title": "Autor do Nome Científico",
+      "$zufmscore:termclass": "taxon"
+    },
+    "acceptedNameUsage": {
+      "type": "string",
+      "description": "identificação do táxon com autor até onde foi possível, não importando a categoria taxonômica",
+      "title": "Nome Científico Aceito",
+      "$zufmscore:termclass": "taxon"
+    },
+    "subgenus": {
+      "type": "string",
+      "description": "se identificado",
+      "title": "Subgênero",
+      "$zufmscore:autocomplete": true,
+      "$zufmscore:termclass": "taxon"
+    },
+    "genus": {
+      "type": "string",
+      "description": "se identificado",
+      "title": "Gênero",
+      "$zufmscore:termclass": "taxon"
+    },
+    "family": {
+      "type": "string",
+      "description": "se identificado",
+      "title": "Família",
+      "$zufmscore:termclass": "taxon"
+    },
+    "order": {
+      "type": "string",
+      "description": "campo obrigatório",
+      "title": "Ordem",
+      "$zufmscore:termclass": "taxon"
+    },
+    "class": {
+      "type": "string",
+      "description": "campo obrigatório",
+      "title": "Classe",
+      "$zufmscore:termclass": "taxon"
+    },
+    "phylum": {
+      "type": "string",
+      "description": "campo obrigatório",
+      "title": "Filo",
+      "$zufmscore:termclass": "taxon"
+    },
+    "kingdom": {
+      "type": "string",
+      "description": "campo obrigatório",
+      "title": "Reino",
+      "$zufmscore:termclass": "taxon"
+    },
+    "artificial": {
+      "type": "string",
+      "description": "se identificado",
+      "title": "Subfamília",
+      "$zufmscore:termclass": "taxon"
+    },
+    "specificEpithet": {
+      "type": "string",
+      "description": "se identificado",
+      "title": "Epíteto Específico",
+      "$zufmscore:termclass": "taxon"
+    },
+    "infraspecificEpithet": {
+      "type": "string",
+      "description": "se identificado",
+      "title": "Epíteto Infraespecífico",
+      "$zufmscore:termclass": "taxon"
+    },
+    "taxonRank": {
+      "type": "string",
+      "description": "informa até que nível taxonômico foi identificado",
+      "title": "Nível do Táxon",
+      "$zufmscore:termclass": "taxon"
+    },
+    "taxonomicStatus": {
+      "type": "string",
+      "description": "informa a condição taxonômica: \"inválido\", \"mal aplicado\", \"sinônimo homotípico\", \"aceito\", etc.",
+      "title": "Status Taxonômico",
+      "$zufmscore:termclass": "taxon"
+    },
+    "originalNameUsage": {
+      "type": "string",
+      "description": "se for um táxon com problemas, informar o original",
+      "title": "Nome Original Usado",
+      "$zufmscore:termclass": "taxon"
+    },
+    "vernacularName": {
+      "type": "string",
+      "description": "nome popular hifenizado",
+      "title": "Nome Vulgar",
+      "$zufmscore:termclass": "taxon"
+    },
+    "nomenclaturalCode": {
+      "type": "string",
+      "description": "informa qual código ou sistema de classificação está sendo utilizado para o registro",
+      "title": "Código Nomenclatural",
+      "$zufmscore:termclass": "taxon"
+    },
+    "nameAccordingTo": {
+      "type": "string",
+      "description": "o sistema de classificação no qual este grupo está organizado",
+      "title": "Sistema de Classificação",
+      "$zufmscore:termclass": "taxon"
+    },
+    "relationshipOfResource": {
+      "type": "string",
+      "description": "informar a relação com o Item Relacionado ao Catálogo",
+      "title": "Tipo de Relacionamento",
+      "$zufmscore:termclass": "resourceRelationship"
+    }
+  }
+}
