@@ -3,6 +3,7 @@ version: '3'
 volumes:
   web_build:
 
+
 services:
   db:
     container_name: zufms_db
@@ -27,11 +28,9 @@ services:
   api:
     container_name: zufms_api
     build: ./api
-    ports:
-      - "9000:9000"
     depends_on:
       - db
-  web: 
+  web:
     container_name: zufms_web
     build: ./web
     volumes:
