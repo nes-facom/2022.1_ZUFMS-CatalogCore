@@ -30,6 +30,11 @@ services:
     build: ./api
     depends_on:
       - db
+  api_docs:
+    container_name: zufms_api_docs
+    image: swaggerapi/swagger-ui
+    environment:
+      - API_URL=https://localhost:3000/docs/v1/openapi.yml
   web:
     container_name: zufms_web
     build: ./web
@@ -46,6 +51,7 @@ services:
       - ./infra/http/nginx/conf.d/:/etc/nginx/conf.d/:z
       - ./infra/http/certificates/:/etc/nginx/certificates/:z
       - web_build:/app/web:z
+      - ./docs/openapi.yml:/app/docs/openapi.yml
     depends_on:
       - api
       - web
