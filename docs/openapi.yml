@@ -56,7 +56,7 @@ paths:
       operationId: "requestAuthCode"
       tags:
         - "auth"
-      summary: "Solicitar um código de autenticação"
+      summary: "Solicitar um código de autenticação de um usuário"
       description: ""
       requestBody:
         content:
@@ -129,8 +129,16 @@ paths:
                   $ref: "#/components/schemas/User"
         "403":
           description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "500":
           description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       operationId: "createUser"
       tags:
@@ -154,7 +162,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Não foi possível processar os dados informados"
           content:
@@ -193,7 +201,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Registro não encontrado"
           content:
@@ -236,7 +244,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Não foi possível processar os dados informados"
           content:
@@ -274,7 +282,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Erro ao excluir registro"
           content:
@@ -305,8 +313,16 @@ paths:
                   $ref: "#/components/schemas/ZUFMSCore"
         "403":
           description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "500":
           description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
     post:
       operationId: "createAcervoEntries"
       tags:
@@ -332,7 +348,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Não foi possível processar os dados informados"
           content:
@@ -370,7 +386,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Não foi possível processar os dados informados"
           content:
@@ -410,7 +426,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Erro ao excluir registro"
           content:
@@ -448,7 +464,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Registro não encontrado"
           content:
@@ -490,7 +506,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Não foi possível processar os dados informados"
           content:
@@ -527,7 +543,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "422":
           description: "Erro ao excluir registro"
           content:
@@ -639,6 +655,29 @@ components:
           type: string
         description: 
           type: string
+    InsufficientPermissionsError:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code: 
+          enum:
+            - 11
+        title: 
+          enum:
+            - "Permissões Insuficientes"
+        description:
+          enum: 
+            - "Você não possui as permissão para realizar esta operação"
+    InsufficientPermissionsErrorResponse: 
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/InsufficientPermissionsError"
     User: 
       type: object
       properties:
