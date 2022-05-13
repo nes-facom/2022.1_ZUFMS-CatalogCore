@@ -1,0 +1,1230 @@
+openapi: 3.0.3
+info:
+  title: Coleção Zoológica Online ZUFMS
+  version: 1.0.0
+  description: |
+    Coleção Zoológica – Incremento e movimentação do acervo
+  
+    ## Visão geral
+  contact:
+    name: "AGETIC"
+    email: suporte.agetic@ufms.br
+  license:
+    name: MIT
+    url: "https://opensource.org/licenses/MIT"
+servers:
+  - url: https://{host}/v1
+    description: Servidor de desenvolvimento (versão 1)
+    variables:
+      host:
+        enum:
+          - "localhost"
+          - "zufms_api"
+        default: "localhost"
+tags:
+  - name: auth
+  - name: user
+  - name: acervo
+paths:
+  /auth:
+    post:
+      operationId: "auth"
+      tags:
+        - "auth"
+      summary: "Realizar autenticação"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/AuthRequest"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/AccessTokenResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/requestcode:
+    post:
+      operationId: "requestAuthCode"
+      tags:
+        - "auth"
+      summary: "Solicitar um código de autenticação"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/RequestCodeRequest"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/AccessTokenResponse"
+        "422":
+          description: "Não foi possível processar os dados informados"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /auth/revoke:
+    post:
+      operationId: "revokeToken"
+      tags:
+        - "auth"
+      summary: "Revogar um token de acesso"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/RevokeAccessTokenRequest"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "text/plain":
+              schema:
+                type: object
+                properties: 
+                  message: 
+                    enum: 
+                    - 'Successfully logged out'
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /user:
+    get:
+      operationId: "getuser"
+      tags:
+        - "user"
+      summary: "Buscar usuários"
+      description: ""
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+        "500":
+          description: "Erro interno"
+    post:
+      operationId: "createUser"
+      tags:
+        - "user"
+      summary: "Adicionar usuário"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/CreateUserRequest"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Não foi possível processar os dados informados"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /user/{id}:
+    get:
+      operationId: "getUser"
+      tags:
+        - "user"
+      summary: "Buscar usuário pelo id"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "integer"
+            example: "0"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Registro não encontrado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: "updateUser"
+      tags:
+        - "user"
+      summary: "Editar usuário"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "integer"
+            example: "0"
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/UpdateUserRequest"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Não foi possível processar os dados informados"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: "deleteUser"
+      tags:
+        - "user"
+      summary: "Excluir usuário"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "id"
+          required: true
+          schema:
+            type: "integer"
+            example: "0"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Erro ao excluir registro"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /acervo:
+    get:
+      operationId: "getAcervoEntries"
+      tags:
+        - "acervo"
+      summary: "Buscar entradas do acervo"
+      description: ""
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
+        "403":
+          description: "Não autorizado"
+        "500":
+          description: "Erro interno"
+    post:
+      operationId: "createAcervoEntries"
+      tags:
+        - "acervo"
+      summary: "Adicionar múltiplas entradas ao acervo"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ZUFMSCore"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Não foi possível processar os dados informados"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: "updateAcervoEntries"
+      tags:
+        - "acervo"
+      summary: "Editar múltiplas entradas do acervo"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ZUFMSCore"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Não foi possível processar os dados informados"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: "deleteAcervoEntries"
+      tags:
+        - "acervo"
+      summary: "Excluir múltiplas entradas do acervo"
+      description: ""
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              type: array
+              items:
+                $ref: "#/components/schemas/ZUFMSCoreOccurrenceID"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Erro ao excluir registro"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /acervo/{occurrenceID}:
+    get:
+      operationId: "getAcervoEntry"
+      tags:
+        - "acervo"
+      summary: "Buscar uma entrada do acervo"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "occurrenceID"
+          required: true
+          schema:
+            $ref: "#/components/schemas/ZUFMSCoreOccurrenceID"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Registro não encontrado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    put:
+      operationId: "updateAcervoEntry"
+      tags:
+        - "acervo"
+      summary: "Editar uma entrada do acervo"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "occurrenceID"
+          required: true
+          schema:
+            $ref: "#/components/schemas/ZUFMSCoreOccurrenceID"
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/ZUFMSCore"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Não foi possível processar os dados informados"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+    delete:
+      operationId: "deleteAcervoEntry"
+      tags:
+        - "acervo"
+      summary: "Excluir uma entrada do acervo"
+      description: ""
+      parameters:
+        - in: "path"
+          name: "occurrenceID"
+          required: true
+          schema:
+            $ref: "#/components/schemas/ZUFMSCoreOccurrenceID"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/User"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "422":
+          description: "Erro ao excluir registro"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+  /acervo/file:
+    post:
+      operationId: "processAcervoEntriesFile"
+      tags:
+        - "acervo"
+      summary: "Realizar o upload e processamento de um arquivo de entradas"
+      description: "Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv"
+      requestBody:
+        content:
+          "multipart/form-data":
+            schema:
+              $ref: "#/components/schemas/ZUFMSCoreFile"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "text/plain":
+              schema:
+                type: object
+                properties: 
+                  message: 
+                    enum: 
+                    - 'Successfully logged out'
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/ErrorResponse"
+components:
+  schemas:
+    RequestCodeRequest:
+      type: object
+      properties: 
+        email:
+          type: string
+          format: email
+    AuthRequest:
+      discriminator:
+        propertyName: type
+      oneOf:
+        - $ref: "#/components/schemas/UserAuthRequest"
+        - $ref: "#/components/schemas/ClientAuthRequest"
+    UserAuthRequest:
+      type: object
+      properties: 
+        type: 
+          enum: 
+          - 'password'
+        email:
+          type: string
+          format: email
+        code: 
+          type: string
+    ClientAuthRequest:
+      type: object
+      properties: 
+        type: 
+          enum: 
+          - 'client_credentials'
+        client_id:
+          type: string
+        client_secret: 
+          type: string
+    AccessTokenResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        token_type:
+          enum: 
+          - 'bearer'
+        expires_in:
+          type: number
+    RevokeAccessTokenRequest:
+      type: object
+      properties:
+        client_id:
+          type: string
+        client_secret:
+          type: string
+        client_token:
+          type: string
+    ErrorResponse:
+      type: object
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/Error"
+    Error: 
+      type: object
+      properties:
+        code:
+          type: number
+        title: 
+          type: string
+        description: 
+          type: string
+    User: 
+      type: object
+      properties:
+        email: 
+          type: string
+    UpdateUserRequest: 
+      type: object
+    CreateUserRequest: 
+      type: object
+    ZUFMSCoreFile:
+      type: string
+      example: | 
+        dcterms:modified,informationWithheld,basisOfRecord,institutionCode,collectionCode,catalogNumber,artificial,artificial,otherCatalogNumbers,associatedOccurrences,relationshipOfResource,acceptedNameUsage,scientificName,scientificNameAuthorship,kingdom,phylum,class,order,family,artificial,genus,subgenus,specificEpithet,infraspecificEpithet,taxonRank,taxonomicStatus,originalNameUsage,vernacularName,nomenclaturalCode,identificationQualifier,identifiedBy,dateIdentified,typeStatus,recordedBy,recordNumber,fieldNumber,day,month,year,eventTime,eventDate,verbatimEventDate,samplingProtocol,habitat,eventRemarks,fieldNotes,continent,country,countryCode,verbatimLocality,stateProvince,county,municipality,locality,verbatimLatitude,verbatimLongitude,decimalLatitude,decimalLongitude,coordinatePrecision,geodeticDatum,footprintWKT,minimumElevationInMeters,maximumElevationInMeters,waterBody,minimumDepthInMeters,maximumDepthInMeters,locationRemarks,preparations,individualCount,sex,measurementRemarks,lifeStage,reproductiveCondition,establishmentMeans,behavior,occurrenceRemarks,disposition,artificial,associatedReferences,dcterms:bibliographicCitation,datasetName,associatedMedia,nameAccordingTo,occurrenceID,previousIdentifications
+        2014-03-06,nenhuma,PreservedSpecimen,UFMS,ZUFMS,ZUFMS-PIS00001,P217,x,x,nenhum,nenhum,"Auchenipterus nigripinnis (Boulenger, 1895)",Auchenipterus nigripinnis,"(Boulenger, 1895)",Animalia,Chordata,Actinopterygii,Siluriformes,Auchenipteridae,Auchenipterinae,Auchenipterus,x,nigripinnis,x,espécie,aceito,x,indeterminado,ICZN,x,"FROEHLICH, O.",1992-09-28,voucher,"LOUZAN, J. C.",x,x,02,11,1991,x,1991-11-02,02.XI.1991,indeterminado,não informado,nenhuma,nenhuma,América do Sul,Brasil,BRA,Paraguai,Mato Grosso do Sul,Miranda,x,Base de Estudos do Pantanal - UFMS,"19°08'31""S","56°47'39""W",-19.141944,-56.794167,x,WGS84,x,300,500,indeterminado,nulo,nulo,área brejosa,lote de animais inteiros (ETOH 70%),2,fêmea,não informado,adulto,não reprodutivo,selvagem,forrageando,nenhuma,em coleção,x,x,x,não informado,nenhuma,"William N. Eschmeyer and Jon David Fong, 2017",br:UFMS:ZUFMS:ZUFMS-PIS00001,x
+        2014-03-06,nenhuma,PreservedSpecimen,UFMS,ZUFMS,ZUFMS-PIS00002,P217,x,x,nenhum,nenhum,"Auchenipterus nigripinnis (Boulenger, 1895)",Auchenipterus nigripinnis,"(Boulenger, 1895)",Animalia,Chordata,Actinopterygii,Siluriformes,Auchenipteridae,Auchenipterinae,Auchenipterus,x,nigripinnis,x,espécie,aceito,x,indeterminado,ICZN,x,"FROEHLICH, O.",1992-09-28,voucher,"FROEHLICH, O.",x,x,27,09,1989,x,1989-09-27,27.IX.1989,indeterminado,não informado,nenhuma,nenhuma,América do Sul,Brasil,BRA,Paraguai,Mato Grosso do Sul,Aquidauana,x,"Corixão, perto da sede da fazenda","19°37'45""S","55°36'26""W",-19.629167,-55.607222,x,WGS84,x,nulo,nulo,indeterminado,nulo,nulo,nenhuma,lote de animais inteiros (ETOH 70%),41,indeterminado,não informado,indeterminado,indeterminado,selvagem,não informado,nenhuma,em coleção,x,x,x,não informado,nenhuma,"William N. Eschmeyer and Jon David Fong, 2017",br:UFMS:ZUFMS:ZUFMS-PIS00002,x
+        2014-03-06,nenhuma,PreservedSpecimen,UFMS,ZUFMS,ZUFMS-PIS00003,P218,x,x,nenhum,nenhum,"Epapterus dispilurus Cope, 1878",Epapterus dispilurus,"Cope, 1878",Animalia,Chordata,Actinopterygii,Siluriformes,Auchenipteridae,Auchenipterinae,Epapterus,x,dispilurus,x,espécie,aceito,x,indeterminado,ICZN,x,"FROEHLICH, O.",1992-09-28,voucher,"FROEHLICH, O.; JESUS, V. M. F.",x,x,01,01,1991,x,1991-01-01,01.I.1991,indeterminado,não informado,nenhuma,nenhuma,América do Sul,Brasil,BRA,Paraguai,Mato Grosso do Sul,Corumbá,x,Rio Miranda,"19°34'37""S","57°00'42""W",-19.576944,-57.011667,x,WGS84,x,85,nulo,indeterminado,nulo,nulo,nenhuma,animal inteiro (ETOH 70%),1,indeterminado,não informado,indeterminado,indeterminado,selvagem,não informado,nenhuma,em coleção,x,x,x,não informado,nenhuma,"William N. Eschmeyer and Jon David Fong, 2017",br:UFMS:ZUFMS:ZUFMS-PIS00003,x
+    ZUFMSCoreOccurrenceID: 
+      type: string
+      description: identidade do exemplar, utilizado para evitar duplicações
+      title: ID da Ocorrência
+      example: br:UFMS:ZUFMS-CRU00002
+    ZUFMSCore:
+      title: ZUFMS Darwin Core Subset
+      type: object
+      properties:
+        artificial:section:
+          type: string
+          title: Seção
+          description: Grupo ao qual o registro faz parte
+          example: Amphibia
+        dcterms:modified:
+          type: string
+          description: data que o registro foi criado ou alterado, no padrão AAAA-MM-DD
+          title: Data da Última Modificação
+          format: date
+          example: '2017-08-28'
+        informationWithheld:
+          type: string
+          description: informação que falta em uma das colunas e deve ser procurada
+          title: Informação Retida
+          example: verificar amostra de tecido
+          default: nenhuma
+        basisOfRecord:
+          type: string
+          description: 'PreservedSpecimen: um recurso que descreve um espécime preservado.
+            LivingSpecimen: um recurso que descreve um espécime vivo. HumanObservation:
+            um recurso que descreve uma observação feita por uma ou mais pessoas. MachineObservation:
+            um recurso que descreve uma observação feita por máquina. Sample: um recurso
+            que descreve os resultados físicos de uma amostragem.'
+          title: Base do Registro
+          example: PreservedSpecimen
+        institutionCode:
+          type: string
+          description: sigla da instituição
+          title: Código da Instituição
+          default: UFMS
+          example: UFMS
+        collectionCode:
+          type: string
+          description: sigla da coleção
+          title: Código da Coleção
+          default: ZUFMS
+          example: ZUFMS
+        dcterms:bibliographicCitation:
+          type: string
+          description: citação do artigo em que este exemplar foi utilizado, concatenar
+            com ";"
+          title: Citação Bibliográfica
+          example: Oliver P. Pearson. 1985. Los tuco-tucos (genera Ctenomys) de los Parques Nacionales
+            Lanin y Nahuel Huapi, Argentina Historia Natural, 5(37):337-343.
+          default: ''
+        datasetName:
+          type: string
+          description: o título do projeto no qual houve envolvimento de coletas
+          title: Nome do Conjunto de Dados
+          example: Projeto Jauru
+          default: ''
+        artificial:shelfLocation:
+          type: string
+          description: local numerado onde o exemplar está armazenado (utilize ALT+0150
+            para inserir a "meia-risca" se forem várias prateleiras)
+          title: Localização na Coleção (Prateleira)
+          example: P001
+          default: ''
+        artificial:flaskLocation:
+          type: string
+          description: 'acronímia da seção (ex.: AMP) que agrupa alfabeticamente vários
+            tombos, desde que sejam mesmo táxon, local e ano de coleta'
+          title: Localização na Coleção (Frasco)
+          example: AMPAA
+          default: ''
+        artificial:shippingGuide:
+          type: string
+          description: exemplar não disponível
+          title: Guia de Remessa
+          example: GR07/2017
+          default: ''
+        catalogNumber:
+          type: string
+          description: número de tombo do exemplar
+          title: Número de Catálogo
+          example: ZUFMS-AMP00001
+        otherCatalogNumbers:
+          type: string
+          description: quando proveniente de outra coleção
+          title: Número de Catálogo Anterior
+          example: AMP01765
+          default: ''
+        recordedBy:
+          type: string
+          description: nome do coletor abreviado seguindo o exemplo "SOBRENOME, N."
+          title: Coletor
+          default: ''
+        recordNumber:
+          type: string
+          description: número da etiqueta de campo, associada ao coletor
+          title: Número da Etiqueta de Campo
+          example: CH381
+          default: ''
+        preparations:
+          type: string
+          description: tipo de preparação concatenado com ";"
+          title: Tipo de Preparação
+          example: animal inteiro (ETOH)
+        individualCount:
+          type: string
+          description: se for em lote, informar a quantidade
+          title: Número de Indivíduos
+          default: '1'
+          example: 147
+        sex:
+          type: string
+          description: Campo informado com vocabulário
+          title: Sexo
+          example: irreconhecível
+        lifeStage:
+          type: string
+          description: o estágio de vida do especime no momento do registro
+          title: Fase da Vida
+          example: zigoto
+        reproductiveCondition:
+          type: string
+          description: informa que fase reprodutiva se encontra
+          title: Condição Reprodutiva
+          example: não reprodutivo
+        establishmentMeans:
+          type: string
+          description: informa a real origem com vocabulário
+          title: Modo de Estabelecimento
+          example: selvagem
+        behavior:
+          type: string
+          description: a ação que o espécime realizava quando ainda vivo
+          title: Comportamento
+          default: não informado
+          example: selvagem
+        occurrenceRemarks:
+          type: string
+          description: observação ou comentário do espécime na hora da coleta
+          title: Observações de Ocorrência
+          default: não informado
+          example: espécime encontrado morto na estrada
+        disposition:
+          type: string
+          description: informação do registro na coleção
+          title: Disposição
+          default: verificar
+          example: em coleção
+        associatedReferences:
+          type: string
+          description: bibliografia relacionada ou direta
+          title: Referências Associadas
+          default: ''
+          example: GALLARDO, Fabiana E.; RECHE, Vanina A.; MONTEIRO, Ricardo Ferreira. New data
+            on Marthiella Buffington (Hymenoptera, Cynipoidea, Figitidae), with description
+            of a new species. Rev. Bras. entomol., São Paulo ,  v. 58, n. 2, jun.  2014
+        associatedMedia:
+          type: string
+          description: o link ou pasta onde está a mídia associada
+          title: Mídia Associada
+          default: ''
+          example: inbio.br/photo.jpg
+        occurrenceID:
+          $ref: "#/components/schemas/ZUFMSCoreOccurrenceID"
+        associatedOccurrences:
+          type: string
+          description: espécime tombado que tenha relação com o registro
+          title: Item Relacionado ao Catálogo
+          default: ''
+          example: ZUFMS-LEP00001|ZUFMS-COL00002
+        previousIdentifications:
+          type: string
+          description: identificações anteriores, informando táxon, determinador, data e
+            método utilizado
+          title: Identificações Anteriores
+          default: ''
+          example: Anthus sp., ID de campo por G. Iglesias; Anthus correndera, ID do experto por
+            C. Cicero 2009-02-12 baseado em morfologia
+        fieldNumber:
+          type: string
+          description: ''
+          title: Número do Campo
+          example: Pitfall0001Seca
+        day:
+          type: integer
+          description: dia em algarismo arábico
+          title: Dia da Coleta
+          default: ''
+          example: 1
+        month:
+          type: integer
+          description: mês em algarismo arábico
+          title: Mês da Coleta
+          default: ''
+          example: 12
+        year:
+          type: integer
+          description: ano em algarismo arábico
+          title: Ano da Coleta
+          default: ''
+          example: 2004
+        eventTime:
+          type: string
+          description: hora única (hh:mm) ou intervalo (hh:mm/hh:mm)
+          title: Hora/Intervalo do Evento
+          default: ''
+          example: 19:00/21:00
+        eventDate:
+          type: string
+          description: data (aaaa-mm-dd) ou intervalo (aaaa-mm-dd/aaaa-mm-dd), mas se não
+            houver todas informações informar apenas mês (aaaa-mm) ou ano (aaaa)
+          title: Data/Intervalo do Evento
+          example: '2010-06-30'
+        verbatimEventDate:
+          type: string
+          description: data clássica com mês em formato romano
+          title: Data Coleta Textual
+          example: 17.IV.2015
+        samplingProtocol:
+          type: string
+          description: descrição sucinta do método de coleta
+          title: Método de Coleta
+          default: ''
+          example: busca ativa
+        habitat:
+          type: string
+          description: pode ser bioma, ecorregião que caracterize o ambiente natural do
+            espécime
+          title: Habitat
+          default: ''
+          example: Pantanal
+        eventRemarks:
+          type: string
+          description: comentários sobre o evento
+          title: Observações do Evento
+          default: ''
+          example: após das recentes chuvas o rio está quase na fase de inundação
+        fieldNotes:
+          type: string
+          description: pode ser um indicador da existencia de, b) uma referência a (publicação,
+            link), ou c) texto das notas tomadas no campo sobre o evento
+          title: Anotações de Campo
+          default: ''
+          example: notas disponíveis na Biblioteca Central
+        measurementRemarks:
+          type: string
+          description: comentários ou notas que acompanham medições ou fatos; medidas concatenadas
+            com ";" informando unidade
+          title: Medidas
+          default: ''
+          example: 'peso (g): 23'
+        continent:
+          type: string
+          description: apenas se for um divisão válida
+          title: Continente/Oceano
+          default: América do Sul
+          example: América do Sul
+        country:
+          type: string
+          description: nome do país
+          title: País
+          default: Brasil
+          example: Brasil
+        countryCode:
+          type: string
+          description: codificação de acordo com ISO3166-1 e código alfa-3
+          title: Código do País
+          example: BRA
+        verbatimLocality:
+          type: string
+          description: utilizar quando se trata de organismos aquáticos
+          title: Bacia Hidrográfica
+          default: Brasil
+          example: Bacia do Paraguai
+        stateProvince:
+          type: string
+          description: escrito por extenso, utilizar região quando são áreas de divisa entre
+            estados
+          title: Estado/Província/Região
+          default: Mato Grosso do Sul
+          example: Mato Grosso do Sul
+        county:
+          type: string
+          description: o nome do município válido
+          title: Município
+          default: ''
+          example: Campo Grande
+        municipality:
+          type: string
+          description: 'quando há necessidade de informar distrito ou sub-região (ex.: Pantanal
+            da Nhecolândia)'
+          title: Sub-Região/Distrito
+          default: ''
+          example: Taboco
+        locality:
+          type: string
+          description: a localidade abaixo de município ou distrito
+          title: Localidade
+          default: ''
+          example: Fazenda Nhumirim
+        decimalLatitude:
+          type: number
+          minimum: -90
+          maximum: 90
+          description: coordenada em formato decimal, a célula deve estar formatada em texto
+          title: Latitude Decimal
+          default: ''
+          example:
+        decimalLongitude:
+          type: number
+          minimum: -180
+          maximum: 180
+          description: coordenada em formato decimal, a célula deve estar formatada em texto
+          title: Longitude Decimal
+          default: ''
+          example:
+        verbatimLatitude:
+          type: string
+          description: informar se não houver decimal
+          title: Latitude
+          example: 21°31'23.40"S
+        verbatimLongitude:
+          type: string
+          description: informar se não houver decimal
+          title: Longitude
+          example: 21°31'23.40"W
+        coordinatePrecision:
+          type: number
+          description: precisão em metros
+          title: Precisão da Coordenada (m)
+          default: ''
+          example: 10
+        geodeticDatum:
+          type: string
+          description: informar somente se decimal
+          title: Datum
+          example: WGS84
+        footprintWKT:
+          type: string
+          description: quando não se sabe a coordenada exata; acesse http://boundingbox.klokantech.com/
+            para estimar o quadrante
+          title: Retângulo Envolvente
+          default: ''
+          example: 'GPS: 019°18''00"S--021°39''00"S/056°22''00"W--053°34''00"W'
+        minimumElevationInMeters:
+          type: number
+          description: limite inferior do intervalo da elevação
+          title: Altitude Mínima (m)
+          default: ''
+          example: 100
+        maximumElevationInMeters:
+          type: number
+          description: limite superior do intervalo da elevação
+          title: Altitude Máxima (m)
+          default: ''
+          example: 100
+        waterBody:
+          type: string
+          description: o nome do corpo d'água lótico/lêntico onde foi coletado; mais detalhes
+            acesse http://www.getty.edu/research/tools/vocabularies/tgn/
+          title: Corpo D'Água
+          default: ''
+          example: Rio Salobra
+        minimumDepthInMeters:
+          type: number
+          description: a menor profundidade de um intervalo de profundidades abaixo da superfície
+            do local, em metros
+          title: Profundidade Mínima (m)
+          default: ''
+          example: 100
+        maximumDepthInMeters:
+          type: number
+          description: a maior profundidade de um intervalo de profundidades abaixo da superfície
+            do local, em metros
+          title: Profundidade Máxima (m)
+          default: ''
+          example: 100
+        locationRemarks:
+          type: string
+          description: comentários sobre o local onde foi coletado
+          title: Observações do Local
+          default: ''
+          example: debaixo de água desde 2005
+        identificationQualifier:
+          type: string
+          description: 'quando não se sabe ao certo a identificação '
+          title: Imprecisão
+          example: cf.
+        identifiedBy:
+          type: string
+          description: o sobrenome e nome abreviado em caixa alta segundo o exemplo de quem
+            identificou o material
+          title: Determinado Por
+          default: ''
+          example: GRACIOLLI, G.
+        dateIdentified:
+          type: string
+          description: data da determsinação no formato aaaa-mm-dd
+          title: Data da Determinação
+          format: date
+          default: ''
+          example: '2012-03-27'
+        typeStatus:
+          type: string
+          description: informa se é tipo nomenclatural ou apenas voucher, se necessário
+            concatenar com ";"
+          title: Tipo Nomenclatural
+          example: Holótipo de Pinus abies | Holótipo de Picea abies
+        scientificName:
+          type: string
+          description: similar ao Nome Científico Aceito, mas aqui utilizamos sem autoria
+          title: Nome Científico
+          default: ''
+          example: Lysapsus limellum
+        scientificNameAuthorship:
+          type: string
+          description: autor e ano, segundo o código de nomenclatura seguido
+          title: Autor do Nome Científico
+          default: ''
+          example: "(Cope, 1862)"
+        acceptedNameUsage:
+          type: string
+          description: identificação do táxon com autor até onde foi possível, não importando
+            a categoria taxonômica
+          title: Nome Científico Aceito
+          example: Lysapsus limellum (Cope, 1862)
+        subgenus:
+          type: string
+          description: se identificado
+          title: Subgênero
+          example: Strobus
+        genus:
+          type: string
+          description: se identificado
+          title: Gênero
+          example: Boana
+        artificial:subtribe:
+          type: string
+          description: se identificado
+          title: Subtribo
+          example: []
+        artificial:tribe:
+          type: string
+          description: se identificado
+          title: Tribo
+          example: []
+        artificial:subfamily:
+          type: string
+          description: se identificado
+          title: Subfamília
+          example: Pseudinae
+        family:
+          type: string
+          description: se identificado
+          title: Família
+          example: Hylidae
+        artificial:superfamily:
+          type: string
+          description: se identificado
+          title: Superfamília
+          example: []
+        artificial:infraorder:
+          type: string
+          description: campo obrigatório
+          title: Infraordem
+          example: []
+        artificial:suborder:
+          type: string
+          description: se identificado
+          title: Subordem
+          example: Furcatergalia
+        order:
+          type: string
+          description: campo obrigatório
+          title: Ordem
+          example: Anura
+        artificial:superorder:
+          type: string
+          description: se identificado
+          title: Superordem
+          example: []
+        artificial:subclass:
+          type: string
+          description: campo obrigatório
+          title: Subclasse
+          example: []
+        class:
+          type: string
+          description: campo obrigatório
+          title: Classe
+          example: Amphibia
+        artificial:subphylum:
+          type: string
+          description: se identificado
+          title: Subfilo
+          example: Hexapoda
+        phylum:
+          type: string
+          description: campo obrigatório
+          title: Filo
+          example: Chordata
+        kingdom:
+          type: string
+          description: campo obrigatório
+          title: Reino
+          example: Animalia
+        specificEpithet:
+          type: string
+          description: se identificado
+          title: Epíteto Específico
+          default: ''
+          example: limellum
+        infraspecificEpithet:
+          type: string
+          description: se identificado
+          title: Epíteto Infraespecífico
+          default: ''
+          example: concolor
+        taxonRank:
+          type: string
+          description: informa até que nível taxonômico foi identificado
+          title: Nível do Táxon
+          default: ''
+          example: subespécie
+        taxonomicStatus:
+          type: string
+          description: 'informa a condição taxonômica:'
+          title: Status Taxonômico
+          default: ''
+          example: em descrição
+        originalNameUsage:
+          type: string
+          description: se for um táxon com problemas, informar o original
+          title: Nome Original Usado
+          default: ''
+          example: Dilocarcinus pagei Stimpson, 1861
+        vernacularName:
+          type: string
+          description: nome popular hifenizado
+          title: Nome Vulgar
+          default: ''
+          example: caramujo-d'água
+        nomenclaturalCode:
+          type: string
+          description: informa qual código ou sistema de classificação está sendo utilizado
+            para o registro
+          title: Código Nomenclatural
+          default: ICZN
+          example: ICZN
+        nameAccordingTo:
+          type: string
+          description: o sistema de classificação no qual este grupo está organizado
+          title: Sistema de Classificação
+          default: ''
+          example: Frost, 2017
+        relationshipOfResource:
+          type: string
+          description: informar a relação com o Item Relacionado ao Catálogo
+          title: Tipo de Relacionamento
+          default: nenhum
+          example: nenhum
+  securitySchemes:
+    access_token:
+      description: ""
+      type: "http"
+      scheme: "bearer"
+      bearerFormat: "JWT"
+security:
+  - access_token: []
