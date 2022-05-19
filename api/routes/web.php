@@ -22,6 +22,7 @@ Route::get('/', function () {
 });
 
 Route::post('/teste', [TesteController::class, 'teste']);
+Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
 
 
 Route::post('/api/auth', [AuthController::class, 'authenticate']);

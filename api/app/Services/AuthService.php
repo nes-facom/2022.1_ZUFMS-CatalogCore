@@ -3,21 +3,24 @@
 namespace App\Services;
 
 use App\DTO\Input\AuthInputDTO;
-use App\Models\User;
+use App\Repository\UserRepository;
 
 class AuthService
 {
     private $emailSenderService;
     private $accessCodeService;
+    private $userRepository;
 
-    public function __construct(EmailSenderService $emailSenderService, AccessCodeService $accessCodeService)
+    public function __construct(EmailSenderService $emailSenderService, AccessCodeService $accessCodeService,
+                                UserRepository $userRepository)
     {
         $this->emailSenderService = $emailSenderService;
         $this->accessCodeService = $accessCodeService;
+        $this->userRepository = $userRepository;
     }
 
     public function sendPassword(AuthInputDTO $inputDTO){
-        $user = $this->checkUserExists($inputDTO->getEmail());
+        $user = $this->userRepository->findByEmail($inputDTO->getEmail());
         if($user == null){
             return response()->json([
                 'error' => 'true',
@@ -37,7 +40,7 @@ class AuthService
     }
 
     public function sendAuthToken(AuthInputDTO $inputDTO){
-        $user = $this->checkValidAuth($inputDTO->getEmail(), $inputDTO->getPassword());
+        $user = $this->userRepository->findByEmailAndPassword($inputDTO->getEmail(), $inputDTO->getPassword());
 
         if($user == null){
             return response()->json([
@@ -53,19 +56,6 @@ class AuthService
             return response()->json(['error' => 'Unauthorized'], 401);
         }
         return $this->respondWithToken($token);
-    }
-
-    private function checkUserExists(string $email){
-        return User::query()
-            ->where('email', '=', $email)
-            ->first();
-    }
-
-    private function checkValidAuth(string $email, string $password){
-        return User::query()
-            ->where('email', '=', $email)
-            ->where('password', '=', $password)
-            ->first();
     }
 
     protected function respondWithToken($token)

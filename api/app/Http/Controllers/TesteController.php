@@ -2,30 +2,40 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Input\UserInputDTO;
+use App\Exceptions\NotFoundException;
 use App\Models\BiologicalOccurrenceView;
 use App\Services\SheetToDatabaseService;
 use App\Services\SpreadSheetService;
+use App\Services\UserService;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
+use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 class TesteController extends Controller
 {
     private $sheetToDatabaseService;
     private $spreadSheetService;
+    private $userService;
 
     /**
      * @param $sheetToDatabaseService
      * @param $spreadSheetService
      */
-    public function __construct(SheetToDatabaseService $sheetToDatabaseService, SpreadSheetService $spreadSheetService)
+    public function __construct(SheetToDatabaseService $sheetToDatabaseService, SpreadSheetService $spreadSheetService,
+                                UserService $userService)
     {
         $this->sheetToDatabaseService = $sheetToDatabaseService;
         $this->spreadSheetService = $spreadSheetService;
+        $this->userService = $userService;
     }
 
+    public function testeInsertSheetToDatabase(Request $request){
+        $this->spreadSheetService->insertSheetToDatabase($request);
+    }
 
-    public function teste(Request $request){
-        $sheet = $this->spreadSheetService->readFile($request);
-        $this->sheetToDatabaseService->insertSheetToDatabase($sheet);
+    public function testeSheetToJson(Request $request){
+        return $this->spreadSheetService->sheetToJson($request);
     }
 
     public function testeProvado(){

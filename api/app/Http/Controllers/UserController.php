@@ -20,11 +20,24 @@ class UserController extends Controller
 
     public function createUser(Request $request){
         $inputDTO = UserInputDTO::fromRequest($request);
-        return $this->userService->createUser($inputDTO);
+        $isCreated = $this->userService->createUser($inputDTO);
+        return $isCreated
+                    ? $this->createResponse('created', false, 201)
+                    : $this->createResponse('failed', true, 409);
     }
 
     public function deleteUser(Request $request){
         $inputDTO = UserInputDTO::fromRequest($request);
-        return $this->userService->deleteUser($inputDTO);
+        $isDeleted = $this->userService->deleteUser($inputDTO);
+        return $isDeleted
+            ? $this->createResponse('deleted', false, 200)
+            : $this->createResponse('failed', true, 409);
+    }
+
+    private function createResponse(string $status, bool $error, int $statusCode){
+        return response()->json([
+            'status'=> $status,
+            'error'=> $error
+        ], $statusCode);
     }
 }

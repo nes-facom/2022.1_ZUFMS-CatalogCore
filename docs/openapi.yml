@@ -1098,7 +1098,7 @@ components:
           description: data da determsinação no formato aaaa-mm-dd
           title: Data da Determinação
           format: date
-          default: ''
+         # default: ''
           example: '2012-03-27'
         typeStatus:
           type: string

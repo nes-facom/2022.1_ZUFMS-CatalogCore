@@ -19,6 +19,6 @@ class AcervoController extends Controller
 
 
     public function uploadDocument(Request $request){
-        $this->spreadSheetService->readFile($request);
+        return $this->spreadSheetService->sheetToJson($request);
     }
 }
