@@ -13,7 +13,7 @@ info:
     name: MIT
     url: "https://opensource.org/licenses/MIT"
 servers:
-  - url: https://{host}/v1
+  - url: https://{host}:3000/v1
     description: Servidor de desenvolvimento (versão 1)
     variables:
       host:
