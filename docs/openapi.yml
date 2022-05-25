@@ -13,26 +13,104 @@ info:
     name: MIT
     url: "https://opensource.org/licenses/MIT"
 servers:
-  - url: https://{host}/v1
-    description: Servidor de desenvolvimento (versão 1)
+  - url: https://{host}{port}/v1
+    description: Servidor de desenvolvimento
     variables:
       host:
         enum:
           - "localhost"
           - "zufms_api"
         default: "localhost"
+      port:
+        enum:
+          - ":3000"
+          - ""
+        default: ":3000"
 tags:
   - name: auth
-  - name: user
-  - name: acervo
+  - name: users
+  - name: occurrences
 paths:
-  /auth:
+  /auth/token:
     post:
-      operationId: "auth"
+      operationId: "auth.token"
       tags:
         - "auth"
       summary: "Realizar autenticação"
-      description: ""
+      description: |
+        ## Fluxo de autenticação do usuário através do front-end
+        1. Front-end se autentifica
+          - `FRONTEND_CLIENT_ID`, `FRONTEND_CLIENT_SECRET`: Credenciais do front-end
+        
+        ```
+        POST https://zufms_api/auth/token
+        Content-Type: application/json
+        {
+          "type": "client_credentials",
+          "client_id": "FRONTEND_CLIENT_ID",
+          "client_secret": "FRONTEND_CLIENT_SECRET",
+          "scope": "client.auth:otp"
+        }
+        ```
+        
+        2. Front-end solicita que um usuário receba um OTP
+          - `STATE`: String aleatória que deve ser salva em algum storage junto com o e-mail do usuário
+          - `USER_EMAIL`: E-mail do usuário
+        ```
+        POST https://zufms_api/auth/otp
+        Content-Type: application/json
+        Authorization: Bearer FRONTEND_ACCESS_TOKEN
+        {
+          "otp_method": "email",
+          "email": "USER_EMAIL",
+          "state": "STATE"
+        }
+        ```
+        
+        3. Usuário recebe um OTP e um link no e-mail
+        
+        4.1. Caso clique no link
+        
+        4.1.1. O usuário é redirecionado para https://zufms_web/auth/cb?otp=`OTP`&state=`STATE`
+          - O link de callback é obtido através do cadastro do client
+          - `OTP`: Código OTP
+          - `STATE`: State fornecido no passo `2.`
+        
+        4.1.2. O front-end recupera o e-mail do storage usando o `STATE` recebido
+        
+        4.1.3. O front-end realiza a autenticação do usuário
+          - `SCOPE`: Escopo de autorização solicitado pelo usuário (ver `AccessTokenScope`)
+        
+        ```
+        POST https://zufms_api/auth/token
+        Content-Type: application/json
+        Authorization: Bearer FRONTEND_ACCESS_TOKEN
+        {
+          "type": "otp",
+          "otp_method": "email",
+          "otp": "OTP",
+          "email": "USER_EMAIL",
+          "scope": "SCOPE"
+        }
+        ```
+        
+        4.2. Caso o usuário digite o código no front-end
+        
+        4.2.1. O front-end realiza a autenticação do usuário
+        ```
+        POST https://zufms_api/auth/token
+        Content-Type: application/json
+        Authorization: Bearer FRONTEND_ACCESS_TOKEN
+        {
+          "type": "otp",
+          "otp_method": "email",
+          "otp": "OTP",
+          "email": "USER_EMAIL",
+          "scope": "SCOPE"
+        }
+        ```
+        
+        5. O front-end está apto a utilizar a conta do usuário (access_token) em suas requisições
       requestBody:
         content:
           "application/json":
@@ -45,50 +123,31 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/AccessTokenResponse"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
+        "401":
+          description: "Credenciais inválidas"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/AuthenticationErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /auth/requestcode:
-    post:
-      operationId: "requestAuthCode"
-      tags:
-        - "auth"
-      summary: "Solicitar um código de autenticação de um usuário"
-      description: ""
-      requestBody:
-        content:
-          "application/json":
-            schema:
-              $ref: "#/components/schemas/RequestCodeRequest"
-      responses:
-        "200":
-          description: "Operação bem sucedida"
-          content:
-            "application/json":
-              schema:
-                $ref: "#/components/schemas/AccessTokenResponse"
-        "422":
-          description: "Não foi possível processar os dados informados"
-          content:
-            "application/json":
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
-        "500":
-          description: "Erro interno"
-          content:
-            "application/json":
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
   /auth/revoke:
     post:
-      operationId: "revokeToken"
+      operationId: "auth.revoke"
       tags:
         - "auth"
       summary: "Revogar um token de acesso"
-      description: ""
+      description: "Necessita de permissão `client.auth:otp` ou maior"
       requestBody:
         content:
           "application/json":
@@ -97,27 +156,71 @@ paths:
       responses:
         "200":
           description: "Operação bem sucedida"
+        "400":
+          description: "Dados inválidos"
           content:
-            "text/plain":
+            "application/json":
               schema:
-                type: object
-                properties: 
-                  message: 
-                    enum: 
-                    - 'Successfully logged out'
+                $ref: "#/components/schemas/DataValidationErrorResponse"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /user:
-    get:
-      operationId: "getuser"
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /auth/otp:
+    post:
+      operationId: "auth.otp"
       tags:
-        - "user"
+        - "auth"
+      summary: "Solicitar um código de autenticação de um usuário"
+      description: "Necessita de permissão `client.auth:otp` ou maior"
+      requestBody:
+        content:
+          "application/json":
+            schema:
+              $ref: "#/components/schemas/OtpRequest"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/AccessTokenResponse"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /users:
+    get:
+      operationId: "users.getAll"
+      tags:
+        - "users"
       summary: "Buscar usuários"
-      description: ""
+      description: |  
+        Necessita de permissão `users:read` ou maior para visualizar infomações básicas de outros usuários
+        
+        Necessita de permissão `users` ou maior para visualizar todas as informações de outros usuários
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -138,13 +241,13 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     post:
-      operationId: "createUser"
+      operationId: "users.createOne"
       tags:
-        - "user"
-      summary: "Adicionar usuário"
-      description: ""
+        - "users"
+      summary: "Criar usuário"
+      description: "Necessita de permissão `users` ou maior"
       requestBody:
         content:
           "application/json":
@@ -157,38 +260,41 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Não foi possível processar os dados informados"
-          content:
-            "application/json":
-              schema:
-                $ref: "#/components/schemas/ErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /user/{id}:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /users/{id}:
     get:
-      operationId: "getUser"
+      operationId: "users.getOne"
       tags:
-        - "user"
+        - "users"
       summary: "Buscar usuário pelo id"
-      description: ""
+      description: |
+        Necessita de permissão `users:read` ou maior para visualizar infomações básicas de outros usuários
+        
+        Necessita de permissão `users` ou maior para visualizar todas as informações de outros usuários
       parameters:
         - in: "path"
           name: "id"
           required: true
           schema:
-            type: "integer"
-            example: "0"
+            type: "string"
+            format: "uuid"
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -196,37 +302,43 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Registro não encontrado"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     put:
-      operationId: "updateUser"
+      operationId: "users.updateOne"
       tags:
-        - "user"
+        - "users"
       summary: "Editar usuário"
-      description: ""
+      description: "Necessita de permissão `users` ou maior"
       parameters:
         - in: "path"
           name: "id"
           required: true
           schema:
-            type: "integer"
-            example: "0"
+            type: "string"
+            format: "uuid"
       requestBody:
         content:
           "application/json":
@@ -239,37 +351,43 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Não foi possível processar os dados informados"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     delete:
-      operationId: "deleteUser"
+      operationId: "users.deleteOne"
       tags:
-        - "user"
+        - "users"
       summary: "Excluir usuário"
-      description: ""
+      description: "Necessita de permissão `users` ou maior"
       parameters:
         - in: "path"
           name: "id"
           required: true
           schema:
-            type: "integer"
-            example: "0"
+            type: "string"
+            format: "uuid"
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -277,31 +395,75 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Erro ao excluir registro"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /acervo:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /occurrences:
     get:
-      operationId: "getAcervoEntries"
+      operationId: "occurrences.getAll"
       tags:
-        - "acervo"
+        - "occurrences"
       summary: "Buscar entradas do acervo"
-      description: ""
+      description: "Necessita de permissão `occurrences:read` ou maior"
+      parameters:
+        - in: "query"
+          name: "sortBy"
+          required: false
+          description: | 
+            Atributo de paginação
+            
+            Define uma ordenação para o retorno dos dados
+          schema:
+            type: string
+            example: "occurrenceID"
+        - in: "query"
+          name: "start"
+          required: false
+          description: | 
+            Atributo de paginação
+            
+            Define o índice do primeiro dado a ser retornado
+          schema:
+            type: number
+            example: 10
+        - in: "query"
+          name: "limit"
+          required: false
+          description: | 
+            Atributo de paginação
+            
+            Define o índice do último dado a ser retornado
+          schema:
+            type: number
+            example: 5
+        - in: "query"
+          name: "artificial:section"
+          required: false
+          description: "Filtra a busca pelo atributo `artificial:section`"
+          schema:
+            type: string
+            example: "Amphibia"
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -311,6 +473,12 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ZUFMSCore"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
@@ -322,13 +490,13 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     post:
-      operationId: "createAcervoEntries"
+      operationId: "occurrences.createMany"
       tags:
-        - "acervo"
+        - "occurrences"
       summary: "Adicionar múltiplas entradas ao acervo"
-      description: ""
+      description: "Necessita de permissão `occurrences` ou maior"
       requestBody:
         content:
           "application/json":
@@ -343,30 +511,36 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Não foi possível processar os dados informados"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     put:
-      operationId: "updateAcervoEntries"
+      operationId: "occurrences.updateMany"
       tags:
-        - "acervo"
-      summary: "Editar múltiplas entradas do acervo"
-      description: ""
+        - "occurrences"
+      summary: "Editar múltiplas entradas ao acervo"
+      description: "Necessita de permissão `occurrences` ou maior"
       requestBody:
         content:
           "application/json":
@@ -381,30 +555,36 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Não foi possível processar os dados informados"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     delete:
-      operationId: "deleteAcervoEntries"
+      operationId: "occurrences.deleteMany"
       tags:
-        - "acervo"
-      summary: "Excluir múltiplas entradas do acervo"
-      description: ""
+        - "occurrences"
+      summary: "Excluir múltiplas entradas ao acervo"
+      description: "Necessita de permissão `occurrences` ou maior"
       requestBody:
         content:
           "application/json":
@@ -421,31 +601,37 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/ZUFMSCore"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Erro ao excluir registro"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /acervo/{occurrenceID}:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /occurrences/{occurrenceID}:
     get:
-      operationId: "getAcervoEntry"
+      operationId: "occurrences.getOne"
       tags:
-        - "acervo"
+        - "occurrences"
       summary: "Buscar uma entrada do acervo"
-      description: ""
+      description: "Necessita de permissão `occurrences:read` ou maior"
       parameters:
         - in: "path"
           name: "occurrenceID"
@@ -459,30 +645,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Registro não encontrado"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     put:
-      operationId: "updateAcervoEntry"
+      operationId: "occurrences.updateOne"
       tags:
-        - "acervo"
+        - "occurrences"
       summary: "Editar uma entrada do acervo"
-      description: ""
+      description: "Necessita de permissão `occurrences` ou maior"
       parameters:
         - in: "path"
           name: "occurrenceID"
@@ -500,31 +692,37 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/ZUFMSCore"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Não foi possível processar os dados informados"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
     delete:
-      operationId: "deleteAcervoEntry"
+      operationId: "occurrences.deleteOne"
       tags:
-        - "acervo"
+        - "occurrences"
       summary: "Excluir uma entrada do acervo"
-      description: ""
+      description: "Necessita de permissão `occurrences` ou maior"
       parameters:
         - in: "path"
           name: "occurrenceID"
@@ -538,31 +736,40 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/User"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
         "403":
           description: "Não autorizado"
           content:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
-        "422":
-          description: "Erro ao excluir registro"
+        "404":
+          description: "Dado não encontrado"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/DataNotFoundErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
-  /acervo/file:
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /occurrences/file:
     post:
-      operationId: "processAcervoEntriesFile"
+      operationId: "occurrences.file"
       tags:
-        - "acervo"
-      summary: "Realizar o upload e processamento de um arquivo de entradas"
-      description: "Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv"
+        - "occurrences"
+      summary: "Realizar o upload, processamento e submissão dos dados de um arquivo de ocorrências ao acervo"
+      description: |
+        Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv
+        
+        Necessita de permissão `occurrences` ou maior
       requestBody:
         content:
           "multipart/form-data":
@@ -572,45 +779,126 @@ paths:
         "200":
           description: "Operação bem sucedida"
           content:
-            "text/plain":
+            "application/json":
               schema:
-                type: object
-                properties: 
-                  message: 
-                    enum: 
-                    - 'Successfully logged out'
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
         "500":
           description: "Erro interno"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/ErrorResponse"
+                $ref: "#/components/schemas/InternalErrorResponse"
+  /occurrences/file/verify:
+    post:
+      operationId: "occurrences.fileVerify"
+      tags:
+        - "occurrences"
+      summary: "Realizar o processamento de um arquivo de ocorrências"
+      description: | 
+        Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv
+        
+        Necessita de permissão `occurrences:read` ou maior
+      requestBody:
+        content:
+          "multipart/form-data":
+            schema:
+              $ref: "#/components/schemas/ZUFMSCoreFile"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
 components:
   schemas:
-    RequestCodeRequest:
+    OtpRequest:
       type: object
       properties: 
+        otp_method: 
+          enum:
+            - "email"
         email:
           type: string
           format: email
+        state: 
+          type: string
+    AccessTokenScope: 
+      description: |
+        String de escopos separados por espaços
+        
+        #### Escopos válidos
+        
+        ##### Client
+        
+        - `internal.client`: Permissão de um client interno do sistema, podendo autenticar usuários utilizando de e-mail + password (método `auth.token` com `"type": "password"`)
+        - `client.auth:otp`: Permite autenticar um usuário utilizando OTP (one-time password)
+        
+        ##### User
+        
+        - `admin`: Permissão de um usuário adminstrativo. Permite leitura e escrita de todas as entidades
+        - `occurrences`: Permite leitura e escrita de ocorrências
+        - `occurrences:read`: Permite leitura de ocorrências
+        - `users`: Permite leitura e escrita de usuários
+        - `users:read`: Permite leitura de outros usuários
+      type: string
+      example: "occurrences users:read"
     AuthRequest:
-      discriminator:
-        propertyName: type
       oneOf:
-        - $ref: "#/components/schemas/UserAuthRequest"
-        - $ref: "#/components/schemas/ClientAuthRequest"
-    UserAuthRequest:
+        - $ref: "#/components/schemas/UserOtpAuthRequest"
+        - $ref: "#/components/schemas/ClientCredentialsAuthRequest"
+    UserOtpAuthRequest:
       type: object
       properties: 
         type: 
           enum: 
-          - 'password'
+          - 'otp'
         email:
           type: string
           format: email
-        code: 
+        otp_method: 
+          enum:
+            - "email"
+        otp: 
           type: string
-    ClientAuthRequest:
+          example: "13a5b0"
+        scope: 
+          $ref: "#/components/schemas/AccessTokenScope"
+    ClientCredentialsAuthRequest:
       type: object
       properties: 
         type: 
@@ -620,10 +908,14 @@ components:
           type: string
         client_secret: 
           type: string
+        scope: 
+          $ref: "#/components/schemas/AccessTokenScope"
     AccessTokenResponse:
       type: object
       properties:
         access_token:
+          type: string
+        refresh_token:
           type: string
         token_type:
           enum: 
@@ -633,11 +925,7 @@ components:
     RevokeAccessTokenRequest:
       type: object
       properties:
-        client_id:
-          type: string
-        client_secret:
-          type: string
-        client_token:
+        token:
           type: string
     ErrorResponse:
       type: object
@@ -662,7 +950,7 @@ components:
       properties:
         code: 
           enum:
-            - 11
+            - 1
         title: 
           enum:
             - "Permissões Insuficientes"
@@ -678,6 +966,121 @@ components:
           type: array
           items: 
             $ref: "#/components/schemas/InsufficientPermissionsError"
+    DataValidationError:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code: 
+          enum:
+            - 2
+        title: 
+          enum:
+            - "Dado inválido"
+        description:
+          type: string
+          example: "O campo \"x\" é do tipo \"y\""
+    DataValidationErrorResponse: 
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/DataValidationError"
+    DataNotFoundError:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code: 
+          enum:
+            - 3
+        title: 
+          enum:
+            - "Dado não encontrado"
+        description:
+          type: string
+          example: "Não foi possível encontrar o \"x\" de id \"y\""
+    DataNotFoundErrorResponse: 
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/DataNotFoundError"
+    InternalError:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code: 
+          enum:
+            - 4
+        title: 
+          enum:
+            - "Erro interno"
+        description:
+          enum: 
+           - "Um erro interno inesperado ocorreu"
+    InternalErrorResponse: 
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/InternalError"
+    FileReadError:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code: 
+          enum:
+            - 5
+        title: 
+          enum:
+            - "Problema na leitura do arquivo"
+        description:
+          enum: 
+            - "Não foi possível processar o arquivo"
+    FileReadErrorResponse: 
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/FileReadError"
+    AuthenticationError:
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/Error"
+      properties:
+        code: 
+          enum:
+            - 6
+        title: 
+          enum:
+            - "Credenciais inválidas"
+        description:
+          enum: 
+            - "Não foi possível autenticar o usuário"
+    AuthenticationErrorResponse: 
+      type: object
+      allOf:
+        - $ref: "#/components/schemas/ErrorResponse"
+      properties:
+        errors:
+          type: array
+          items: 
+            $ref: "#/components/schemas/AuthenticationError"
     User: 
       type: object
       properties:
@@ -697,10 +1100,8 @@ components:
     ZUFMSCoreOccurrenceID: 
       type: string
       description: identidade do exemplar, utilizado para evitar duplicações
-      title: ID da Ocorrência
       example: br:UFMS:ZUFMS-CRU00002
     ZUFMSCore:
-      title: ZUFMS Darwin Core Subset
       type: object
       properties:
         artificial:section:
