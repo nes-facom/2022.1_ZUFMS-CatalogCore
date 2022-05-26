@@ -760,6 +760,49 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InternalErrorResponse"
+  /occurrences/autocomplete:
+    get:
+      operationId: "occurrences.autocomplete"
+      tags:
+        - "occurrences"
+      summary: "Realiza a busca pelas opções de autocomplete de um campo"
+      description: |
+        Necessita de permissão `occurrences:read` ou maior
+      parameters:
+        - in: "query"
+          name: "column"
+          required: true
+          schema:
+            type: string
+            example: "lifeStage"
+        - in: "query"
+          name: "value"
+          required: true
+          schema:
+            type: string
+            example: "zigot"
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "zigoto"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
   /occurrences/file:
     post:
       operationId: "occurrences.file"
