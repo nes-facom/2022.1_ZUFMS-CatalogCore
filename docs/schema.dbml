@@ -1,0 +1,350 @@
+// https://dbdiagram.io/d/6244f523bed61838732d28ea
+
+table "artificial:section" {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table basisOfRecord {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table institutionCode { 
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table collectionCode { 
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table datasetName {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table "artificial:shelfLocation" {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table "artificial:flaskLocation" {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table recordedBy {
+  id serial [pk]
+  value text [unique,not null]
+} 
+
+table recordedBy_biological_occurrence {
+  recordedBy_id int [pk, ref: > recordedBy.id]
+  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
+  recordNumber int 
+}
+
+table preparations {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table sex {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table lifeStage {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table reproductiveCondition {
+  id serial [pk]
+  value text [not null]
+}
+
+table establishmentMeans {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table behavior {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table disposition {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table associatedOccurrences {
+  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
+  value text [pk, ref: > biological_occurrence.catalogNumber]
+}
+
+table habitat {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table continent {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table country {
+  countryCode text [pk]
+  value text [not null]
+  continent_id int [ref: > continent.id]
+
+  indexes {
+    (value, continent_id) [unique]
+  }
+}
+
+table verbatimLocality {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table stateProvince {
+  id serial [pk]
+  value text [not null]
+  country_id text [ref: > country.countryCode]
+
+  indexes {
+    (value, country_id) [unique]
+  }
+}
+
+table county {
+  id serial [pk]
+  value text [not null]
+  stateProvince_id int [ref: > stateProvince.id]
+
+  indexes {
+    (value, stateProvince_id) [unique]
+  }
+}
+
+table municipality {
+  id serial [pk]
+  value text [not null]
+  county_id int [ref: > county.id]
+
+  indexes {
+    (value, county_id) [unique]
+  }
+}
+
+table geodeticDatum {
+  id serial [pk]
+  value text [not null]
+}
+
+table locality {
+  id serial [pk]
+  value text [not null]
+  decimalLatitude text [not null]
+  decimalLongitude text [not null]
+  verbatimLatitude text [note: "virtual"]
+  verbatimLongitude text [note: "virtual"]
+  coordinatePrecision text 
+  geodeticDatum_id int [ref: > geodeticDatum.id]
+  footprintWKT text
+  minimumElevationInMeters text [note: "validar normalizacao"]
+  maximumElevationInMeters text [note: "validar normalizacao"]
+  municipality_id int [ref: > municipality.id]
+  verbatimLocality_id int [ref: > verbatimLocality.id]
+
+  indexes {
+    (value, decimalLatitude, decimalLongitude) [unique]
+  }
+}
+
+table waterBody {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table identificationQualifier {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table identifiedBy {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table identifiedBy_biological_occurrence {
+  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
+  value int [ref: > identifiedBy.id]
+  dateIdentified date
+  
+  indexes {
+    (value, biological_occurrence_id) [unique]
+  }
+}
+
+table kingdom {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table phylum {
+  id serial [pk]
+  value text [not null]
+  kingdom_id int [ref: > kingdom.id]
+
+  indexes {
+    (value, kingdom_id) [unique]
+  }
+}
+
+table class {
+  id serial [pk]
+  value text [not null]
+  phylum_id int [ref: > phylum.id]
+
+  indexes {
+    (value, phylum_id) [unique]
+  }
+}
+
+table order {
+  id serial [pk]
+  value text [not null]
+  class_id int [ref: > class.id]
+
+  indexes {
+    (value, class_id) [unique]
+  }
+}
+
+table family {
+  id serial [pk]
+  value text [not null]
+  order_id int [ref: > order.id]
+
+  indexes {
+    (value, order_id) [unique]
+  }
+}
+
+table "artificial:subfamily" {
+  id serial [pk]
+  value text [not null]
+  family_id int [ref: > family.id]
+
+  indexes {
+    (value, family_id) [unique]
+  }
+}
+
+table genus {
+  id serial [pk]
+  value text [not null]
+  family_id int [ref: > family.id]
+
+  indexes {
+    (value, family_id) [unique]
+  }
+}
+
+table subgenus {
+  id serial [pk]
+  value text [not null]
+  genus_id int [ref: > genus.id]
+
+  indexes {
+    (value, genus_id) [unique]
+  }
+}
+
+table taxonomicStatus {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table nomenclaturalCode {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table nameAccordingTo {
+  id serial [pk]
+  value text [unique,not null]
+}
+
+table specie {
+  id serial [pk]
+  typeStatus text
+  scientificName text
+  scientificNameAuthorship text
+  acceptedNameUsage text [note: "virtual"]
+  subgenus_id int [ref: > subgenus.id]
+  "artificial:subfamily_id" int [ref: > "artificial:subfamily".id]
+  specificEpithet text
+  infraspecificEpithet text
+  taxonRank text [note: "validar normalizacao"]
+  taxonomicStatus_id int [ref: > taxonomicStatus.id]
+  originalNameUsage text
+  vernacularName text
+  nomenclaturalCode_id int [ref: > nomenclaturalCode.id]
+  nameAccordingTo_id int [ref: > nameAccordingTo.id]
+}
+
+table biological_occurrence {
+  occurrenceID text [pk]
+  "artificial:section_id" int [ref: > "artificial:section".id, not null]
+  "dcterms:modified" timestamp [note: "default now", not null]
+  informationWithheld text
+  basisOfRecord_id int [ref: > basisOfRecord.id]
+  institutionCode_id int [ref: > institutionCode.id]
+  collectionCode_id int [ref: > collectionCode.id]
+  "dcterms:bibliographicCitation" text
+  datasetName_id int [ref: > datasetName.id]
+  "artificial:shelfLocation_id" int [ref: > "artificial:shelfLocation".id]
+  "artificial:flaskLocation_id" int [ref: > "artificial:flaskLocation".id]
+  "artificial:shippingGuide" text
+  catalogNumber text [unique]
+  otherCatalogNumbers text 
+  preparations_id int [ref: > preparations.id]
+  individualCount int
+  sex_id int [ref: > sex.id]
+  lifeStage_id int [ref: > lifeStage.id]
+  reproductiveCondition_id int [ref: > reproductiveCondition.id]
+  establishmentMeans_id int [ref: > establishmentMeans.id]
+  behavior_id int [ref: > behavior.id]
+  occurrenceRemarks text
+  disposition_id int [ref: > disposition.id]
+  associatedReferences text [note: "validar normalizacao"]
+  associatedMedia text [note: "validar normalizacao"]
+  previousIdentifications text
+  fieldNumber text
+  day text [note: "virtual"]
+  month text [note: "virtual"]
+  year text [note: "virtual"]
+  eventTime interval
+  eventDate interval
+  verbatimEventDate text [note: "virtual"]
+  samplingProtocol text
+  habitat_id int [ref: > habitat.id]
+  eventRemarks text
+  fieldNotes text
+  measurementRemarks text
+  specie_id int [ref: > specie.id]
+  locality_id int [ref: > locality.id]
+  waterBody_id int [ref: > waterBody.id]
+  minimumDepthInMeters text [note: "validar normalizacao (locality?)"]
+  maximumDepthInMeters text [note: "validar normalizacao (locality?)"]
+  locationRemarks text 
+  identificationQualifier_id int [ref: > identificationQualifier.id]
+  identifiedBy_id int [ref: > identifiedBy.id]
+  relationshipOfResource text
+}
