@@ -15,7 +15,7 @@ services:
       - ./infra/database/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/:z
   db_admin:
     container_name: zufms_db_admin
-    image: dpage/pgadmin4:6.8
+    image: dpage/pgadmin4:6.9
     env_file: ./infra/database/.env
     ports:
       - "9090:80"

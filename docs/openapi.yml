@@ -760,6 +760,77 @@ paths:
             "application/json":
               schema:
                 $ref: "#/components/schemas/InternalErrorResponse"
+  /occurrences/autocomplete:
+    get:
+      operationId: "occurrences.autocomplete"
+      tags:
+        - "occurrences"
+      summary: "Realiza a busca dos dados de autocomplete de um termo específico"
+      description: |
+        Necessita de permissão `occurrences:read` ou maior
+      parameters:
+        - in: "query"
+          name: "term"
+          required: true
+          description: "Termo a ser pesquisado"
+          schema:
+            type: string
+            example: "sex"
+        - in: "query"
+          name: "value"
+          required: true
+          description: "Valor do termo"
+          schema:
+            type: string
+            example: "mach"
+        - in: "query"
+          name: "start"
+          required: false
+          description: | 
+            Atributo de paginação
+            
+            Define o índice do primeiro dado a ser retornado
+          schema:
+            type: number
+            example: 10
+        - in: "query"
+          name: "limit"
+          required: false
+          description: | 
+            Atributo de paginação
+            
+            Define o índice do último dado a ser retornado
+          schema:
+            type: number
+            example: 5
+      responses:
+        "200":
+          description: "Operação bem sucedida"
+          content:
+            "application/json":
+              schema:
+                type: array
+                items:
+                  type: string
+                  example: "macho"
+        "400":
+          description: "Dados inválidos"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/DataValidationErrorResponse"
+        "403":
+          description: "Não autorizado"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InsufficientPermissionsErrorResponse"
+        "500":
+          description: "Erro interno"
+          content:
+            "application/json":
+              schema:
+                $ref: "#/components/schemas/InternalErrorResponse"
   /occurrences/file:
     post:
       operationId: "occurrences.file"

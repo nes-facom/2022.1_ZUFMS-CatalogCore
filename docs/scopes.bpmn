@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:omgdi="http://www.omg.org/spec/DD/20100524/DI" xmlns:omgdc="http://www.omg.org/spec/DD/20100524/DC" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" id="sid-38422fae-e03e-43a3-bef4-bd33b32041b2" targetNamespace="http://bpmn.io/bpmn" exporter="bpmn-js (https://demo.bpmn.io)" exporterVersion="9.1.0">
+  <process id="Process_1" isExecutable="false">
+    <task id="Task_1hcentk" name="users:read">
+      <incoming>Flow_1e0afwl</incoming>
+    </task>
+    <task id="Activity_11urrbd" name="users">
+      <incoming>Flow_1bdznzz</incoming>
+      <outgoing>Flow_1e0afwl</outgoing>
+    </task>
+    <task id="Activity_00xbkjq" name="occurrences">
+      <incoming>Flow_1wdks3x</incoming>
+      <outgoing>Flow_1qfqu9o</outgoing>
+    </task>
+    <task id="Activity_0mgo7aw" name="occurrences:read">
+      <incoming>Flow_1qfqu9o</incoming>
+    </task>
+    <task id="Activity_1ke547s" name="admin">
+      <outgoing>Flow_1wdks3x</outgoing>
+      <outgoing>Flow_1bdznzz</outgoing>
+    </task>
+    <sequenceFlow id="Flow_1e0afwl" sourceRef="Activity_11urrbd" targetRef="Task_1hcentk" />
+    <sequenceFlow id="Flow_1qfqu9o" sourceRef="Activity_00xbkjq" targetRef="Activity_0mgo7aw" />
+    <sequenceFlow id="Flow_1wdks3x" sourceRef="Activity_1ke547s" targetRef="Activity_00xbkjq" />
+    <sequenceFlow id="Flow_1bdznzz" sourceRef="Activity_1ke547s" targetRef="Activity_11urrbd" />
+    <task id="Activity_062li5r" name="internal.client">
+      <outgoing>Flow_0zasvmr</outgoing>
+    </task>
+    <task id="Activity_0l0zzfr" name="client.auth:otp">
+      <incoming>Flow_0zasvmr</incoming>
+    </task>
+    <sequenceFlow id="Flow_0zasvmr" sourceRef="Activity_062li5r" targetRef="Activity_0l0zzfr" />
+  </process>
+  <bpmndi:BPMNDiagram id="BpmnDiagram_1">
+    <bpmndi:BPMNPlane id="BpmnPlane_1" bpmnElement="Process_1">
+      <bpmndi:BPMNEdge id="Flow_1wdks3x_di" bpmnElement="Flow_1wdks3x">
+        <omgdi:waypoint x="550" y="160" />
+        <omgdi:waypoint x="550" y="210" />
+        <omgdi:waypoint x="650" y="210" />
+        <omgdi:waypoint x="650" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bdznzz_di" bpmnElement="Flow_1bdznzz">
+        <omgdi:waypoint x="550" y="160" />
+        <omgdi:waypoint x="550" y="210" />
+        <omgdi:waypoint x="450" y="210" />
+        <omgdi:waypoint x="450" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1e0afwl_di" bpmnElement="Flow_1e0afwl">
+        <omgdi:waypoint x="450" y="320" />
+        <omgdi:waypoint x="450" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1qfqu9o_di" bpmnElement="Flow_1qfqu9o">
+        <omgdi:waypoint x="650" y="320" />
+        <omgdi:waypoint x="650" y="370" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0zasvmr_di" bpmnElement="Flow_0zasvmr">
+        <omgdi:waypoint x="210" y="160" />
+        <omgdi:waypoint x="210" y="240" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="Activity_1ke547s_di" bpmnElement="Activity_1ke547s">
+        <omgdc:Bounds x="500" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_11urrbd_di" bpmnElement="Activity_11urrbd">
+        <omgdc:Bounds x="400" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Task_1hcentk_di" bpmnElement="Task_1hcentk">
+        <omgdc:Bounds x="400" y="370" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_00xbkjq_di" bpmnElement="Activity_00xbkjq">
+        <omgdc:Bounds x="600" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_0ven9s9" bpmnElement="Activity_0mgo7aw">
+        <omgdc:Bounds x="600" y="370" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_062li5r_di" bpmnElement="Activity_062li5r">
+        <omgdc:Bounds x="160" y="80" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0l0zzfr_di" bpmnElement="Activity_0l0zzfr">
+        <omgdc:Bounds x="160" y="240" width="100" height="80" />
+        <bpmndi:BPMNLabel />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</definitions>

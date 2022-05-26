@@ -1,18 +1,25 @@
-CREATE TABLE "users" (
+CREATE TABLE "user" (
   "id" serial PRIMARY KEY,
-  "email" text UNIQUE,
-  "password" text
+  "email" text UNIQUE NOT NULL,
+  "password" text NOT NULL
 );
 
-CREATE TABLE "roles" (
-  "id" serial PRIMARY KEY,
-  "name" text
+CREATE TABLE "scope" (
+  "id" int PRIMARY KEY,
+  "name" text NOT NULL,
+  "description" text
 );
 
-CREATE TABLE "user_roles" (
-  "id" serial PRIMARY KEY,
-  "user_id" int NOT NULL,
-  "role_id" int NOT NULL
+CREATE TABLE "scope_closure_table" (
+  "ancestor" int,
+  "descendant" int,
+  PRIMARY KEY ("ancestor", "descendant")
+);
+
+CREATE TABLE "user_allowed_scope" (
+  "user_id" int,
+  "scope_id" int,
+  PRIMARY KEY ("user_id", "scope_id")
 );
 
 CREATE TABLE "artificial:section" (
@@ -345,8 +352,8 @@ CREATE TABLE "biological_occurrence" (
   "day" text,
   "month" text,
   "year" text,
-  "eventTime" date[2],
-  "eventDate" date[2],
+  "eventTime" date[],
+  "eventDate" date[],
   "associatedOccurrences" text,
   "verbatimEventDate" text,
   "samplingProtocol" text,
@@ -436,9 +443,13 @@ COMMENT ON COLUMN "biological_occurrence"."minimumDepthInMeters" IS 'validar nor
 
 COMMENT ON COLUMN "biological_occurrence"."maximumDepthInMeters" IS 'validar normalizacao (locality?)';
 
-ALTER TABLE "user_roles" ADD FOREIGN KEY ("user_id") REFERENCES "users" ("id");
+ALTER TABLE "scope_closure_table" ADD FOREIGN KEY ("ancestor") REFERENCES "scope" ("id");
 
-ALTER TABLE "user_roles" ADD FOREIGN KEY ("role_id") REFERENCES "roles" ("id");
+ALTER TABLE "scope_closure_table" ADD FOREIGN KEY ("descendant") REFERENCES "scope" ("id");
+
+ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
+
+ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("scope_id") REFERENCES "scope" ("id");
 
 ALTER TABLE "recordedBy_biological_occurrence" ADD FOREIGN KEY ("recordedBy_id") REFERENCES "recordedBy" ("id");
 
@@ -555,3 +566,4 @@ ALTER TABLE "biological_occurrence" ADD FOREIGN KEY ("locality_id") REFERENCES "
 ALTER TABLE "biological_occurrence" ADD FOREIGN KEY ("waterBody_id") REFERENCES "waterBody" ("id");
 
 ALTER TABLE "biological_occurrence" ADD FOREIGN KEY ("identificationQualifier_id") REFERENCES "identificationQualifier" ("id");
+
