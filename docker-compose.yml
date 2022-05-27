@@ -30,6 +30,8 @@ services:
     build: ./api
     depends_on:
       - db
+    volumes:
+      - ./api:/var/www:z
   api_docs:
     container_name: zufms_api_docs
     image: swaggerapi/swagger-ui

@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AcervoController;
+use \App\Http\Controllers\AuthController;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,8 +16,10 @@ use \App\Http\Controllers\AcervoController;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
 Route::get('/occurrences/autocomplete', [AcervoController::class, 'getAutocomplete']);
+
+Route::post('/auth/token', [AuthController::class, 'token']);
+
+Route::post('/auth/revoke', [AuthController::class, 'revoke']);
+
+Route::post('/auth/otp', [AuthController::class, 'otp']);

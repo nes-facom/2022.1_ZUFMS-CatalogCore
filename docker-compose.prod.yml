@@ -1,2 +1,59 @@
 version: '3'
 
+volumes:
+  web_build:
+
+
+services:
+  db:
+    container_name: zufms_db
+    image: postgres:14.2-alpine
+    env_file: ./infra/database/.env
+    ports:
+      - '5432:5432'
+    volumes:
+      - ./infra/database/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/:z
+  db_admin:
+    container_name: zufms_db_admin
+    image: dpage/pgadmin4:6.9
+    env_file: ./infra/database/.env
+    ports:
+      - "9090:80"
+    volumes:
+      - ./infra/database/pgadmin/servers.json:/pgadmin4/servers.json:z
+    logging:
+      driver: none
+    depends_on:
+      - db
+  api:
+    container_name: zufms_api
+    build: ./api
+    depends_on:
+      - db
+    volumes:
+      - ./api:/var/www:z
+  api_docs:
+    container_name: zufms_api_docs
+    image: swaggerapi/swagger-ui
+    environment:
+      - API_URL=https://localhost:3000/docs/v1/openapi.yml
+  web:
+    container_name: zufms_web
+    build: ./web
+    volumes:
+      - web_build:/app/dist:z
+  http:
+    container_name: zufms_http
+    image: nginx:1.21
+    ports:
+      - "443:443"
+      - "3000:3000"
+    volumes:
+      - ./infra/http/nginx/nginx.conf:/etc/nginx/nginx.conf:z
+      - ./infra/http/nginx/conf.d/:/etc/nginx/conf.d/:z
+      - ./infra/http/certificates/:/etc/nginx/certificates/:z
+      - web_build:/app/web:z
+      - ./docs/openapi.yml:/app/docs/openapi.yml:z
+    depends_on:
+      - api
+      - web

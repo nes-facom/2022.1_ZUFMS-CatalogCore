@@ -12,6 +12,7 @@ CREATE TABLE "user" (
 CREATE TABLE "client" (
   "id" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
   "name" text NOT NULL,
+  "secret" text NOT NULL,
   "callback_url" text NOT NULL
 );
 
