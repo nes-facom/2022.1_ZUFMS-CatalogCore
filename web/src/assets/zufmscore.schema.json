@@ -25,21 +25,66 @@
         "Tecidos"
       ],
       "oneOf": [
-        { "const": "Amphibia", "$zufmscore:initials": "AMP" },
-        { "const": "Chelicerata", "$zufmscore:initials": "CHE" },
-        { "const": "Chiroptera", "$zufmscore:initials": "CHI" },
-        { "const": "Crustacea", "$zufmscore:initials": "CRU" },
-        { "const": "Diptera", "$zufmscore:initials": "DIP" },
-        { "const": "Fósseis", "$zufmscore:initials": "FOS" },
-        { "const": "Hemiptera", "$zufmscore:initials": "HEM" },
-        { "const": "Hymenoptera", "$zufmscore:initials": "HYM" },
-        { "const": "Mollusca", "$zufmscore:initials": "MOL" },
-        { "const": "Nematoda", "$zufmscore:initials": "NEM" },
-        { "const": "Odonata", "$zufmscore:initials": "ODO" },
-        { "const": "Orthoptera", "$zufmscore:initials": "ORT" },
-        { "const": "Peixes", "$zufmscore:initials": "PIS" },
-        { "const": "Reptilia", "$zufmscore:initials": "REP" },
-        { "const": "Tecidos", "$zufmscore:initials": "TEC" }
+        {
+          "const": "Amphibia",
+          "$zufmscore:initials": "AMP"
+        },
+        {
+          "const": "Chelicerata",
+          "$zufmscore:initials": "CHE"
+        },
+        {
+          "const": "Chiroptera",
+          "$zufmscore:initials": "CHI"
+        },
+        {
+          "const": "Crustacea",
+          "$zufmscore:initials": "CRU"
+        },
+        {
+          "const": "Diptera",
+          "$zufmscore:initials": "DIP"
+        },
+        {
+          "const": "Fósseis",
+          "$zufmscore:initials": "FOS"
+        },
+        {
+          "const": "Hemiptera",
+          "$zufmscore:initials": "HEM"
+        },
+        {
+          "const": "Hymenoptera",
+          "$zufmscore:initials": "HYM"
+        },
+        {
+          "const": "Mollusca",
+          "$zufmscore:initials": "MOL"
+        },
+        {
+          "const": "Nematoda",
+          "$zufmscore:initials": "NEM"
+        },
+        {
+          "const": "Odonata",
+          "$zufmscore:initials": "ODO"
+        },
+        {
+          "const": "Orthoptera",
+          "$zufmscore:initials": "ORT"
+        },
+        {
+          "const": "Peixes",
+          "$zufmscore:initials": "PIS"
+        },
+        {
+          "const": "Reptilia",
+          "$zufmscore:initials": "REP"
+        },
+        {
+          "const": "Tecidos",
+          "$zufmscore:initials": "TEC"
+        }
       ],
       "$zufmscore:autocomplete": true,
       "$zufmscore:termclass": "zufmscore:management"
@@ -49,7 +94,9 @@
       "description": "data que o registro foi criado ou alterado, no padrão AAAA-MM-DD",
       "title": "Data da Última Modificação",
       "format": "date",
-      "examples": ["2017-08-28"],
+      "examples": [
+        "2017-08-28"
+      ],
       "$zufmscore:dynamic": "currentdate",
       "$zufmscore:termclass": "recordLevel"
     },
@@ -57,7 +104,9 @@
       "type": "string",
       "description": "informação que falta em uma das colunas e deve ser procurada",
       "title": "Informação Retida",
-      "examples": ["verificar amostra de tecido"],
+      "examples": [
+        "verificar amostra de tecido"
+      ],
       "default": "nenhuma",
       "$zufmscore:termclass": "recordLevel"
     },
@@ -105,7 +154,9 @@
       "type": "string",
       "description": "o título do projeto no qual houve envolvimento de coletas",
       "title": "Nome do Conjunto de Dados",
-      "examples": ["Projeto Jauru"],
+      "examples": [
+        "Projeto Jauru"
+      ],
       "default": "",
       "$zufmscore:repeat": true,
       "$zufmscore:termclass": "recordLevel"
@@ -114,7 +165,9 @@
       "type": "string",
       "description": "local numerado onde o exemplar está armazenado (utilize ALT+0150 para inserir a \"meia-risca\" se forem várias prateleiras)",
       "title": "Localização na Coleção (Prateleira)",
-      "examples": ["P001"],
+      "examples": [
+        "P001"
+      ],
       "default": "",
       "$zufmscore:repeat": true,
       "$zufmscore:termclass": "zufmscore:management"
@@ -123,7 +176,9 @@
       "type": "string",
       "description": "acronímia da seção (ex.: AMP) que agrupa alfabeticamente vários tombos, desde que sejam mesmo táxon, local e ano de coleta",
       "title": "Localização na Coleção (Frasco)",
-      "examples": ["AMPAA"],
+      "examples": [
+        "AMPAA"
+      ],
       "default": "",
       "$zufmscore:repeat": true,
       "$zufmscore:termclass": "zufmscore:management"
@@ -132,7 +187,9 @@
       "type": "string",
       "description": "exemplar não disponível",
       "title": "Guia de Remessa",
-      "examples": ["GR07/2017"],
+      "examples": [
+        "GR07/2017"
+      ],
       "default": "",
       "$zufmscore:termclass": "zufmscore:management"
     },
@@ -141,7 +198,10 @@
       "description": "número de tombo do exemplar",
       "title": "Número de Catálogo",
       "$zufmscore:termclass": "occurrence",
-      "examples": ["ZUFMS-AMP00001", "ZUFMS-BLA00001"]
+      "examples": [
+        "ZUFMS-AMP00001",
+        "ZUFMS-BLA00001"
+      ]
     },
     "otherCatalogNumbers": {
       "type": "string",
@@ -160,7 +220,10 @@
       "type": "string",
       "description": "número da etiqueta de campo, associada ao coletor",
       "title": "Número da Etiqueta de Campo",
-      "examples": ["CH381", "SF454"],
+      "examples": [
+        "CH381",
+        "SF454"
+      ],
       "$zufmscore:termclass": "occurrence"
     },
     "preparations": {
