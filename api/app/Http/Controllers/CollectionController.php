@@ -8,7 +8,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class AcervoController extends Controller
+class CollectionController extends Controller
 {
     private $spreadSheetService;
 

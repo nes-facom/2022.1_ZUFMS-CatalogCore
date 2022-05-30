@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Services;
+namespace App\Helpers;
 
 use App\Helpers\ArrayHelper;
 use App\Helpers\EncodingHelper;
 
-class JWTService {
+class JWTHelper {
     public static function has_scopes($jwt, ...$scopes) {
         $jwt_scope = self::parse($jwt)['payload']['scope'];
         $jwt_scope_array = explode(' ', $jwt_scope);
@@ -59,8 +59,8 @@ class JWTService {
         $payload_json = base64_decode($token_parts[1]);
         $signature = $token_parts[2];
 
-        $header = json_decode($header_json);
-        $payload = json_decode($payload_json);
+        $header = json_decode($header_json, true);
+        $payload = json_decode($payload_json, true);
 
         return [
             'header' => $header,
@@ -72,7 +72,7 @@ class JWTService {
     public static function validate($jwt) {
         $parsed_jwt = self::parse($jwt);
 
-        $is_token_expired = ($parsed_jwt['payload']->exp - time()) < 0;
+        $is_token_expired = ($parsed_jwt['payload']['exp'] - time()) < 0;
     
         if ($is_token_expired) {
             return [

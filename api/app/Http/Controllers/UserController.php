@@ -3,41 +3,20 @@
 namespace App\Http\Controllers;
 
 use App\DTO\Input\UserInputDTO;
-use App\Services\UserService;
+use App\Repository\GenericRepository;
 use Illuminate\Http\Request;
+use App\Helpers\ArrayHelper;
 
-class UserController extends Controller
+class UserController extends CRUDController
 {
-    private $userService;
-
-    /**
-     * @param $userService
-     */
-    public function __construct(UserService $userService)
+    public function __construct()
     {
-        $this->userService = $userService;
+        parent::__construct(
+            repository: new GenericRepository('user'),
+        );
     }
-
-    public function createUser(Request $request){
-        $inputDTO = UserInputDTO::fromRequest($request);
-        $isCreated = $this->userService->createUser($inputDTO);
-        return $isCreated
-                    ? $this->createResponse('created', false, 201)
-                    : $this->createResponse('failed', true, 409);
-    }
-
-    public function deleteUser(Request $request){
-        $inputDTO = UserInputDTO::fromRequest($request);
-        $isDeleted = $this->userService->deleteUser($inputDTO);
-        return $isDeleted
-            ? $this->createResponse('deleted', false, 200)
-            : $this->createResponse('failed', true, 409);
-    }
-
-    private function createResponse(string $status, bool $error, int $statusCode){
-        return response()->json([
-            'status'=> $status,
-            'error'=> $error
-        ], $statusCode);
+    
+    public function mapEntity($user) {
+        return ArrayHelper::array_omit((array)$user, ['password']);
     }
 }

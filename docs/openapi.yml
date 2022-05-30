@@ -1027,7 +1027,7 @@ components:
             - "Permissões Insuficientes"
         description:
           enum: 
-            - "Você não possui as permissão para realizar esta operação"
+            - "Você não possui as permissões necessárias para realizar esta operação"
     InsufficientPermissionsErrorResponse: 
       type: object
       allOf:

@@ -2,7 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use \App\Http\Controllers\AuthController;
-use \App\Http\Controllers\AcervoController;
+use \App\Http\Controllers\CollectionController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\TesteController;
 
@@ -37,6 +37,6 @@ Route::group(['middleware' => ['apiJwt']], function(){
         ->middleware(['check.user.roles:admin']);
     Route::delete('/api/user/delete', [UserController::class, 'deleteUser'])
         ->middleware(['check.user.roles:admin']);
-    Route::post('/api/acervo/upload-file', [AcervoController::class, 'uploadDocument'])
+    Route::post('/api/acervo/upload-file', [CollectionController::class, 'uploadDocument'])
         ->middleware(['check.user.roles:admin|criador|editor']);
 });

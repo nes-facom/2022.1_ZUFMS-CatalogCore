@@ -2,61 +2,48 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\JWTService;
+use App\Helpers\JWTHelper;
 use App\Helpers\ArrayHelper;
+use App\Helpers\StringHelper;
+use App\DTO\Input\TokenRequestDTO;
+use App\DTO\Input\OtpTokenRequestDTO;
+use App\DTO\Input\OtpRequestDTO;
+use App\DTO\Input\ClientCredentialsTokenRequestDTO;
+use App\DTO\DTOValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Validator;
+
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Validator;
 
 class AuthController
 {
     public function token(Request $request) {
-        $available_types = ['otp', 'client_credentials'];
-        $available_otp_methods = ['email'];
+        $token_request;
 
-        $input = $request->all();
-
-        $is_otp = Rule::requiredIf($input['type'] == 'otp');
-        $is_client_credentials = Rule::requiredIf($input['type'] == 'client_credentials');
-
-        $validator = Validator::make($input, [
-            // default values
-            'type' => ['required', Rule::in($available_types)],
-            'scope' => 'required|string',
-
-            // "type": "otp"
-            'email' => [$is_otp, 'email', 'exists:user,email'],
-            'otp_method' => [$is_otp, Rule::in($available_otp_methods)],
-            'otp' => [$is_otp, 'string', 'exists:otp,value'],
-
-            // "type": "client_credentials"
-            'client_id' => [$is_client_credentials, 'uuid', 'exists:client,id'],
-            'client_secret' => [$is_client_credentials, 'string'],
-        ]);
-
-        if ($validator->fails()) {
-            $errors = array_map(fn (string $description) => [
-                'code' => 2,
-                'title' => 'Dado inválido',
-                'description' => $description
-            ],  $validator->errors()->all());
-
+        try {
+            $token_request = TokenRequestDTO::fromRequest($request);
+        } catch(DTOValidationException $e) {
             return response()->json([
-                'errors' => $errors
+                'errors' => $e->errors
             ], 400);
         }
 
-        $validated_input = $validator->safe();
+        $requested_scopes = $token_request->scopes_array;
 
-        $requested_scopes = explode(' ', $validated_input['scope']);
-
-        if ($validated_input['type'] == 'client_credentials') {
-
+        if ($token_request->type == 'client_credentials') {
+            try {
+                $token_request = ClientCredentialsTokenRequestDTO::fromRequest($request);
+            } catch(DTOValidationException $e) {
+                return response()->json([
+                    'errors' => $e->errors
+                ], 400);
+            }
+    
             // Check client existence/credentials
             $client = DB::table('client')
-                ->where('id', $validated_input['client_id'])
+                ->where('id', $token_request->client_id)
                 ->first();
 
             if (is_null($client)) {
@@ -69,7 +56,7 @@ class AuthController
                 ], 401);
             }
 
-            $secret_match = Hash::check($validated_input->client_secret, $client->secret);
+            $secret_match = Hash::check($token_request->client_secret, $client->secret);
 
             if (!$secret_match) {
                 return response()->json([
@@ -92,7 +79,7 @@ class AuthController
                     'errors' => [
                         'code' => 1,
                         'title' => 'Permissões Insuficientes',
-                        'description' => 'Você não possui as permissão para realizar esta operação',
+                        'description' => 'Você não possui as permissões necessárias para realizar esta operação',
                     ]
                 ], 403);
             }
@@ -112,7 +99,7 @@ class AuthController
             $ttl = config('jwt.ttl');
             $expires_in = strtotime('+' . $ttl . ' minutes');
 
-            $access_token_jit = DB::table('access_token')
+            $access_token_jti = DB::table('access_token')
                 ->insertGetId([
                     'sub_type' => 'client',
                     'refresh_token' => $refresh_token,
@@ -120,9 +107,9 @@ class AuthController
                     'scope' => $access_token_scope
                 ], 'jti');
 
-            $jwt = JWTService::generate([
+            $jwt = JWTHelper::generate([
                 'exp' => $expires_in,
-                'jit' => $access_token_jit,
+                'jti' => $access_token_jti,
                 'sub_type' => 'client',
                 'sub' => $client->id,
                 'iss' => $client->id,
@@ -138,16 +125,18 @@ class AuthController
         }
 
 
-        if ($validated_input['type'] == 'otp') {
-
-            // TODO: Check if provided access_token has
-            //       scope = "client.auth:otp"
-
-  
+        if ($token_request->type == 'otp') {
+            try {
+                $token_request = OtpTokenRequestDTO::fromRequest($request);
+            } catch(DTOValidationException $e) {
+                return response()->json([
+                    'errors' => $e->errors
+                ], 400);
+            }
 
             $jwt = $request->bearerToken();
 
-            if (is_null($jwt) || !JWTService::validate($jwt)['valid']) {
+            if (is_null($jwt) || !JWTHelper::validate($jwt)['valid']) {
                 return response()->json([
                     'errors' => [
                         'code' => 6,
@@ -157,12 +146,12 @@ class AuthController
                 ], 401);
             }
 
-            $access_token = JWTService::parse($jwt);
+            $access_token = JWTHelper::parse($jwt);
 
             // TODO: Implement OTP retrieval and verification
             $otp = DB::table('otp')
-                ->where('value', '=', $validated_input['otp'])
-                ->where('email', '=', $validated_input['email'])
+                ->where('value', '=', $token_request->otp)
+                ->where('email', '=', $token_request->email)
                 ->first();
 
             if (is_null($otp)) {
@@ -194,7 +183,7 @@ class AuthController
                     'errors' => [
                         'code' => 1,
                         'title' => 'Permissões Insuficientes',
-                        'description' => 'Você não possui as permissão para realizar esta operação',
+                        'description' => 'Você não possui as permissões necessárias para realizar esta operação',
                     ]
                 ], 403);
             }
@@ -202,23 +191,32 @@ class AuthController
             // Store access_token
             $refresh_token = "";
 
+            $access_token_scope_array = DB::table('user_inherited_scope')
+                ->where('user_id', $user->id)
+                ->whereIn('inherited_from_scope_name', $requested_scopes)
+                ->pluck('inherited_scope_name')
+                ->unique()
+                ->toArray();
+        
+            $access_token_scope = implode(' ', $access_token_scope_array);
+
             $ttl = config('jwt.ttl');
             $expires_in =  strtotime('+' . $ttl . ' minutes');
 
-            $access_token_jit = DB::table('access_token')
+            $access_token_jti = DB::table('access_token')
                 ->insertGetId([
                     'sub_type' => 'user',
                     'refresh_token' => $refresh_token,
                     'expires_in' => date("Y-m-d h:m:s", $expires_in)
                 ], 'jti');
 
-            $jwt = JWTService::generate([
+            $jwt = JWTHelper::generate([
                 'exp' => $expires_in,
-                'jit' => $access_token_jit,
+                'jti' => $access_token_jti,
                 'sub_type' => 'user',
                 'sub' => $user->id,
-                'iss' => $access_token['payload']->sub,
-                'scope' => implode(' ', $requested_scopes)
+                'iss' => $access_token['payload']['sub'],
+                'scope' => $access_token_scope
             ]);
 
             return response()->json([
@@ -233,55 +231,44 @@ class AuthController
     public function revoke(Request $request) {}
 
     public function otp(Request $request) {
-        $available_otp_methods = ["email"];
+        $otp_request;
 
-        $input = $request->all();
-
-        $is_email = Rule::requiredIf($input['otp_method'] == 'email');
-
-        $validator = Validator::make($input, [
-            'otp_method' => ['required', Rule::in($available_otp_methods)],
-            'email' => [$is_email, 'email', 'exists:user,email'],
-            'state' => 'string',
-        ]);
-
-        if ($validator->fails()) {
-            $errors = array_map(fn (string $description) => [
-                'code' => 2,
-                'title' => 'Dado inválido',
-                'description' => $description
-            ],  $validator->errors()->all());
-
+        try {
+            $otp_request = OtpRequestDTO::fromRequest($request);
+        } catch(DTOValidationException $e) {
             return response()->json([
-                'errors' => $errors
+                'errors' => $e->errors
             ], 400);
         }
 
-        $validated_input = $validator->safe();
+        $jwt = $request->bearerToken();
 
-        // TODO: Check if provided access_token has
-        //       scope = "client.auth:otp"
-        $access_token = [
-            'jti' => '4bc7dba9-46cc-41c2-802a-dcb5a76120c7',
-            'scope' => 'client.auth:otp',
-            'sub' => '4bc7dba9-46cc-41c2-802a-dcb5a76120c7'
-        ];
+        if (is_null($jwt) || !JWTHelper::validate($jwt)['valid']) {
+            return response()->json([
+                'errors' => [
+                    'code' => 6,
+                    'title' => 'Credenciais inválidas',
+                    'description' => 'Não foi possível autenticar o usuário'
+                ]
+            ], 401);
+        }
+
+        $access_token = JWTHelper::parse($jwt);
 
         $client_callback_url = DB::table('client')
-            ->where('id', '=', $access_token['sub'])
+            ->where('id', '=', $access_token['payload']['sub'])
             ->pluck('callback_url')
             ->first();
 
-        if ($validated_input['otp_method'] == 'email') {
-            // TODO: Implement OTP generation logic (maybe directly on database)
-            $otp_value = "";
+        if ($otp_request->otp_method == 'email') {
+            $otp_value = StringHelper::random();
 
             DB::table('otp')
                 ->insert([
                     'value' => $otp_value,
-                    'email' => $validated_input['email'],
-                    'state' => $validated_input['state'],
-                    'requested_with_access_token' => $access_token['jti']
+                    'email' => $otp_request->email,
+                    'state' => $otp_request->state,
+                    'requested_with_access_token' => $access_token['payload']['jti']
                 ]);
 
             // TODO: Send e-mail with $client_callback_url+$otp and $otp_value
