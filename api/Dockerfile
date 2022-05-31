@@ -47,6 +47,7 @@ COPY --chown=www:www . /var/www
 USER www
 
 # Configure project 
+RUN composer update
 RUN composer install --optimize-autoloader --no-dev
 RUN composer dump-autoload 
 RUN php artisan route:clear
