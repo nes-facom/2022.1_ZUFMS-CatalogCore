@@ -16,7 +16,7 @@ class CRUDController extends Controller
     )
     { }
 
-    public function mapEntity($entity) {
+    protected function mapEntity($entity) {
         return $entity;
     }
 
@@ -46,10 +46,12 @@ class CRUDController extends Controller
     }
 
     public function updateOne(Request $request) {
-        $request->merge(['id' => $request->route('id')]);
+        $id = $request->route('id');
         $input = $this->validatedIfNecessary(__FUNCTION__, $request);
 
-        $data = $this->repository->updateOne($input);
+        unset($input['access_token']);
+
+        $data = $this->repository->updateOne($id, $input);
 
         $mapped_data = $this->mapEntity($data);
 
@@ -57,12 +59,10 @@ class CRUDController extends Controller
     }
 
     public function deleteOne(Request $request) {
-        $request->merge(['id' => $request->route('id')]);
+        $id = $request->route('id');
         $input = $this->validatedIfNecessary(__FUNCTION__, $request);
 
-        $data = $this->repository->deleteOne(
-            ArrayHelper::array_pick($input, $this->entity_pk)
-        );
+        $data = $this->repository->deleteOne($id, $input);
 
         $mapped_data = $this->mapEntity($data);
 
@@ -70,12 +70,9 @@ class CRUDController extends Controller
     }
 
     public function getOne(Request $request) {
-        $request->merge(['id' => $request->route('id')]);
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $id = $request->route('id');
 
-        $data = $this->repository->getOne(
-            ArrayHelper::array_pick($input, $this->entity_pk)
-        );
+        $data = $this->repository->getOne($id);
 
         $mapped_data = $this->mapEntity($data);
 

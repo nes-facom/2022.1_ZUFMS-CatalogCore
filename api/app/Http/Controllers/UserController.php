@@ -16,7 +16,7 @@ class UserController extends CRUDController
         );
     }
     
-    public function mapEntity($user) {
+    protected function mapEntity($user) {
         return ArrayHelper::array_omit((array)$user, ['password']);
     }
 }
