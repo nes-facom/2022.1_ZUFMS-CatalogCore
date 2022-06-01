@@ -2,6 +2,9 @@
 import { ref, watchEffect } from "vue";
 import SequenceButton from "@/components/SequenceButton.vue";
 import Button from "@/components/Button.vue";
+import { serviceApi } from "@/api";
+import { uniqueId } from "lodash/fp";
+import router from "@/router";
 
 const loginStep = ref<"email" | "code">("email");
 
@@ -11,6 +14,43 @@ const currentCodeIndex = ref(1);
 watchEffect(() => {
   codeElements.value[currentCodeIndex.value - 1]?.focus();
 });
+
+const email = ref<string>();
+
+const loginStepEmailSubmit = () => {
+  serviceApi.auth
+    .authOtp({
+      otp_method: "email",
+      email: email.value,
+      state: uniqueId("otp"),
+    })
+    .then(() => {
+      loginStep.value = "code";
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
+
+const loginStepCodeSubmit = () => {
+  serviceApi.auth
+    .authToken({
+      type: "otp",
+      otp_method: "email",
+      email: email.value,
+      otp: codeElements.value.reduce(
+        (code, el) => (code += el.target.value),
+        ""
+      ),
+      scope: "occurrences:read",
+    })
+    .then(() => {
+      router.replace("/");
+    })
+    .catch((err) => {
+      console.error(err);
+    });
+};
 </script>
 
 <template>
@@ -28,12 +68,13 @@ watchEffect(() => {
       <form
         v-if="loginStep === 'email'"
         class="flex flex-col pb-20"
-        @submit.prevent="loginStep = 'code'"
+        @submit.prevent="loginStepEmailSubmit"
       >
         <input
           type="email"
           placeholder="Digite seu e-mail"
           required
+          v-model="email"
           class="mb-3 rounded-md px-7 py-3 bg-[#F2FAFF] border border-[#348F80]"
         />
         <SequenceButton type="submit">Solicitar acesso</SequenceButton>
@@ -42,7 +83,7 @@ watchEffect(() => {
       <form
         v-if="loginStep === 'code'"
         class="flex flex-col pb-12"
-        @submit.prevent="$router.replace('/')"
+        @submit.prevent="loginStepCodeSubmit"
       >
         <p class="mb-3 text-[#616161]">Insira o código enviado em seu e-mail</p>
         <div class="flex justify-between">

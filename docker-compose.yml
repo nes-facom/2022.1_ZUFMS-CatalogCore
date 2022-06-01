@@ -56,4 +56,5 @@ services:
       - ./docs/openapi.yml:/app/docs/openapi.yml:z
     depends_on:
       - api
-      - web
+      #- web
+      - api_docs
