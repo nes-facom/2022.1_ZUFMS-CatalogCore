@@ -59,6 +59,8 @@ table otp {
   value text [pk]
   email text [not null, ref: > user.email]
   state text 
+  scope text [not null]
+  expires_in timestamp [not null]
   issued_at timestamp [not null, default: `now()`]
   requested_with_access_token uuid [not null, ref: > access_token.jti]
 }

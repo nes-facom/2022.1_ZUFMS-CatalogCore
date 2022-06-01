@@ -64,6 +64,8 @@ CREATE TABLE "otp" (
   "value" text PRIMARY KEY,
   "email" text NOT NULL,
   "state" text,
+  "scope" text NOT NULL,
+  "expires_in" timestamp NOT NULL,
   "issued_at" timestamp NOT NULL DEFAULT (now()),
   "requested_with_access_token" uuid NOT NULL
 );

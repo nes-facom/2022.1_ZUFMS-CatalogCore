@@ -269,6 +269,7 @@ class AuthController
                     'value' => $otp_value,
                     'email' => $otp_request->email,
                     'state' => $otp_request->state,
+                    'scope' => $access_token_scope,
                     'requested_with_access_token' => $access_token['payload']['jti']
                 ]);
 
