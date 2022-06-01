@@ -30,12 +30,6 @@ class GenericRepository
         return $this->db()->find($id);
     }
 
-    public function createMany($data) {
-        $id = $this->db()->insertGetId($data);
-
-        return $this->db()->find($id);
-    }
-
     public function deleteOne($id) {
         $data = $this->db()
             ->find($id);

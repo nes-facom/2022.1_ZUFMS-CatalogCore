@@ -22,21 +22,25 @@ class CRUDController extends Controller
 
     private function validatedIfNecessary(string $action, Request $request) {
         if (isset($this->dtos[$action])) {
-            try {
-                return $this->dtos[$action]::fromRequest($request)
+            return $this->dtos[$action]::fromRequest($request)
                     ->toArray();
-            } catch (DTOValidationException $e) {
-                return response()->json([
-                    'errors' => $e['errors']
-                ], 400);
-            }
         }
 
         return $request->all();
     }
 
     public function createOne(Request $request) {
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $input;
+        
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
+
+        unset($input['access_token']);
 
         $data = $this->repository->createOne($input);
 
@@ -47,7 +51,15 @@ class CRUDController extends Controller
 
     public function updateOne(Request $request) {
         $id = $request->route('id');
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $input;
+        
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
 
         unset($input['access_token']);
 
@@ -60,7 +72,15 @@ class CRUDController extends Controller
 
     public function deleteOne(Request $request) {
         $id = $request->route('id');
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $input;
+        
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
 
         $data = $this->repository->deleteOne($id, $input);
 

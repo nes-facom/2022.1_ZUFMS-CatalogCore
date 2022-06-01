@@ -5,8 +5,7 @@ CREATE TYPE "access_token_sub_type" AS ENUM (
 
 CREATE TABLE "user" (
   "id" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
-  "email" text UNIQUE NOT NULL,
-  "password" text NOT NULL
+  "email" text UNIQUE NOT NULL
 );
 
 CREATE TABLE "client" (
@@ -42,7 +41,7 @@ CREATE TABLE "scope_closure_table" (
 
 CREATE TABLE "access_token" (
   "jti" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
-  "refresh_token" text UNIQUE,
+  "refresh_token" text,
   "sub_type" access_token_sub_type NOT NULL DEFAULT 'user',
   "expires_in" timestamp NOT NULL,
   "issued_at" timestamp NOT NULL DEFAULT (now()),
@@ -64,7 +63,6 @@ CREATE TABLE "access_token_client_sub" (
 CREATE TABLE "otp" (
   "value" text PRIMARY KEY,
   "email" text NOT NULL,
-  "scope" text NOT NULL,
   "state" text,
   "issued_at" timestamp NOT NULL DEFAULT (now()),
   "requested_with_access_token" uuid NOT NULL

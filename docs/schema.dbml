@@ -1,7 +1,6 @@
 table user {
   id uuid [pk, default: `uuid_generate_v4()`]
   email text [unique,not null]
-  password text [not null]
 }
 
 table client {
@@ -34,7 +33,7 @@ table scope_closure_table {
 
 table access_token {
   jti uuid [pk, default: `uuid_generate_v4()`]
-  refresh_token text [unique]
+  refresh_token text
   sub_type access_token_sub_type [not null, default: 'user']
   expires_in timestamp [not null]
   issued_at timestamp [not null, default: `now()`]
@@ -59,7 +58,6 @@ table access_token_client_sub {
 table otp {
   value text [pk]
   email text [not null, ref: > user.email]
-  scope text [not null]
   state text 
   issued_at timestamp [not null, default: `now()`]
   requested_with_access_token uuid [not null, ref: > access_token.jti]

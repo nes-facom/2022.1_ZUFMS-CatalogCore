@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\DTO\Input\UserInputDTO;
+use App\DTO\Input\CreateUserRequestDTO;
 use App\Repository\GenericRepository;
 use Illuminate\Http\Request;
 use App\Helpers\ArrayHelper;
@@ -13,6 +13,9 @@ class UserController extends CRUDController
     {
         parent::__construct(
             repository: new GenericRepository('user'),
+            dtos: [
+                'createOne' => CreateUserRequestDTO::class
+            ]
         );
     }
     

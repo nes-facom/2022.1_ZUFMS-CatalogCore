@@ -2,7 +2,6 @@
 import { ref, watchEffect } from "vue";
 import SequenceButton from "@/components/SequenceButton.vue";
 import Button from "@/components/Button.vue";
-import { serviceApi } from "@/api";
 import { uniqueId } from "lodash/fp";
 import router from "@/router";
 
@@ -18,38 +17,11 @@ watchEffect(() => {
 const email = ref<string>();
 
 const loginStepEmailSubmit = () => {
-  serviceApi.auth
-    .authOtp({
-      otp_method: "email",
-      email: email.value,
-      state: uniqueId("otp"),
-    })
-    .then(() => {
-      loginStep.value = "code";
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  loginStep.value = "code";
 };
 
 const loginStepCodeSubmit = () => {
-  serviceApi.auth
-    .authToken({
-      type: "otp",
-      otp_method: "email",
-      email: email.value,
-      otp: codeElements.value.reduce(
-        (code, el) => (code += el.target.value),
-        ""
-      ),
-      scope: "occurrences:read",
-    })
-    .then(() => {
-      router.replace("/");
-    })
-    .catch((err) => {
-      console.error(err);
-    });
+  router.replace("/");
 };
 </script>
 

@@ -207,7 +207,8 @@ class AuthController
                 ->insertGetId([
                     'sub_type' => 'user',
                     'refresh_token' => $refresh_token,
-                    'expires_in' => date("Y-m-d h:m:s", $expires_in)
+                    'expires_in' => date("Y-m-d h:m:s", $expires_in),
+                    'scope' => $access_token_scope
                 ], 'jti');
 
             $jwt = JWTHelper::generate([
