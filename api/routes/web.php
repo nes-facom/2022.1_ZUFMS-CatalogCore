@@ -5,6 +5,7 @@ use \App\Http\Controllers\AuthController;
 use \App\Http\Controllers\CollectionController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\TesteController;
+use Ramsey\Collection\Collection;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,14 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/teste', [UserController::class, 'createOne']);
-Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
+//teste users
+Route::get('/teste/users', [UserController::class, 'getAll']);
+Route::post('/teste/users', [UserController::class, 'createOne']);
+Route::get('/teste/users/{id}', [UserController::class, 'getOne']);
+Route::delete('/teste/users/{id}', [UserController::class, 'deleteOne']);
 
+Route::post('/teste', [CollectionController::class, 'uploadDocument']);
+Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
 
 Route::post('/api/auth', [AuthController::class, 'authenticate']);
 

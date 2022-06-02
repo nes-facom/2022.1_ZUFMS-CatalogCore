@@ -28,8 +28,10 @@ Route::middleware(['token', 'token.scope:users:read'])->group(function () {
 
 Route::middleware(['token', 'token.scope:users'])->group(function () {
     Route::post('/users', [UserController::class, 'createOne']);
+    Route::get('/users', [UserController::class, 'getAll']);
     Route::put('/users/{id}', [UserController::class, 'updateOne']);
     Route::delete('/users/{id}', [UserController::class, 'deleteOne']);
+    Route::get('/users/{id}', [UserController::class, 'getOne']);
 });
 
 Route::middleware(['token', 'token.scope:occurrences:read'])->group(function () {

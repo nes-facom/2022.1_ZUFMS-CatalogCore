@@ -229,7 +229,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  properties:
+                    id:
+                      type: string
+                    email:
+                      type: string
         "403":
           description: "Não autorizado"
           content:
@@ -252,14 +256,22 @@ paths:
         content:
           "application/json":
             schema:
-              $ref: "#/components/schemas/CreateUserRequest"
+              properties:
+                email:
+                  type: string
+                scope:
+                  type: integer
       responses:
         "200":
           description: "Operação bem sucedida"
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/User"
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
         "400":
           description: "Dados inválidos"
           content:
