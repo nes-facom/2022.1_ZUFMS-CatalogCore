@@ -21,7 +21,7 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/teste', [TesteController::class, 'teste']);
+Route::post('/teste', [UserController::class, 'createOne']);
 Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
 
 
