@@ -9,7 +9,7 @@ INSERT INTO "client_allowed_scope" (client_id, scope_id) VALUES
     ('150ea34a-dcd7-4eae-a535-3be3beee9a6a', 6);
 
 INSERT INTO "user" (id, email) VALUES
-    ('08f0a407-7afb-4ffd-ae4f-8f8121c7680a', 'admin@zufms.ufms.br'),
+    ('08f0a407-7afb-4ffd-ae4f-8f8121c7680a', 'yan.ajiki@ufms.br'),
     ('e99382b9-c091-4e4c-8eea-9c16befab88d', 'user@zufms.ufms.br');
 
 INSERT INTO "user_allowed_scope" (user_id, scope_id) VALUES 

@@ -21,7 +21,7 @@ abstract class DataTransferObject
 
     protected static function validate($input) {
         $validator = Validator::make($input, static::getValidationRules($input));
-    
+
         if ($validator->fails()) {
             $errors = array_map(fn (string $description) => [
                 'code' => 2,
@@ -50,10 +50,10 @@ abstract class DataTransferObject
             foreach ($data as $key => $value) {
                 $result[$key] = (is_array($value) || is_object($value)) ? object_to_array($value) : $value;
             }
-            
+
             return $result;
         }
-        
+
         return $data;
     }
 }
