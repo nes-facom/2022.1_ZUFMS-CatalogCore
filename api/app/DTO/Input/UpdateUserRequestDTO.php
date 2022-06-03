@@ -16,9 +16,9 @@ class UpdateUserRequestDTO extends DataTransferObject
 
     protected static function getValidationRules($rawInput) {
         return [
-            'id' => 'string|exists:user,id',
-            'email' => 'required_if:type,string|email|unique:user,email',
-            'scope' => 'integer|required_if:type,integer|exists:scope,id'
+            'id' => 'required|string|exists:user,id',
+            'email' => 'nullable|email|unique:user,email',
+            'scope' => 'nullable|integer|exists:scope,id'
         ];
     }
 
