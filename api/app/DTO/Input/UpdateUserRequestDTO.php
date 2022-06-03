@@ -3,12 +3,12 @@
 namespace App\DTO\Input;
 
 use App\DTO\DataTransferObject;
-use Illuminate\Http\Request;
 
-class CreateUserRequestDTO extends DataTransferObject
+class UpdateUserRequestDTO extends DataTransferObject
 {
 
     private function __construct(
+        public $id,
         public $email,
         public $scope
     )
@@ -16,13 +16,15 @@ class CreateUserRequestDTO extends DataTransferObject
 
     protected static function getValidationRules($rawInput) {
         return [
-            'email' => 'required|email|unique:user,email',
-            'scope' => 'required|integer|exists:scope,id'
+            'id' => 'string|exists:user,id',
+            'email' => 'required_if:type,string|email|unique:user,email',
+            'scope' => 'integer|required_if:type,integer|exists:scope,id'
         ];
     }
 
     public static function fromArray(array $array) {
-        return new CreateUserRequestDTO(
+        return new UpdateUserRequestDTO(
+            $array['id'],
             $array['email'],
             $array['scope']
         );

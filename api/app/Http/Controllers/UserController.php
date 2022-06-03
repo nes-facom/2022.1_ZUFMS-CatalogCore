@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DTO\DTOValidationException;
 use App\DTO\Input\CreateUserRequestDTO;
+use App\DTO\Input\UpdateUserRequestDTO;
 use App\Repository\GenericRepository;
 use Illuminate\Http\Request;
 use App\Helpers\ArrayHelper;
@@ -16,7 +17,8 @@ class UserController extends CRUDController
         parent::__construct(
             repository: new GenericRepository('user'),
             dtos: [
-                'createOne' => CreateUserRequestDTO::class
+                'createOne' => CreateUserRequestDTO::class,
+                'updateOne' => UpdateUserRequestDTO::class
             ]
         );
     }
@@ -25,6 +27,9 @@ class UserController extends CRUDController
         return ArrayHelper::array_omit((array)$user, ['password']);
     }
 
+    /*
+     * @Override
+     */
     public function createOne(Request $request) {
         $input;
 
@@ -52,7 +57,41 @@ class UserController extends CRUDController
         return response()->json($mapped_data);
     }
 
+    /*
+     * @Override
+     */
+    public function updateOne(Request $request)
+    {
+        $input;
+
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
+
+        unset($input['access_token']);
+
+        if ($input['email'] != null) {
+            DB::table('user')
+                ->where('id', '=', $input['id'])
+                ->update(['email' => $input['email']]);
+        }
+
+        if ($input['scope'] != null) {
+            DB::table('user_allowed_scope')
+                ->where('user_id', '=', $input['id'])
+                ->update(['scope_id' => $input['scope']]);
+        }
+        return response()->json([
+            'message' => 'Update successful'
+        ], 200);
+    }
+
     private function validatedIfNecessary(string $action, Request $request) {
+        $request['id'] = $request->id;
         if (isset($this->dtos[$action])) {
             return $this->dtos[$action]::fromRequest($request)
                 ->toArray();

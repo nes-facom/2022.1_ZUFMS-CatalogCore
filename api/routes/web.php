@@ -27,6 +27,7 @@ Route::get('/teste/users', [UserController::class, 'getAll']);
 Route::post('/teste/users', [UserController::class, 'createOne']);
 Route::get('/teste/users/{id}', [UserController::class, 'getOne']);
 Route::delete('/teste/users/{id}', [UserController::class, 'deleteOne']);
+Route::put('/teste/users/{id}', [UserController::class, 'updateOne']);
 
 Route::post('/teste', [CollectionController::class, 'uploadDocument']);
 Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
