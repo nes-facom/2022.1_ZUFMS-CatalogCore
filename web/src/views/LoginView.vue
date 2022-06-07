@@ -2,9 +2,9 @@
 import { ref, watchEffect } from "vue";
 import SequenceButton from "@/components/SequenceButton.vue";
 import Button from "@/components/Button.vue";
-import { serviceApi } from "@/api";
-import { uniqueId } from "lodash/fp";
+import { otpRequestStorage, serviceApi } from "@/api";
 import router from "@/router";
+import { generateOtpState } from "@/util/auth";
 
 const loginStep = ref<"email" | "code">("email");
 
@@ -17,20 +17,24 @@ watchEffect(() => {
 
 const email = ref<string>();
 
-const loginStepEmailSubmit = () => {
-  serviceApi.auth
-    .authOtp({
+const loginStepEmailSubmit = async () => {
+  const state = generateOtpState();
+  const emailValue = email.value as string;
+
+  try {
+    await serviceApi.auth.authOtp({
       otp_method: "email",
-      email: email.value,
-      state: uniqueId("otp"),
-      scope: "admin",
-    })
-    .then(() => {
-      loginStep.value = "code";
-    })
-    .catch((err) => {
-      console.error(err);
+      email: emailValue,
+      state: state,
+      scope: "occurrences:read",
     });
+
+    await otpRequestStorage.set(state, emailValue);
+
+    loginStep.value = "code";
+  } catch (err) {
+    console.error(err);
+  }
 };
 
 const loginStepCodeSubmit = () => {
@@ -39,13 +43,11 @@ const loginStepCodeSubmit = () => {
       type: "otp",
       otp_method: "email",
       email: email.value,
-      otp: codeElements.value.reduce(
-        (code, el) => (code += el.target.value),
-        ""
-      ),
+      otp: codeElements.value.reduce((code, el) => (code += el.value), ""),
       scope: "occurrences:read",
     })
-    .then(() => {
+    .then((response) => {
+      window.localStorage.setItem("_at", response.data.access_token ?? "");
       router.replace("/");
     })
     .catch((err) => {

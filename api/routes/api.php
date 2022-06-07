@@ -20,6 +20,7 @@ use \App\Http\Controllers\UserController;
 Route::post('/auth/token', [AuthController::class, 'token']);
 Route::post('/auth/revoke', [AuthController::class, 'revoke']);
 Route::post('/auth/otp', [AuthController::class, 'otp']);
+Route::get('/auth/userinfo', [AuthController::class, 'userinfo']);
 
 Route::middleware(['token', 'token.scope:users:read'])->group(function () {
     Route::get('/users', [UserController::class, 'getAll']);

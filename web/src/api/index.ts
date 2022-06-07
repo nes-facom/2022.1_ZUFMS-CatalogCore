@@ -1,4 +1,5 @@
-import { default as api } from "./client_facade";
+import { default as api } from "./clientFacade";
+import { createOtpRequestStorage } from "./otpRequestStorage";
 export { api };
 
 export const serviceApi = await (async () => {
@@ -15,3 +16,5 @@ export const serviceApi = await (async () => {
 
   return serviceApi;
 })();
+
+export const otpRequestStorage = await createOtpRequestStorage();

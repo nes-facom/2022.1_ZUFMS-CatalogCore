@@ -8,8 +8,7 @@ class GenericRepository
 {
     public function __construct(
         public string $table_name
-    )
-    { }
+    ) { }
 
     private function db() {
         return DB::table($this->table_name);

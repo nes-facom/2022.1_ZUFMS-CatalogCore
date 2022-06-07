@@ -37,12 +37,24 @@ const router = createRouter({
           name: "submissao",
           components: { default: SubmissionMain },
         },
+        {
+          path: "/usuarios",
+          name: "usuarios",
+          components: {
+            default: () => import("../components/Dashboard/UsersMain.vue"),
+          },
+        },
       ],
     },
     {
       path: "/login",
       name: "login",
       component: LoginView,
+    },
+    {
+      path: "/auth/cb",
+      name: "auth callback",
+      component: () => import("../views/AuthCallbackView.vue"),
     },
   ],
 });

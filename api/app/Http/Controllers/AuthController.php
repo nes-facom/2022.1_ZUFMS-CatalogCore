@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\EmailSenderService;
 use App\Helpers\JWTHelper;
 use App\Helpers\ArrayHelper;
 use App\Helpers\StringHelper;
@@ -13,7 +14,6 @@ use App\DTO\DTOValidationException;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
@@ -148,7 +148,6 @@ class AuthController
 
             $access_token = JWTHelper::parse($jwt);
 
-            // TODO: Implement OTP retrieval and verification
             $otp = DB::table('otp')
                 ->where('value', '=', $token_request->otp)
                 ->where('email', '=', $token_request->email)
@@ -256,6 +255,9 @@ class AuthController
 
         $access_token = JWTHelper::parse($jwt);
 
+        $ttl = config('jwt.ttl');
+        $expires_in =  strtotime('+' . $ttl . ' minutes');
+
         $client_callback_url = DB::table('client')
             ->where('id', '=', $access_token['payload']['sub'])
             ->pluck('callback_url')
@@ -269,13 +271,54 @@ class AuthController
                     'value' => $otp_value,
                     'email' => $otp_request->email,
                     'state' => $otp_request->state,
-                    'scope' => $access_token_scope,
+                    'scope' => $otp_request->scope,
+                    'expires_in' => date("Y-m-d h:m:s", $expires_in),
                     'requested_with_access_token' => $access_token['payload']['jti']
                 ]);
 
-            // TODO: Send e-mail with $client_callback_url+$otp and $otp_value
+            EmailSenderService::send(
+                "Código: " . $otp_value . "<br />" .
+                "Ou " . "<a href=\"http://localhost:3001/auth/cb?otp=" . $otp_value . "&state=" . $otp_request->state . "\">clique aqui</a>",
+                "lima.barbosa@ufms.br",
+                "Código de acesso ZUFMS"
+            );
 
             return response()->json(null, 200);
         }
     }
+
+    public function userinfo(Request $request) {
+        $jwt = $request->bearerToken();
+
+        if (is_null($jwt) || !JWTHelper::validate($jwt)['valid']) {
+            return response()->json([
+                'errors' => [
+                    'code' => 6,
+                    'title' => 'Credenciais inválidas',
+                    'description' => 'Não foi possível autenticar o usuário'
+                ]
+            ], 401);
+        }
+
+        $access_token = JWTHelper::parse($jwt);
+
+        if ($access_token['payload']['sub_type'] == 'user') {
+            $user = DB::table('user')
+                ->where('id', $access_token['payload']['sub'])
+                ->first();
+
+            return response()->json($user);
+        }
+
+        if ($access_token['payload']['sub_type'] == 'client') {
+            $client = DB::table('client')
+                ->where('id', $access_token['payload']['sub'])
+                ->first();
+
+            return response()->json($client);
+        }
+
+        response()->json([]);
+    }
+    
 }

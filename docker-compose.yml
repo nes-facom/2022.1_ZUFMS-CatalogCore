@@ -28,6 +28,9 @@ services:
   api:
     container_name: zufms_api
     build: ./api
+    environment:
+      - MAIL_USERNAME=acervo.ufms@gmail.com
+      - MAIL_PASSWORD="S}}/#.w]dh/BhQ4#"
     depends_on:
       - db
     volumes:
@@ -42,6 +45,23 @@ services:
     build: ./web
     volumes:
       - web_build:/app/dist:z
+  redis:
+    container_name: zufms_redis
+    image: redis:7.0-alpine
+    env_file: ./infra/database/.env
+    command: redis-server --loglevel warning --requirepass secret
+  redis_adapter:
+    container_name: zufms_redis_adapter
+    env_file: ./infra/database/.env
+    build: 
+      context: ./infra/database/redis/http_adapter
+      args:
+        - REDIS_ADAPTER_PORT=$${REDIS_ADAPTER_PORT}
+        - REDIS_CONNECTION_URL=$${REDIS_CONNECTION_URL}
+    ports:
+      - '3030:3030'
+    depends_on:
+      - redis
   http:
     container_name: zufms_http
     image: nginx:1.21

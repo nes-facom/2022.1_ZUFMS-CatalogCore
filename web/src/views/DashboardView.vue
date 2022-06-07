@@ -6,6 +6,8 @@ import MaterialIcon from "@/components/icons/MaterialIcon.vue";
 import UserIndicator from "@/components/UserIndicator.vue";
 import OpacityTransition from "@/components/transitions/OpacityTransition.vue";
 import SlideTransition from "@/components/transitions/SlideTransition.vue";
+import { api } from "@/api";
+import router from "@/router";
 
 const sidebarState = ref({});
 const onSidebarStateChange = (newState: any) => {
@@ -17,7 +19,25 @@ const navLinks = [
   { title: "Etiquetas", to: "/etiquetas" },
   { title: "Empréstimos", to: "/emprestimos" },
   { title: "Submissão", to: "/submissao" },
+  { title: "Usuários", to: "/usuarios" },
 ];
+
+const userEmail = ref<string>();
+
+fetch("https://localhost:3000/v1/auth/userinfo", {
+  headers: {
+    Authorization: "Bearer " + window.localStorage.getItem("_at") ?? "",
+  },
+})
+  .then((response) => response.json())
+  .then((userData) => {
+    userEmail.value = userData.email.split("@")[0];
+  });
+
+const onLogout = () => {
+  window.localStorage.removeItem("_at");
+  router.replace("/login");
+};
 
 const sidebarOnFocus = ref(true);
 </script>
@@ -37,9 +57,9 @@ const sidebarOnFocus = ref(true);
         </RouterLink>
       </nav>
       <UserIndicator
-        name="Técnico"
-        @avatarClick="$router.replace('/login')"
-        @logout="$router.replace('/login')"
+        :name="userEmail ?? 'Carregando...'"
+        @avatarClick="onLogout"
+        @logout="onLogout"
       />
     </header>
     <div class="page-body">
