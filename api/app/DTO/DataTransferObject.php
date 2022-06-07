@@ -48,7 +48,7 @@ abstract class DataTransferObject
             $result = [];
 
             foreach ($data as $key => $value) {
-                $result[$key] = (is_array($value) || is_object($value)) ? object_to_array($value) : $value;
+                $result[$key] = $value;
             }
 
             return $result;

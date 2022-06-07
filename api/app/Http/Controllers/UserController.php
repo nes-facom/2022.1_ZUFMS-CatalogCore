@@ -9,6 +9,7 @@ use App\Repository\GenericRepository;
 use Illuminate\Http\Request;
 use App\Helpers\ArrayHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends CRUDController
 {
@@ -40,17 +41,17 @@ class UserController extends CRUDController
                 'errors' => $e->errors
             ], 400);
         }
-
         unset($input['access_token']);
-
         $newUser = ['email' => $input['email']];
         $data = $this->repository->createOne($newUser);
 
-        DB::table('user_allowed_scope')
-            ->insert([
-                'user_id' => $data->id,
-                'scope_id' => $input['scope']
-            ]);
+        foreach ($input['scope_id'] as $scope_id){
+            DB::table('user_allowed_scope')
+                ->insert([
+                    'user_id' => $data->id,
+                    'scope_id' => $scope_id
+                ]);
+        }
 
         $mapped_data = $this->mapEntity($data);
 

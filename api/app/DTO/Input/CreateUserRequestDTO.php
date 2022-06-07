@@ -10,21 +10,22 @@ class CreateUserRequestDTO extends DataTransferObject
 
     private function __construct(
         public $email,
-        public $scope
+        public $scope_id
     )
     { }
 
     protected static function getValidationRules($rawInput) {
         return [
             'email' => 'required|email|unique:user,email',
-            'scope' => 'required|integer|exists:scope,id'
+            'scope_id' => 'required|array',
+            'scope_id.*' => 'integer|exists:scope,id'
         ];
     }
 
     public static function fromArray(array $array) {
         return new CreateUserRequestDTO(
             $array['email'],
-            $array['scope']
+            $array['scope_id']
         );
     }
 }
