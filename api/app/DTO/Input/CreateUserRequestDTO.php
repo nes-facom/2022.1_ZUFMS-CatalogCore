@@ -18,7 +18,7 @@ class CreateUserRequestDTO extends DataTransferObject
         return [
             'email' => 'required|email|unique:user,email',
             'scope_id' => 'required|array',
-            'scope_id.*' => 'integer|exists:scope,id'
+            'scope_id.*' => 'required|integer|exists:scope,id'
         ];
     }
 

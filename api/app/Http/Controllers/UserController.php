@@ -81,10 +81,17 @@ class UserController extends CRUDController
                 ->update(['email' => $input['email']]);
         }
 
-        if ($input['scope'] != null) {
+        if ($input['scope_id'] != null) {
             DB::table('user_allowed_scope')
-                ->where('user_id', '=', $input['id'])
-                ->update(['scope_id' => $input['scope']]);
+                ->where('user_id', $input['id'])->delete();
+
+            foreach ($input['scope_id'] as $scope_id){
+                DB::table('user_allowed_scope')
+                    ->insert([
+                        'user_id' => $input['id'],
+                        'scope_id' => $scope_id
+                    ]);
+            }
         }
         return response()->json([
             'message' => 'Update successful'

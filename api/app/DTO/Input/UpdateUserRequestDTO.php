@@ -10,7 +10,7 @@ class UpdateUserRequestDTO extends DataTransferObject
     private function __construct(
         public $id,
         public $email,
-        public $scope
+        public $scope_id
     )
     { }
 
@@ -18,7 +18,8 @@ class UpdateUserRequestDTO extends DataTransferObject
         return [
             'id' => 'required|string|exists:user,id',
             'email' => 'nullable|email|unique:user,email',
-            'scope' => 'nullable|integer|exists:scope,id'
+            'scope_id' => 'nullable|array',
+            'scope_id.*' => 'integer|exists:scope,id'
         ];
     }
 
@@ -26,7 +27,7 @@ class UpdateUserRequestDTO extends DataTransferObject
         return new UpdateUserRequestDTO(
             $array['id'],
             $array['email'],
-            $array['scope']
+            $array['scope_id']
         );
     }
 }
