@@ -37,44 +37,21 @@ const loginStepCodeSubmit = () => {
         <h2 class="card-title">Acessar a Coleção Zoológica</h2>
       </div>
 
-      <form
-        v-if="loginStep === 'email'"
-        class="flex flex-col pb-20"
-        @submit.prevent="loginStepEmailSubmit"
-      >
-        <input
-          type="email"
-          placeholder="Digite seu e-mail"
-          required
-          v-model="email"
-          class="mb-3 rounded-md px-7 py-3 bg-[#F2FAFF] border border-[#348F80]"
-        />
-        <SequenceButton type="submit">Solicitar acesso</SequenceButton>
+      <form v-if="loginStep === 'email'" class="flex flex-col pb-20" @submit.prevent="loginStepEmailSubmit">
+        <input type="email" id="input-email" placeholder="Digite seu e-mail" required v-model="email"
+          class="mb-3 rounded-md px-7 py-3 bg-[#F2FAFF] border border-[#348F80]" />
+        <SequenceButton type="submit" id="button-request-otp">Solicitar acesso</SequenceButton>
       </form>
 
-      <form
-        v-if="loginStep === 'code'"
-        class="flex flex-col pb-12"
-        @submit.prevent="loginStepCodeSubmit"
-      >
+      <form v-if="loginStep === 'code'" class="flex flex-col pb-12" @submit.prevent="loginStepCodeSubmit">
         <p class="mb-3 text-[#616161]">Insira o código enviado em seu e-mail</p>
         <div class="flex justify-between">
-          <input
-            v-for="i in 5"
-            :key="'code_' + i"
-            ref="codeElements"
-            type="text"
-            :autofocus="i === 1"
-            required
-            @focus="(el) => (el.target as any)?.select()"
-            @keypress="currentCodeIndex = i + 1"
-            maxlength="1"
-            placeholder="0"
-            class="code-input"
-          />
+          <input v-for="i in 5" :id="'input-otp-' + i" :key="'code_' + i" ref="codeElements" type="text"
+            :autofocus="i === 1" required @focus="(el) => (el.target as any)?.select()"
+            @keypress="currentCodeIndex = i + 1" maxlength="1" placeholder="0" class="code-input" />
         </div>
-        <Button>Entrar</Button>
-        <a @click="loginStep = 'email'" class="secondary-action">
+        <Button id="button-signin">Entrar</Button>
+        <a @click="loginStep = 'email'" class="secondary-action" id="link-another-email">
           Inserir outro e-mail
         </a>
       </form>
