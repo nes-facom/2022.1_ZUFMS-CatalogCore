@@ -38,8 +38,8 @@ class OccurrenceInputDTO
     public int $day;
     public int $month;
     public int $year;
-    public string $eventTime;
-    public string $eventDate;
+    public array $eventTime;
+    public array $eventDate;
     public string $verbatimEventDate;
     public string $samplingProtocol;
     public string $habitat;
@@ -74,15 +74,15 @@ class OccurrenceInputDTO
     public string $scientificName;
     public string $scientificNameAuthorship;
     public string $acceptedNameUsage;
-    public string $subgenus;
+    public string $subGenus;
     public string $genus;
     public string $artificialSubtribe;
     public string $artificialTribe;
     public string $artificialSubfamily;
     public string $family;
     public string $artificialSuperfamily;
-    public string $artifcialInfraorder;
-    public string $artificialSuborder;
+    public string $artificialInfraorder;
+    public string $artificialSuborder;//61542202191
     public string $order;
     public string $artificialSuperorder;
     public string $artificialSubclass;
@@ -274,7 +274,7 @@ class OccurrenceInputDTO
         $this->artificialSubfamily = $artificialSubfamily;
         $this->family = $family;
         $this->artificialSuperfamily = $artificialSuperfamily;
-        $this->artifcialInfraorder = $artifcialInfraorder;
+        $this->artificialInfraorder = $artifcialInfraorder;
         $this->artificialSuborder = $artificialSuborder;
         $this->order = $order;
         $this->artificialSuperorder = $artificialSuperorder;
@@ -296,11 +296,74 @@ class OccurrenceInputDTO
 
     public static function constructEmpty(): OccurrenceInputDTO
     {
-        return new OccurrenceInputDTO("","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",0,0,0,"","","","","","","","","","","","","","","","",0.0,0.0,"","",0.0,"","",0.0,0.0,"",0.0,0.0,"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","");
+        return new OccurrenceInputDTO("","","","","","","","","","","","","","","","","","","","","","","","","","","","","","",0,0,0,[],[],"","","","","","","","","","","","","","",0.0,0.0,"","",0.0,"","",0.0,0.0,"",0.0,0.0,"","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","","");
     }
     public static function validate($request,Validator $validator): \Opis\JsonSchema\ValidationResult
     {
         return $validator->validate($request,'https://inbio.ufms.br/zufms/zufmscore.schema.json');
     }
+    public static function fromArray($jsonOccurrence, $mapper): OccurrenceInputDTO{
+        $uniqueOccurrence = OccurrenceInputDTO::constructEmpty();
 
+        $mapper->mapObject($jsonOccurrence, $uniqueOccurrence);
+        $tempArrayOccurrence =  json_decode(json_encode($jsonOccurrence, true), true);
+        $uniqueOccurrence->dctermsModified = $tempArrayOccurrence["dcterms:modified"];
+        $uniqueOccurrence->artificialSection = $tempArrayOccurrence["artificial:section"];
+        $uniqueOccurrence->artificialShelfLocation = $tempArrayOccurrence["artificial:shelfLocation"];
+        $uniqueOccurrence->artificialFlaskLocation = $tempArrayOccurrence["artificial:flaskLocation"];
+        $uniqueOccurrence->artificialShippingGuide = $tempArrayOccurrence["artificial:shippingGuide"];
+        $uniqueOccurrence->artificialSubfamily = $tempArrayOccurrence["artificial:subfamily"];
+        $uniqueOccurrence->artificialSubtribe = $tempArrayOccurrence["artificial:subtribe"];
+        $uniqueOccurrence->artificialTribe = $tempArrayOccurrence["artificial:tribe"];
+        $uniqueOccurrence->artificialSuperfamily = $tempArrayOccurrence["artificial:superfamily"];
+        $uniqueOccurrence->artificialInfraorder = $tempArrayOccurrence["artificial:infraorder"];
+        $uniqueOccurrence->artificialSuperorder = $tempArrayOccurrence["artificial:superorder"];
+        $uniqueOccurrence->artificialSuborder = $tempArrayOccurrence["artificial:suborder"];
+        $uniqueOccurrence->artificialSubclass = $tempArrayOccurrence["artificial:subclass"];
+        $uniqueOccurrence->artificialSubphylum = $tempArrayOccurrence["artificial:subphylum"];
+        $uniqueOccurrence->dctermsBibliographicCitation = $tempArrayOccurrence["dcterms:bibliographicCitation"];
+
+
+        return $uniqueOccurrence;
+    }
+    public function toArray(): array{
+        $uniqueOccurrence = $this;
+        $tempArrayOccurrence = (array) $this;
+        $tempArrayOccurrence["dcterms:modified"] = $uniqueOccurrence->dctermsModified;
+        $tempArrayOccurrence["artificial:section"] = $uniqueOccurrence->artificialSection;
+        $tempArrayOccurrence["artificial:shelfLocation"] = $uniqueOccurrence->artificialShelfLocation;
+        $tempArrayOccurrence["artificial:flaskLocation"] = $uniqueOccurrence->artificialFlaskLocation;
+        $tempArrayOccurrence["artificial:shippingGuide"] = $uniqueOccurrence->artificialShippingGuide;
+        $tempArrayOccurrence["artificial:subfamily"] = $uniqueOccurrence->artificialSubfamily;
+        $tempArrayOccurrence["artificial:subtribe"] = $uniqueOccurrence->artificialSubtribe;
+        $tempArrayOccurrence["artificial:tribe"] = $uniqueOccurrence->artificialTribe;
+        $tempArrayOccurrence["artificial:superfamily"] = $uniqueOccurrence->artificialSuperfamily;
+        $tempArrayOccurrence["artificial:infraorder"] = $uniqueOccurrence->artificialInfraorder;
+        $tempArrayOccurrence["artificial:superorder"] = $uniqueOccurrence->artificialSuperorder;
+        $tempArrayOccurrence["artificial:suborder"] = $uniqueOccurrence->artificialSuborder;
+        $tempArrayOccurrence["artificial:subclass"] = $uniqueOccurrence->artificialSubclass;
+        $tempArrayOccurrence["artificial:subphylum"] = $uniqueOccurrence->artificialSubphylum;
+        $tempArrayOccurrence["dcterms:bibliographicCitation"] = $uniqueOccurrence->dctermsBibliographicCitation;
+
+
+
+        unset($tempArrayOccurrence["dctermsModified"]);
+        unset($tempArrayOccurrence["artificialSection"]);
+        unset($tempArrayOccurrence["artificialShelfLocation"]);
+        unset($tempArrayOccurrence["artificialFlaskLocation"]);
+        unset($tempArrayOccurrence["artificialShippingGuide"]);
+        unset($tempArrayOccurrence["artificialSubfamily"]);
+        unset($tempArrayOccurrence["artificialSubtribe"]);
+        unset($tempArrayOccurrence["artificialTribe"]);
+        unset($tempArrayOccurrence["artificialSuperfamily"]);
+        unset($tempArrayOccurrence["artificialInfraorder"]);
+        unset($tempArrayOccurrence["artificialSuperorder"]);
+        unset($tempArrayOccurrence["artificialSuborder"]);
+        unset($tempArrayOccurrence["artificialSubclass"]);
+        unset($tempArrayOccurrence["artificialSubphylum"]);
+        unset($tempArrayOccurrence["dctermsBibliographicCitation"]);
+        unset($tempArrayOccurrence["eventTime"]);
+        unset($tempArrayOccurrence["eventDate"]);
+        return $tempArrayOccurrence;
+    }
 }

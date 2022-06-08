@@ -19,7 +19,7 @@
         "phpoffice/phpspreadsheet": "^1.0@beta",
         "swaggest/json-schema": "^0.12.39",
         "tymon/jwt-auth": "^1.0",
-      "ext-json": "*"
+        "ext-json": "*"
     },
     "require-dev": {
         "facade/ignition": "^2.5",

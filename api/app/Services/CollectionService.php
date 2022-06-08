@@ -4,9 +4,12 @@ namespace App\Services;
 
 use App\DTO\Input\ListOccurrenceInputDTO;
 use App\DTO\Input\OccurrenceInputDTO;
+use App\Models\BiologicalOccurrenceView;
 use App\Repository\CollectionRepository;
+use Exception;
 use Illuminate\Http\Request;
 use Opis\JsonSchema\{Errors\ErrorFormatter, Validator,};
+use function Pest\Laravel\json;
 
 
 class CollectionService
@@ -18,7 +21,7 @@ class CollectionService
 
     public function __construct()
     {
-        $this->collectionRepository = new CollectionRepository("biological_occurrence_view");
+        $this->collectionRepository = new CollectionRepository("biological_occurrence_view", "occurrenceID");
         $this->mapper = (new \JsonMapper\JsonMapperFactory())->bestFit();
         $this->validator = new Validator();
         $this->validator->resolver()->registerFile(
@@ -35,13 +38,15 @@ class CollectionService
 
     public function insertMany(Request $request)
     {
+        $vl = $request->all();
+        $acess_token = $vl["access_token"];
+        unset($vl["access_token"]);
 
-        $jsonBody = json_encode($request->all());
+        $jsonBody = json_encode($vl);
+
         $jsonBody = $this->remove_null_values($jsonBody);
-        $arrayError = [];
-
+        $validationErrors = [];
         $body = json_decode($jsonBody);
-
 
         $listOccurrence = ListOccurrenceInputDTO::constructEmpty();
 
@@ -51,22 +56,23 @@ class CollectionService
         for ($i = 0; $i < $size; $i++) {
 
             $key = $keys[$i];
-            $occurrence = $body[$key];
+            $jsonOccurrence = $body[$key];
 
-            $uniqueOccurrence = OccurrenceInputDTO::constructEmpty();
-            $result = OccurrenceInputDTO::validate($occurrence, $this->validator);
+            $occurrence = OccurrenceInputDTO::constructEmpty();
+
+            $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
 
 
             if ($result->isValid()) {
-                $this->mapper->mapObject($occurrence, $uniqueOccurrence);
-                $listOccurrence->occurrences[] = $uniqueOccurrence;
+
+                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence,$this->mapper);
             } else {
                 $error = $result->error();
                 $formatter = new ErrorFormatter();
                 $errorDescription = $formatter->format($error, false);
                 $errorKeys = array_keys($errorDescription);
                 $term = $errorKeys[0];
-                $arrayError[] =
+                $validationErrors[] =
                     array(
                         "code" => 2,
                         "title" => "Dado inválido",
@@ -77,39 +83,45 @@ class CollectionService
                     );
             }
         }
-        /*
-         * "errors": [
-    {
-      "code": 4,
-      "title": "Erro interno",
-      "description": "Um erro interno inesperado ocorreu"
-    }
-  ]
-         *
-         * */
-        if (empty($arrayError)) {
+        $insertedOccurrences = [];
+        if (empty($validationErrors)) {
             try {
-                foreach ($listOccurrence as &$ocurrence){
-
-                    $this->collectionRepository->createOne($ocurrence);
+                foreach ($listOccurrence->occurrences as &$ocurrence){
+                    $occurrenceArray = $ocurrence->toArray();
+                    $isInserted = BiologicalOccurrenceView::query()->insert($occurrenceArray);
+                    if($isInserted){
+                        $insertedOccurrences[]= $occurrenceArray;
+                    }
                 }
             } catch (Exception $e) {
+                $error_description = "Um erro interno inesperado ocorreu";
+
+                if($e->getCode() == 23505){
+                    $error_string = $e->getMessage();
+
+                    $error_array = explode("\n", $error_string,  3);
+                    $error_description = $error_array[0].$error_array[1];
+                }
+
                 return response()->json(
                     array(
-                        "errors" => array("code" => 4,
+                        "errors" => array(array("code" => 4,
                             "title" => "Error interno",
-                            "description" => "Um erro interno inesperado ocorreu"),), 500);
+                            "description" => $error_description)),), 500);
             }
-           return response()->json(
-                array('email' => "",)
-                , 200);
+
         } else {
             return response()->json(
-                array('errors' => $arrayError,)
+                array('errors' => $validationErrors)
 
                 , 400);
         }
+        if(!empty($insertedOccurrences)){
+            return response()->json(
+                $insertedOccurrences
 
+                , 200);
+        }
 
     }
 

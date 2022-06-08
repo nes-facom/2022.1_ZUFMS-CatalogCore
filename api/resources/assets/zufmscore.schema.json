@@ -578,7 +578,11 @@
             ]
         },
         "eventTime": {
-            "type": "string",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "time"
+            },
             "description": "hora única (hh:mm) ou intervalo (hh:mm/hh:mm)",
             "title": "Hora/Intervalo do Evento",
             "$zufmscore:section": "event",
@@ -589,7 +593,11 @@
             ]
         },
         "eventDate": {
-            "type": "string",
+            "type": "array",
+            "items": {
+                "type": "string",
+                "format": "date"
+            },
             "description": "data (aaaa-mm-dd) ou intervalo (aaaa-mm-dd/aaaa-mm-dd), mas se não houver todas informações informar apenas mês (aaaa-mm) ou ano (aaaa)",
             "title": "Data/Intervalo do Evento",
             "$zufmscore:section": "event",

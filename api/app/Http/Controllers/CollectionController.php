@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Repository\GenericRepository;
 use App\Services\CollectionService;
 use App\Services\SpreadSheetService;
 use Illuminate\Http\Request;
@@ -9,7 +10,7 @@ use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class CollectionController extends Controller
+class CollectionController extends CRUDController
 {
     private CollectionService  $collectionService;
     private $spreadSheetService;
@@ -19,9 +20,11 @@ class CollectionController extends Controller
      */
     public function __construct(SpreadSheetService $spreadSheetService, CollectionService  $collectionService)
     {
+        parent::__construct(
+           new GenericRepository('biological_occurrence_view',"OccurrenceID"),
+        );
         $this->spreadSheetService = $spreadSheetService;
         $this->collectionService=$collectionService;
-
     }
 
 
