@@ -259,8 +259,10 @@ paths:
               properties:
                 email:
                   type: string
-                scope:
-                  type: integer
+                scope_id:
+                  type: array
+                  items:
+                    type: integer
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -351,11 +353,18 @@ paths:
           schema:
             type: "string"
             format: "uuid"
+
       requestBody:
         content:
           "application/json":
             schema:
-              $ref: "#/components/schemas/UpdateUserRequest"
+              properties:
+                email:
+                  type: string
+                scope_id:
+                  type: array
+                  items:
+                    type: integer
       responses:
         "200":
           description: "Operação bem sucedida"
