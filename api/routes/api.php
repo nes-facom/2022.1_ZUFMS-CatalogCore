@@ -45,7 +45,8 @@ Route::middleware(['token', 'token.scope:occurrences'])->group(function () {
     Route::post('/occurrences', [CollectionController::class, 'createMany']);
     Route::put('/occurrences', [CollectionController::class, 'updateMany']);
     Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
+    Route::post('/occurrences/file', [CollectionController::class, 'file']);
+    Route::post('/occurrences/file/verify', [CollectionController::class, 'uploadDocumentReturnJson']);
     Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
     Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
-    Route::post('/occurrences/file', [CollectionController::class, 'file']);
 });

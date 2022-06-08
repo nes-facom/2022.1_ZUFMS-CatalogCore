@@ -30,11 +30,7 @@ class SpreadSheetService
             array_push($tableBody, $tableRow);
         }
 
-        return response()->json([
-            'section' => $sheetDTO->getSection(),
-            'table-head' => $tableHead,
-            'table-body' => $tableBody,
-        ], 200);
+        return response()->json($tableBody, 200);
     }
 
     public function insertSheetToDatabase(Request $request){

@@ -906,9 +906,16 @@ paths:
         Necessita de permissão `occurrences:read` ou maior
       requestBody:
         content:
-          "multipart/form-data":
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/ZUFMSCoreFile"
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                section:
+                  type: string
+
       responses:
         "200":
           description: "Operação bem sucedida"

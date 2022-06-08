@@ -29,7 +29,7 @@ Route::get('/teste/users/{id}', [UserController::class, 'getOne']);
 Route::delete('/teste/users/{id}', [UserController::class, 'deleteOne']);
 Route::put('/teste/users/{id}', [UserController::class, 'updateOne']);
 
-Route::post('/teste', [CollectionController::class, 'uploadDocument']);
+Route::post('/teste/sheet/tojson', [CollectionController::class, 'uploadDocumentReturnJson']);
 Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
 
 Route::post('/api/auth', [AuthController::class, 'authenticate']);
@@ -44,6 +44,6 @@ Route::group(['middleware' => ['apiJwt']], function(){
         ->middleware(['check.user.roles:admin']);
     Route::delete('/api/user/delete', [UserController::class, 'deleteUser'])
         ->middleware(['check.user.roles:admin']);
-    Route::post('/api/acervo/upload-file', [CollectionController::class, 'uploadDocument'])
+    Route::post('/api/acervo/upload-file', [CollectionController::class, 'uploadDocumentReturnJson'])
         ->middleware(['check.user.roles:admin|criador|editor']);
 });
