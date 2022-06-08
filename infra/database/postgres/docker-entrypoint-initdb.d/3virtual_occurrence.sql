@@ -68,22 +68,22 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
   "scientificName",
   "scientificNameAuthorship",
   "acceptedNameUsage",
-  "subGenus".value AS "subGenus",
+  "subgenus".value AS "subgenus",
   "genus".value AS "genus",
   "family".value AS "family",
   "order".value AS "order",
   "class".value AS "class",
   "phylum".value AS "phylum",
   "kingdom".value AS "kingdom",
-  "artificial:subFamily".value AS "artificial:subFamily",
-  "artificial:subTribe".value AS "artificial:subTribe",
+  "artificial:subfamily".value AS "artificial:subfamily",
+  "artificial:subtribe".value AS "artificial:subtribe",
   "artificial:tribe".value AS "artificial:tribe",
-  "artificial:superFamily".value AS "artificial:superFamily",
-  "artificial:infraOrder".value AS "artificial:infraOrder",
-  "artificial:subOrder".value AS "artificial:subOrder",
-  "artificial:superOrder".value AS "artificial:superOrder",
-  "artificial:subClass".value AS "artificial:subClass",
-  "artificial:subPhylum".value AS "artificial:subPhylum",
+  "artificial:superfamily".value AS "artificial:superfamily",
+  "artificial:infraorder".value AS "artificial:infraorder",
+  "artificial:suborder".value AS "artificial:suborder",
+  "artificial:superorder".value AS "artificial:superorder",
+  "artificial:subclass".value AS "artificial:subclass",
+  "artificial:subphylum".value AS "artificial:subphylum",
   "specificEpithet",
   "infraspecificEpithet",
   "taxonRank",
@@ -124,25 +124,25 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
   LEFT JOIN "identifiedBy_biological_occurrence" ON "identifiedBy_biological_occurrence"."biological_occurrence_id" = bo."occurrenceID"
   	LEFT JOIN "identifiedBy" ON "identifiedBy".id = "identifiedBy_biological_occurrence".value
   LEFT JOIN "specie" ON "specie".id = bo."specie_id"
-  	LEFT JOIN "subGenus" ON "subGenus".id = "specie"."subGenus_id"
-	LEFT JOIN "genus" ON "genus".id = "subGenus"."genus_id"
+  	LEFT JOIN "subgenus" ON "subgenus".id = "specie"."subgenus_id"
+	LEFT JOIN "genus" ON "genus".id = "subgenus"."genus_id"
 	LEFT JOIN "family" ON "family".id = "genus"."family_id"
 	LEFT JOIN "order" ON "order".id = "family"."order_id"
 	LEFT JOIN "class" ON "class".id = "order"."class_id"
 	LEFT JOIN "phylum" ON "phylum".id = "class"."phylum_id"
 	LEFT JOIN "kingdom" ON "kingdom".id = "phylum"."kingdom_id"
-	LEFT JOIN "artificial:subTribe" ON "artificial:subTribe".id = "specie"."artificial:subTribe_id"
+	LEFT JOIN "artificial:subtribe" ON "artificial:subtribe".id = "specie"."artificial:subtribe_id"
 	LEFT JOIN "artificial:tribe" ON "artificial:tribe".id = "specie"."artificial:tribe_id"
-	LEFT JOIN "artificial:superFamily" ON "artificial:superFamily".id = "specie"."artificial:superFamily_id"
-	LEFT JOIN "artificial:infraOrder" ON "artificial:infraOrder".id = "specie"."artificial:infraOrder_id"
-	LEFT JOIN "artificial:subOrder" ON "artificial:subOrder".id = "specie"."artificial:subOrder_id"
-	LEFT JOIN "artificial:superOrder" ON "artificial:superOrder".id = "specie"."artificial:superOrder_id"
-	LEFT JOIN "artificial:subClass" ON "artificial:subClass".id = "specie"."artificial:subClass_id"
-	LEFT JOIN "artificial:subPhylum" ON "artificial:subPhylum".id = "specie"."artificial:subPhylum_id"	
+	LEFT JOIN "artificial:superfamily" ON "artificial:superfamily".id = "specie"."artificial:superfamily_id"
+	LEFT JOIN "artificial:infraorder" ON "artificial:infraorder".id = "specie"."artificial:infraorder_id"
+	LEFT JOIN "artificial:suborder" ON "artificial:suborder".id = "specie"."artificial:suborder_id"
+	LEFT JOIN "artificial:superorder" ON "artificial:superorder".id = "specie"."artificial:superorder_id"
+	LEFT JOIN "artificial:subclass" ON "artificial:subclass".id = "specie"."artificial:subclass_id"
+	LEFT JOIN "artificial:subphylum" ON "artificial:subphylum".id = "specie"."artificial:subphylum_id"	
 	LEFT JOIN "taxonomicStatus" ON "taxonomicStatus".id = "specie"."taxonomicStatus_id"
 	LEFT JOIN "nomenclaturalCode" ON "nomenclaturalCode".id = "specie"."nomenclaturalCode_id"
 	LEFT JOIN "nameAccordingTo" ON "nameAccordingTo".id = "specie"."nameAccordingTo_id"
-	LEFT JOIN "artificial:subFamily" ON "artificial:subFamily".id = "specie"."artificial:subFamily_id";
+	LEFT JOIN "artificial:subfamily" ON "artificial:subfamily".id = "specie"."artificial:subfamily_id";
 
 CREATE OR REPLACE FUNCTION func_setof_biological_occurrence (new_ref anyelement) RETURNS setof biological_occurrence AS $$
 BEGIN
@@ -198,46 +198,46 @@ BEGIN
 		INSERT INTO "genus" (value, "family_id") (SELECT new_ref."genus", id FROM "family_id" WHERE new_ref."genus" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
 	), "genus_id" AS (
 		SELECT COALESCE((SELECT id FROM "inserted_genus_id"), (SELECT id FROM "genus" WHERE value = new_ref."genus")) AS id
-	), "inserted_subGenus_id" AS (
-		INSERT INTO "subGenus" (value, "genus_id") (SELECT new_ref."subGenus", id FROM "genus_id" WHERE new_ref."subGenus" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "subGenus_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_subGenus_id"), (SELECT id FROM "subGenus" WHERE value = new_ref."subGenus")) AS id
-	), "inserted_artificial:subFamily_id" AS (
-		INSERT INTO "artificial:subFamily" (value, "family_id") (SELECT new_ref."artificial:subFamily", id FROM "family_id" WHERE new_ref."artificial:subFamily" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:subFamily_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:subFamily_id"), (SELECT id FROM "artificial:subFamily" WHERE value = new_ref."artificial:subFamily")) AS id
+	), "inserted_subgenus_id" AS (
+		INSERT INTO "subgenus" (value, "genus_id") (SELECT new_ref."subgenus", id FROM "genus_id" WHERE new_ref."subgenus" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "subgenus_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_subgenus_id"), (SELECT id FROM "subgenus" WHERE value = new_ref."subgenus")) AS id
+	), "inserted_artificial:subfamily_id" AS (
+		INSERT INTO "artificial:subfamily" (value, "family_id") (SELECT new_ref."artificial:subfamily", id FROM "family_id" WHERE new_ref."artificial:subfamily" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:subfamily_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:subfamily_id"), (SELECT id FROM "artificial:subfamily" WHERE value = new_ref."artificial:subfamily")) AS id
 	), "inserted_artificial:tribe_id" AS (
 		INSERT INTO "artificial:tribe" (value, "family_id") (SELECT new_ref."artificial:tribe", id FROM "family_id" WHERE new_ref."artificial:tribe" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
 	), "artificial:tribe_id" AS (
 		SELECT COALESCE((SELECT id FROM "inserted_artificial:tribe_id"), (SELECT id FROM "artificial:tribe" WHERE value = new_ref."artificial:tribe")) AS id
-	), "inserted_artificial:subTribe_id" AS (
-		INSERT INTO "artificial:subTribe" (value, "tribe_id") (SELECT new_ref."artificial:subTribe", id FROM "artificial:tribe_id" WHERE new_ref."artificial:subTribe" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:subTribe_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:subTribe_id"), (SELECT id FROM "artificial:subTribe" WHERE value = new_ref."artificial:subTribe")) AS id
-	), "inserted_artificial:superFamily_id" AS (
-		INSERT INTO "artificial:superFamily" (value, "order_id") (SELECT new_ref."artificial:superFamily", id FROM "order_id" WHERE new_ref."artificial:superFamily" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id 
-	), "artificial:superFamily_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:superFamily_id"), (SELECT id FROM "artificial:superFamily" WHERE value = new_ref."artificial:superFamily")) AS id
-	), "inserted_artificial:infraOrder_id" AS (
-		INSERT INTO "artificial:infraOrder" (value, "order_id") (SELECT new_ref."artificial:infraOrder", id FROM "order_id" WHERE new_ref."artificial:infraOrder" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:infraOrder_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:infraOrder_id"), (SELECT id FROM "artificial:infraOrder" WHERE value = new_ref."artificial:infraOrder")) AS id
-	), "inserted_artificial:subOrder_id" AS (
-		INSERT INTO "artificial:subOrder" (value, "order_id") (SELECT new_ref."artificial:subOrder", id FROM "order_id" WHERE new_ref."artificial:subOrder" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:subOrder_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:subOrder_id"), (SELECT id FROM "artificial:subOrder" WHERE value = new_ref."artificial:subOrder")) AS id
-	), "inserted_artificial:superOrder_id" AS (
-		INSERT INTO "artificial:superOrder" (value, "class_id") (SELECT new_ref."artificial:superOrder", id FROM "class_id" WHERE new_ref."artificial:superOrder" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:superOrder_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:superOrder_id"), (SELECT id FROM "artificial:subOrder" WHERE value = new_ref."artificial:superOrder")) AS id
-	), "inserted_artificial:subClass_id" AS (
-		INSERT INTO "artificial:subClass" (value, "class_id") (SELECT new_ref."artificial:subClass", id FROM "class_id" WHERE new_ref."artificial:subClass" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:subClass_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:subClass_id"), (SELECT id FROM "artificial:subClass" WHERE value = new_ref."artificial:subClass")) AS id
-	), "inserted_artificial:subPhylum_id" AS (
-		INSERT INTO "artificial:subPhylum" (value, "phylum_id") (SELECT new_ref."artificial:subPhylum", id FROM "phylum_id" WHERE new_ref."artificial:subPhylum" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-	), "artificial:subPhylum_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_artificial:subPhylum_id"), (SELECT id FROM "artificial:subPhylum" WHERE value = new_ref."artificial:subPhylum")) AS id
+	), "inserted_artificial:subtribe_id" AS (
+		INSERT INTO "artificial:subtribe" (value, "tribe_id") (SELECT new_ref."artificial:subtribe", id FROM "artificial:tribe_id" WHERE new_ref."artificial:subtribe" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:subtribe_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:subtribe_id"), (SELECT id FROM "artificial:subtribe" WHERE value = new_ref."artificial:subtribe")) AS id
+	), "inserted_artificial:superfamily_id" AS (
+		INSERT INTO "artificial:superfamily" (value, "order_id") (SELECT new_ref."artificial:superfamily", id FROM "order_id" WHERE new_ref."artificial:superfamily" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id 
+	), "artificial:superfamily_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:superfamily_id"), (SELECT id FROM "artificial:superfamily" WHERE value = new_ref."artificial:superfamily")) AS id
+	), "inserted_artificial:infraorder_id" AS (
+		INSERT INTO "artificial:infraorder" (value, "order_id") (SELECT new_ref."artificial:infraorder", id FROM "order_id" WHERE new_ref."artificial:infraorder" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:infraorder_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:infraorder_id"), (SELECT id FROM "artificial:infraorder" WHERE value = new_ref."artificial:infraorder")) AS id
+	), "inserted_artificial:suborder_id" AS (
+		INSERT INTO "artificial:suborder" (value, "order_id") (SELECT new_ref."artificial:suborder", id FROM "order_id" WHERE new_ref."artificial:suborder" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:suborder_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:suborder_id"), (SELECT id FROM "artificial:suborder" WHERE value = new_ref."artificial:suborder")) AS id
+	), "inserted_artificial:superorder_id" AS (
+		INSERT INTO "artificial:superorder" (value, "class_id") (SELECT new_ref."artificial:superorder", id FROM "class_id" WHERE new_ref."artificial:superorder" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:superorder_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:superorder_id"), (SELECT id FROM "artificial:suborder" WHERE value = new_ref."artificial:superorder")) AS id
+	), "inserted_artificial:subclass_id" AS (
+		INSERT INTO "artificial:subclass" (value, "class_id") (SELECT new_ref."artificial:subclass", id FROM "class_id" WHERE new_ref."artificial:subclass" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:subclass_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:subclass_id"), (SELECT id FROM "artificial:subclass" WHERE value = new_ref."artificial:subclass")) AS id
+	), "inserted_artificial:subphylum_id" AS (
+		INSERT INTO "artificial:subphylum" (value, "phylum_id") (SELECT new_ref."artificial:subphylum", id FROM "phylum_id" WHERE new_ref."artificial:subphylum" IS NOT NULL AND id IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
+	), "artificial:subphylum_id" AS (
+		SELECT COALESCE((SELECT id FROM "inserted_artificial:subphylum_id"), (SELECT id FROM "artificial:subphylum" WHERE value = new_ref."artificial:subphylum")) AS id
 	), "inserted_taxonomicStatus_id" AS (
 		INSERT INTO "taxonomicStatus" (value) (SELECT new_ref."taxonomicStatus" WHERE new_ref."taxonomicStatus" IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
 	), "taxonomicStatus_id" AS (
@@ -327,13 +327,13 @@ BEGIN
 	), "behavior_id" AS (
 		SELECT COALESCE((SELECT id FROM "inserted_behavior_id"), (SELECT id FROM "behavior" WHERE value = new_ref."behavior")) AS id
 	), "inserted_specie_id" AS (
-		INSERT INTO "specie" ("typeStatus", "scientificName", "scientificNameAuthorship", "acceptedNameUsage", "subGenus_id", "artificial:subFamily_id", "artificial:subTribe_id", "artificial:tribe_id", "artificial:superFamily_id", "artificial:infraOrder_id", "artificial:subOrder_id", "artificial:superOrder_id",	"artificial:subClass_id", "artificial:subPhylum_id", "specificEpithet", "infraspecificEpithet", "taxonRank", "taxonomicStatus_id", "originalNameUsage", "vernacularName", "nomenclaturalCode_id", "nameAccordingTo_id") (SELECT new_ref."typeStatus", new_ref."scientificName", new_ref."scientificNameAuthorship", new_ref."acceptedNameUsage", "subGenus_id".id AS "subGenus_id", "artificial:subFamily_id".id AS "artificial:subFamily_id" , "artificial:subTribe_id".id AS "artificial:subTribe_id", "artificial:tribe_id".id AS "artificial:tribe_id", "artificial:superFamily_id".id AS "artificial:superFamily_id", "artificial:infraOrder_id".id AS "artificial:infraOrder_id", "artificial:subOrder_id".id AS "artificial:subOrder_id", "artificial:superOrder_id".id AS "artificial:superOrder_id", "artificial:subClass_id".id AS "artificial:subClass_id", "artificial:subPhylum_id".id AS "artificial:subPhylum_id", new_ref."specificEpithet", new_ref."infraspecificEpithet", new_ref."taxonRank", "taxonomicStatus_id".id AS "taxonomicStatus_id", new_ref."originalNameUsage", new_ref."vernacularName", "nomenclaturalCode_id".id AS "nomenclaturalCode_id", "nameAccordingTo_id".id AS "nameAccordingTo_id" FROM "subGenus_id", "artificial:subFamily_id", "artificial:subTribe_id", "artificial:tribe_id", "artificial:superFamily_id", "artificial:infraOrder_id", "artificial:subOrder_id", "artificial:superOrder_id", "artificial:subClass_id", "artificial:subPhylum_id", "taxonomicStatus_id", "nomenclaturalCode_id", "nameAccordingTo_id") ON CONFLICT DO NOTHING RETURNING id
+		INSERT INTO "specie" ("typeStatus", "scientificName", "scientificNameAuthorship", "acceptedNameUsage", "subgenus_id", "artificial:subfamily_id", "artificial:subtribe_id", "artificial:tribe_id", "artificial:superfamily_id", "artificial:infraorder_id", "artificial:suborder_id", "artificial:superorder_id",	"artificial:subclass_id", "artificial:subphylum_id", "specificEpithet", "infraspecificEpithet", "taxonRank", "taxonomicStatus_id", "originalNameUsage", "vernacularName", "nomenclaturalCode_id", "nameAccordingTo_id") (SELECT new_ref."typeStatus", new_ref."scientificName", new_ref."scientificNameAuthorship", new_ref."acceptedNameUsage", "subgenus_id".id AS "subgenus_id", "artificial:subfamily_id".id AS "artificial:subfamily_id" , "artificial:subtribe_id".id AS "artificial:subtribe_id", "artificial:tribe_id".id AS "artificial:tribe_id", "artificial:superfamily_id".id AS "artificial:superfamily_id", "artificial:infraorder_id".id AS "artificial:infraorder_id", "artificial:suborder_id".id AS "artificial:suborder_id", "artificial:superorder_id".id AS "artificial:superorder_id", "artificial:subclass_id".id AS "artificial:subclass_id", "artificial:subphylum_id".id AS "artificial:subphylum_id", new_ref."specificEpithet", new_ref."infraspecificEpithet", new_ref."taxonRank", "taxonomicStatus_id".id AS "taxonomicStatus_id", new_ref."originalNameUsage", new_ref."vernacularName", "nomenclaturalCode_id".id AS "nomenclaturalCode_id", "nameAccordingTo_id".id AS "nameAccordingTo_id" FROM "subgenus_id", "artificial:subfamily_id", "artificial:subtribe_id", "artificial:tribe_id", "artificial:superfamily_id", "artificial:infraorder_id", "artificial:suborder_id", "artificial:superorder_id", "artificial:subclass_id", "artificial:subphylum_id", "taxonomicStatus_id", "nomenclaturalCode_id", "nameAccordingTo_id") ON CONFLICT DO NOTHING RETURNING id
 	), "specie_id" AS (
 		SELECT COALESCE((SELECT id FROM "inserted_specie_id"), (SELECT id FROM "specie" WHERE "acceptedNameUsage" = new_ref."acceptedNameUsage")) AS id
 	), "inserted_locality_id" AS (
 		INSERT INTO "locality" ("value", "decimalLatitude", "decimalLongitude", "verbatimLatitude", "verbatimLongitude", "coordinatePrecision", "geodeticDatum_id", "footprintWKT", "minimumElevationInMeters", "maximumElevationInMeters", "municipality_id", "verbatimLocality_id") (SELECT new_ref."locality" AS value, new_ref."decimalLatitude", new_ref."decimalLongitude", new_ref."verbatimLatitude", new_ref."verbatimLongitude", new_ref."coordinatePrecision", "geodeticDatum_id".id AS "geodeticDatum_id", new_ref."footprintWKT", new_ref."minimumElevationInMeters", new_ref."maximumElevationInMeters", "municipality_id".id AS "municipality_id", "verbatimLocality_id".id AS "verbatimLocality_id" FROM  "geodeticDatum_id", "municipality_id", "verbatimLocality_id") ON CONFLICT DO NOTHING RETURNING id
 	), "locality_id" AS (
-		SELECT COALESCE((SELECT id FROM "inserted_locality_id"), (SELECT id FROM "locality" WHERE value = new_ref."locality")) AS id
+		SELECT COALESCE((SELECT id FROM "inserted_locality_id"), (SELECT locality.id FROM "locality", "municipality_id" WHERE value = new_ref."locality" AND "decimalLongitude" = new_ref."decimalLongitude" AND "decimalLatitude" = new_ref."decimalLatitude" AND locality."municipality_id" = "municipality_id".id)) AS id
 	), "insert_biological_occurrence" AS (
 		INSERT INTO "biological_occurrence" ("occurrenceID", "artificial:section_id", "dcterms:modified", "informationWithheld", "basisOfRecord_id", "institutionCode_id", "collectionCode_id", "dcterms:bibliographicCitation", "datasetName_id", "artificial:shelfLocation_id", "artificial:flaskLocation_id", "artificial:shippingGuide", "catalogNumber", "otherCatalogNumbers", "preparations_id", "individualCount", "sex_id", "lifeStage_id", "reproductiveCondition_id", "establishmentMeans_id", "behavior_id", "occurrenceRemarks", "disposition_id", "associatedReferences", "associatedMedia", "previousIdentifications", "associatedOccurrences","fieldNumber", "day", "month", "year", "eventTime", "eventDate", "verbatimEventDate", "samplingProtocol", "habitat_id", "eventRemarks", "fieldNotes", "measurementRemarks", "specie_id", "locality_id", "waterBody_id", "minimumDepthInMeters", "maximumDepthInMeters", "locationRemarks", "identificationQualifier_id", "relationshipOfResource") (SELECT new_ref."occurrenceID", "artificial:section_id".id AS "artificial:section_id" , new_ref."dcterms:modified", new_ref."informationWithheld", "basisOfRecord_id".id AS "basisOfRecord_id", "institutionCode_id".id AS "institutionCode_id", "collectionCode_id".id AS "collectionCode_id", new_ref."dcterms:bibliographicCitation", "datasetName_id".id AS "datasetName_id", "artificial:shelfLocation_id".id AS "artificial:shelfLocation_id", "artificial:flaskLocation_id".id AS "artificial:flaskLocation_id", new_ref."artificial:shippingGuide", new_ref."catalogNumber", new_ref."otherCatalogNumbers", "preparations_id".id AS "preparations_id", new_ref."individualCount", "sex_id".id AS "sex_id", "lifeStage_id".id AS "lifeStage_id", "reproductiveCondition_id".id AS "reproductiveCondition_id", "establishmentMeans_id".id AS "establishmentMeans_id", "behavior_id".id AS "behavior_id", new_ref."occurrenceRemarks", "disposition_id".id AS "disposition_id", new_ref."associatedReferences", new_ref."associatedMedia", new_ref."previousIdentifications",new_ref."associatedOccurrences", new_ref."fieldNumber", new_ref."day", new_ref."month", new_ref."year", new_ref."eventTime", new_ref."eventDate", new_ref."verbatimEventDate", new_ref."samplingProtocol", "habitat_id".id AS "habitat_id", new_ref."eventRemarks", new_ref."fieldNotes", new_ref."measurementRemarks", "specie_id".id AS "specie_id", "locality_id".id AS "locality_id", "waterBody_id".id AS "waterBody_id", new_ref."minimumDepthInMeters", new_ref."maximumDepthInMeters", new_ref."locationRemarks", "identificationQualifier_id".id AS "identificationQualifier_id", new_ref."relationshipOfResource" FROM "artificial:section_id", "basisOfRecord_id", "institutionCode_id", "collectionCode_id", "datasetName_id", "artificial:shelfLocation_id", "artificial:flaskLocation_id", "preparations_id", "sex_id", "lifeStage_id", "reproductiveCondition_id", "establishmentMeans_id", "behavior_id", "disposition_id", "habitat_id", "specie_id", "locality_id", "waterBody_id", "identificationQualifier_id" WHERE "artificial:section_id".id IS NOT NULL AND new_ref."dcterms:modified" IS NOT NULL)
 	),"insert_recordedBy_biological_occurrence" AS (
