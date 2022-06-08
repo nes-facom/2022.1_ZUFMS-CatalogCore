@@ -256,13 +256,7 @@ paths:
         content:
           "application/json":
             schema:
-              properties:
-                email:
-                  type: string
-                scope_id:
-                  type: array
-                  items:
-                    type: integer
+              $ref: "#/components/schemas/CreateUserRequest"
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -358,13 +352,7 @@ paths:
         content:
           "application/json":
             schema:
-              properties:
-                email:
-                  type: string
-                scope_id:
-                  type: array
-                  items:
-                    type: integer
+              $ref: "#/components/schemas/UpdateUserRequest"
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -1193,8 +1181,23 @@ components:
           type: string
     UpdateUserRequest: 
       type: object
+      properties:
+        mail:
+          type: string
+        scope_id:
+          type: array
+          items:
+            type: integer
     CreateUserRequest: 
       type: object
+      properties:
+        mail:
+          type: string
+        scope_id:
+            type: array
+            items:
+              type: integer
+
     ZUFMSCoreFile:
       type: string
       example: | 

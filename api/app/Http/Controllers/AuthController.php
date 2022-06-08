@@ -288,7 +288,7 @@ class AuthController
 
             $this->emailSenderService->send('send-access-code', $otp_request->email, $emailBodyVariables, 'Codigo de acesso');
 
-            return response()->json(["result"=>"Email colocado na fila"], 200);
+            return response()->json(["message"=>"Email colocado na fila"], 200);
         }
     }
 }

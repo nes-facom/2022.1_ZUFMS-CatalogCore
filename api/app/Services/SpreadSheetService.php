@@ -22,7 +22,7 @@ class SpreadSheetService
         $tableBody = [];
         for ($row = 3; $row <= $sheetDTO->getRowCount(); $row++) {
             $tableRow = [];
-
+            $tableRow['artificial:section'] = $sheetDTO->getSection();
             for ($col = 0; $col < count($tableHead); $col++) {
                 $value = $sheetDTO->getSheet()->getCellByColumnAndRow($col, $row)->getValue();
                 $tableRow[$tableHead[$col]] = $value == '' ? null : $value;
