@@ -70,31 +70,15 @@ class AuthController
 
             $client_avaliable_scopes = DB::table('client_inherited_scope')
                 ->where('client_id', $client->id)
-                ->pluck('inherited_scope_name')
-                ->unique()
-                ->toArray();
-
-            if (!ArrayHelper::all_in_array($requested_scopes, $client_avaliable_scopes)) {
-                return response()->json([
-                    'errors' => [
-                        'code' => 1,
-                        'title' => 'Permissões Insuficientes',
-                        'description' => 'Você não possui as permissões necessárias para realizar esta operação',
-                    ]
-                ], 403);
-            }
-
-            // Store access_token
-            $refresh_token = "";
-
-            $access_token_scope_array = DB::table('client_inherited_scope')
-                ->where('client_id', $client->id)
                 ->whereIn('inherited_from_scope_name', $requested_scopes)
                 ->pluck('inherited_scope_name')
                 ->unique()
                 ->toArray();
-            
-            $access_token_scope = implode(' ', $access_token_scope_array);
+
+            // Store access_token
+            $refresh_token = "";
+
+            $access_token_scope = implode(' ', $client_avaliable_scopes);
 
             $ttl = config('jwt.ttl');
             $expires_in = strtotime('+' . $ttl . ' minutes');
@@ -171,33 +155,16 @@ class AuthController
                 ->where('email', '=', $otp->email)
                 ->first();
 
-            // Check requested scopes availability
             $user_avaliable_scopes = DB::table('user_inherited_scope')
-                ->where('user_id', $user->id)
-                ->pluck('inherited_scope_name')
-                ->toArray();
-
-            if (!ArrayHelper::all_in_array($requested_scopes, $user_avaliable_scopes)) {
-                return response()->json([
-                    'errors' => [
-                        'code' => 1,
-                        'title' => 'Permissões Insuficientes',
-                        'description' => 'Você não possui as permissões necessárias para realizar esta operação',
-                    ]
-                ], 403);
-            }
-
-            // Store access_token
-            $refresh_token = "";
-
-            $access_token_scope_array = DB::table('user_inherited_scope')
                 ->where('user_id', $user->id)
                 ->whereIn('inherited_from_scope_name', $requested_scopes)
                 ->pluck('inherited_scope_name')
-                ->unique()
                 ->toArray();
-        
-            $access_token_scope = implode(' ', $access_token_scope_array);
+                
+            // Store access_token
+            $refresh_token = "";
+
+            $access_token_scope = implode(' ', $user_avaliable_scopes);
 
             $ttl = config('jwt.ttl');
             $expires_in =  strtotime('+' . $ttl . ' minutes');

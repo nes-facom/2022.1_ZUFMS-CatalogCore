@@ -8,6 +8,7 @@ import OpacityTransition from "@/components/transitions/OpacityTransition.vue";
 import SlideTransition from "@/components/transitions/SlideTransition.vue";
 import { api } from "@/api";
 import router from "@/router";
+import VueJwtDecode from "vue-jwt-decode";
 
 const sidebarState = ref({});
 const onSidebarStateChange = (newState: any) => {
@@ -19,7 +20,6 @@ const navLinks = [
   { title: "Etiquetas", to: "/etiquetas" },
   { title: "Empréstimos", to: "/emprestimos" },
   { title: "Submissão", to: "/submissao" },
-  { title: "Usuários", to: "/usuarios" },
 ];
 
 const userEmail = ref<string>();
@@ -33,6 +33,12 @@ fetch("https://localhost:3000/v1/auth/userinfo", {
   .then((userData) => {
     userEmail.value = userData.email.split("@")[0];
   });
+
+const parsedJwt = VueJwtDecode.decode(window.localStorage.getItem("_at") ?? "");
+
+if (parsedJwt.scope.split(" ").includes("users:read")) {
+  navLinks.push({ title: "Usuários", to: "/usuarios" });
+}
 
 const onLogout = () => {
   window.localStorage.removeItem("_at");

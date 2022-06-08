@@ -1,24 +1,31 @@
 <script setup lang="ts">
 import DashboardHeader from "./DashboardHeader.vue";
 import MaterialIcon from "../icons/MaterialIcon.vue";
-import { reactive, ref, watchEffect } from "vue";
+import { computed, nextTick, reactive, ref, watch, watchEffect } from "vue";
+import { api } from "@/api";
 
-const users = [
-  { id: "0", email: "admin@ufms.br", scopes: ["admin"] },
-  { id: "1", email: "usuario@ufms.br", scopes: ["occurrences:read"] },
-  {
-    id: "2",
-    email: "outro.usuario@ufms.br",
-    scopes: ["occurrences", "users:read"],
-  },
-];
+const users = ref<any>([]);
 
 const selectedUsers = reactive<any>({});
 
-const someUserSelected = ref<boolean>(false);
+const someUserSelected = ref(false);
+
+const someUpdateMade = ref(false);
+
+api
+  .withAccessToken(localStorage.getItem("_at") ?? "")
+  .users.usersGetAll()
+  .then(({ data }) => {
+    users.value = data;
+    nextTick(() => (someUpdateMade.value = false));
+  });
+
+watch([users], () => (someUpdateMade.value = true), { deep: true });
+
+const userProps = computed(() => Object.keys(users.value?.[0] ?? {}));
 
 const onCheckboxChange = (user: any) => (e: Event) => {
-  if (e.target.checked) {
+  if ((e.target as any | null)?.checked) {
     selectedUsers[user.id] = true;
   } else {
     delete selectedUsers[user.id];
@@ -26,6 +33,13 @@ const onCheckboxChange = (user: any) => (e: Event) => {
 
   someUserSelected.value = Object.keys(selectedUsers).length > 0;
 };
+
+const searchBoxValue = ref("");
+
+const filteredUsers = () =>
+  users.value.filter(({ email }: { email: string }) =>
+    email.startsWith(searchBoxValue.value)
+  );
 </script>
 
 <template>
@@ -44,35 +58,46 @@ const onCheckboxChange = (user: any) => (e: Event) => {
           class="flex justify-between p-6 pl-14 border-b-2 border-[#2E688C]"
         >
           <div
-            class="w-[30rem] py-[.6rem] flex items-center rounded-md border-2 border-[#2E688C] bg-[#10527A]"
+            :class="`${
+              filteredUsers().length === 0 && 'border-red-600/70'
+            }  w-[30rem] py-[.6rem] flex items-center rounded-md border-2 border-[#2E688C] bg-[#10527A]`"
           >
             <MaterialIcon
               name="search"
               class="mx-3 text-[#4E93BF] text-[1.2rem]"
             />
             <input
+              v-model="searchBoxValue"
               class="bg-transparent placeholder:text-[#4E93BF] text-gray-200 focus-visible:outline-none"
               placeholder="Pesquisar usuário"
             />
           </div>
 
-          <button
-            :disabled="someUserSelected"
-            :class="`${
-              someUserSelected
-                ? 'hover:bg-red-600 hover:border-red-700'
-                : 'opacity-30 cursor-default'
-            } w-fit p-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
-          >
-            <MaterialIcon name="delete" />
-          </button>
+          <div class="flex">
+            <button
+              :disabled="someUpdateMade"
+              :class="`${
+                someUpdateMade
+                  ? 'hover:bg-green-600 hover:border-green-700'
+                  : 'opacity-30 cursor-default'
+              } w-fit p-2 mr-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
+            >
+              <MaterialIcon name="check" />
+            </button>
+            <button
+              :disabled="someUserSelected"
+              :class="`${
+                someUserSelected
+                  ? 'hover:bg-red-600 hover:border-red-700'
+                  : 'opacity-30 cursor-default'
+              } w-fit p-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
+            >
+              <MaterialIcon name="delete" />
+            </button>
+          </div>
         </section>
         <section class="mt-4 pl-16 flex">
-          <div
-            class="w-[20rem]"
-            v-for="userProp in Object.keys(users[0])"
-            :key="userProp"
-          >
+          <div class="w-[20rem]" v-for="userProp in userProps" :key="userProp">
             <h4 class="text-white text-xl font-semibold mb-1">
               {{ userProp }}
             </h4>
@@ -80,7 +105,11 @@ const onCheckboxChange = (user: any) => (e: Event) => {
         </section>
       </header>
       <div class="pl-16 flex-col">
-        <div class="flex w-full h-12" v-for="user in users" :key="user.id">
+        <div
+          class="flex w-full h-12"
+          v-for="user in filteredUsers()"
+          :key="user.id"
+        >
           <input
             type="checkbox"
             class="-ml-6 mr-2"
@@ -89,8 +118,12 @@ const onCheckboxChange = (user: any) => (e: Event) => {
           <input
             v-for="userProp in Object.keys(users[0])"
             :key="userProp"
-            class="w-[20rem] h-full bg-transparent border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white"
+            :disabled="userProp === 'id'"
+            :class="`${
+              userProp === 'id' ? 'bg-[#2E688C] opacity-40' : 'bg-transparent'
+            } w-[20rem] h-full border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
             :value="user[userProp as keyof typeof user]"
+            @change="(el) => user[userProp as keyof typeof user] = (el.target as any)?.value"
           />
         </div>
       </div>

@@ -28,9 +28,6 @@ services:
   api:
     container_name: zufms_api
     build: ./api
-    environment:
-      - MAIL_USERNAME=acervo.ufms@gmail.com
-      - MAIL_PASSWORD="S}}/#.w]dh/BhQ4#"
     depends_on:
       - db
     volumes:

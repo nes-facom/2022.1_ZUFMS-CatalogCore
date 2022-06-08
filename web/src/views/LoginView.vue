@@ -26,7 +26,7 @@ const loginStepEmailSubmit = async () => {
       otp_method: "email",
       email: emailValue,
       state: state,
-      scope: "occurrences:read",
+      scope: "admin",
     });
 
     await otpRequestStorage.set(state, emailValue);
@@ -44,7 +44,7 @@ const loginStepCodeSubmit = () => {
       otp_method: "email",
       email: email.value,
       otp: codeElements.value.reduce((code, el) => (code += el.value), ""),
-      scope: "occurrences:read",
+      scope: "admin",
     })
     .then((response) => {
       window.localStorage.setItem("_at", response.data.access_token ?? "");
