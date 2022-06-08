@@ -12,15 +12,21 @@ const someUserSelected = ref(false);
 
 const someUpdateMade = ref(false);
 
-api
-  .withAccessToken(localStorage.getItem("_at") ?? "")
-  .users.usersGetAll()
-  .then(({ data }) => {
-    users.value = data;
-    nextTick(() => (someUpdateMade.value = false));
-  });
+const fetchUsers = () =>
+  api
+    .withAccessToken(localStorage.getItem("_at") ?? "")
+    .users.usersGetAll()
+    .then(({ data }) => {
+      users.value = data;
+      nextTick(() => (someUpdateMade.value = false));
+    });
 
-watch([users], () => (someUpdateMade.value = true), { deep: true });
+fetchUsers();
+
+const insertingNewUser = ref(false);
+const newUser = ref<any>({});
+
+watch([users, newUser], () => (someUpdateMade.value = true), { deep: true });
 
 const userProps = computed(() => Object.keys(users.value?.[0] ?? {}));
 
@@ -32,6 +38,33 @@ const onCheckboxChange = (user: any) => (e: Event) => {
   }
 
   someUserSelected.value = Object.keys(selectedUsers).length > 0;
+};
+
+const onClickDelete = () =>
+  Object.keys(selectedUsers).forEach((userId) => {
+    api
+      .withAccessToken(localStorage.getItem("_at") ?? "")
+      .users.usersDeleteOne(userId)
+      .then(fetchUsers);
+  });
+
+const onClickUpdate = () => {
+  if (insertingNewUser.value) {
+    api
+      .withAccessToken(localStorage.getItem("_at") ?? "")
+      .users.usersCreateOne(newUser.value)
+      .then(() => {
+        insertingNewUser.value = false;
+        fetchUsers();
+      });
+  }
+
+  users.value.forEach(({ id, ...userData }: any) =>
+    api
+      .withAccessToken(localStorage.getItem("_at") ?? "")
+      .users.usersUpdateOne(id, userData)
+      .then(fetchUsers)
+  );
 };
 
 const searchBoxValue = ref("");
@@ -68,14 +101,25 @@ const filteredUsers = () =>
             />
             <input
               v-model="searchBoxValue"
-              class="bg-transparent placeholder:text-[#4E93BF] text-gray-200 focus-visible:outline-none"
+              class="w-full bg-transparent placeholder:text-[#4E93BF] text-gray-200 focus-visible:outline-none"
               placeholder="Pesquisar usuário"
             />
           </div>
 
           <div class="flex">
             <button
-              :disabled="someUpdateMade"
+              @click="insertingNewUser = !insertingNewUser"
+              :class="`${
+                !insertingNewUser
+                  ? 'hover:bg-green-600 hover:border-green-700'
+                  : 'bg-green-600  cursor-default'
+              } w-fit p-2 mr-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
+            >
+              <MaterialIcon name="add" />
+            </button>
+            <button
+              @click="onClickUpdate"
+              :disabled="!someUpdateMade"
               :class="`${
                 someUpdateMade
                   ? 'hover:bg-green-600 hover:border-green-700'
@@ -85,7 +129,8 @@ const filteredUsers = () =>
               <MaterialIcon name="check" />
             </button>
             <button
-              :disabled="someUserSelected"
+              @click="onClickDelete"
+              :disabled="!someUserSelected"
               :class="`${
                 someUserSelected
                   ? 'hover:bg-red-600 hover:border-red-700'
@@ -124,6 +169,19 @@ const filteredUsers = () =>
             } w-[20rem] h-full border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
             :value="user[userProp as keyof typeof user]"
             @change="(el) => user[userProp as keyof typeof user] = (el.target as any)?.value"
+          />
+        </div>
+
+        <div class="flex w-full h-12" v-if="insertingNewUser">
+          <input type="checkbox" class="-ml-6 mr-2" />
+          <input
+            v-for="userProp in Object.keys(users[0])"
+            :key="userProp"
+            :disabled="userProp === 'id'"
+            :class="`${
+              userProp === 'id' ? 'bg-[#2E688C] opacity-40' : 'bg-transparent'
+            } w-[20rem] h-full border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
+            @change="(el) => newUser[userProp as keyof typeof newUser] = (el.target as any)?.value"
           />
         </div>
       </div>

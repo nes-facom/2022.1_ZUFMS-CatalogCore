@@ -12,19 +12,23 @@ table client {
 
 table scope {
   id int [pk]
-  name text [unique,not null]
+  name text [unique, not null]
   description text
 }
 
 table user_allowed_scope {
-  user_id uuid [pk, ref: > user.id]
+  user_id uuid [pk]
   scope_id int [pk, ref: > scope.id]
 }
 
+Ref: user_allowed_scope.user_id > user.id [delete: cascade]
+
 table client_allowed_scope {
-  client_id uuid [pk, ref: > client.id]
+  client_id uuid [pk]
   scope_id int [pk, ref: > scope.id]
 }
+
+Ref: client_allowed_scope.client_id > client.id [delete: cascade]
 
 table scope_closure_table {
   ancestor int [pk, ref: > scope.id]
@@ -34,25 +38,11 @@ table scope_closure_table {
 table access_token {
   jti uuid [pk, default: `uuid_generate_v4()`]
   refresh_token text
-  sub_type access_token_sub_type [not null, default: 'user']
+  subject uuid [ref: > user.id]
+  issuer uuid [not null, ref: > client.id]
   expires_in timestamp [not null]
   issued_at timestamp [not null, default: `now()`]
   scope text [not null]
-}
-
-enum access_token_sub_type {
-  client
-  user
-}
-
-table access_token_user_sub {
-  access_token_jti uuid [pk, ref: > access_token.jti]
-  user_id uuid [pk, ref: > user.id]
-}
-
-table access_token_client_sub {
-  access_token_jti uuid [pk, ref: > access_token.jti]
-  client_id uuid [pk, ref: > client.id]
 }
 
 table otp {

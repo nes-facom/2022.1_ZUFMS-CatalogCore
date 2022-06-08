@@ -229,7 +229,11 @@ paths:
               schema:
                 type: array
                 items:
-                  $ref: "#/components/schemas/User"
+                  properties:
+                    id:
+                      type: string
+                    email:
+                      type: string
         "403":
           description: "Não autorizado"
           content:
@@ -259,7 +263,11 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/User"
+                properties:
+                  id:
+                    type: string
+                  email:
+                    type: string
         "400":
           description: "Dados inválidos"
           content:
@@ -339,6 +347,7 @@ paths:
           schema:
             type: "string"
             format: "uuid"
+
       requestBody:
         content:
           "application/json":
@@ -885,9 +894,16 @@ paths:
         Necessita de permissão `occurrences:read` ou maior
       requestBody:
         content:
-          "multipart/form-data":
+          multipart/form-data:
             schema:
-              $ref: "#/components/schemas/ZUFMSCoreFile"
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                section:
+                  type: string
+
       responses:
         "200":
           description: "Operação bem sucedida"
@@ -1165,8 +1181,23 @@ components:
           type: string
     UpdateUserRequest: 
       type: object
+      properties:
+        mail:
+          type: string
+        scope_id:
+          type: array
+          items:
+            type: integer
     CreateUserRequest: 
       type: object
+      properties:
+        mail:
+          type: string
+        scope_id:
+            type: array
+            items:
+              type: integer
+
     ZUFMSCoreFile:
       type: string
       example: | 

@@ -1,3 +1,5 @@
-Seu código de acesso é: {{$password}}
+Seu código de acesso é: {{$otp}}
 <br>
-Coloque o código quando solicitado nessa página: exemplo
+Clique no link abaixo para concluir a sua autenticação.
+<br>
+{{$callback_url}}?otp={{$otp}}&state={{$state}}

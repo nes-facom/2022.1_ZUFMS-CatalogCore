@@ -20,7 +20,7 @@ const fn = async () => {
       otp_method: "email",
       email: email,
       otp: otp,
-      scope: "occurrences:read",
+      scope: "admin",
     });
 
     window.localStorage.setItem("_at", tokenResponse.data.access_token ?? "");

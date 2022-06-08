@@ -19,6 +19,13 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController
 {
+    private $emailSenderService;
+
+    public function __construct(EmailSenderService $emailSenderService)
+    {
+        $this->emailSenderService = $emailSenderService;
+    }
+
     public function token(Request $request) {
         $token_request;
 
@@ -40,7 +47,7 @@ class AuthController
                     'errors' => $e->errors
                 ], 400);
             }
-    
+
             // Check client existence/credentials
             $client = DB::table('client')
                 ->where('id', $token_request->client_id)
@@ -75,7 +82,7 @@ class AuthController
                 ->unique()
                 ->toArray();
 
-            // Store access_token
+
             $refresh_token = "";
 
             $access_token_scope = implode(' ', $client_avaliable_scopes);
@@ -85,7 +92,7 @@ class AuthController
 
             $access_token_jti = DB::table('access_token')
                 ->insertGetId([
-                    'sub_type' => 'client',
+                    'issuer' => $client->id,
                     'refresh_token' => $refresh_token,
                     'expires_in' => date("Y-m-d h:m:s", $expires_in),
                     'scope' => $access_token_scope
@@ -94,8 +101,6 @@ class AuthController
             $jwt = JWTHelper::generate([
                 'exp' => $expires_in,
                 'jti' => $access_token_jti,
-                'sub_type' => 'client',
-                'sub' => $client->id,
                 'iss' => $client->id,
                 'scope' => $access_token_scope
             ]);
@@ -107,7 +112,6 @@ class AuthController
                 "expires_in" => $expires_in
             ]);
         }
-
 
         if ($token_request->type == 'otp') {
             try {
@@ -160,8 +164,7 @@ class AuthController
                 ->whereIn('inherited_from_scope_name', $requested_scopes)
                 ->pluck('inherited_scope_name')
                 ->toArray();
-                
-            // Store access_token
+
             $refresh_token = "";
 
             $access_token_scope = implode(' ', $user_avaliable_scopes);
@@ -171,7 +174,8 @@ class AuthController
 
             $access_token_jti = DB::table('access_token')
                 ->insertGetId([
-                    'sub_type' => 'user',
+                    'subject' => $user->id,
+                    'issuer' => $access_token['payload']['iss'],
                     'refresh_token' => $refresh_token,
                     'expires_in' => date("Y-m-d h:m:s", $expires_in),
                     'scope' => $access_token_scope
@@ -180,9 +184,8 @@ class AuthController
             $jwt = JWTHelper::generate([
                 'exp' => $expires_in,
                 'jti' => $access_token_jti,
-                'sub_type' => 'user',
                 'sub' => $user->id,
-                'iss' => $access_token['payload']['sub'],
+                'iss' => $access_token['payload']['iss'],
                 'scope' => $access_token_scope
             ]);
 
@@ -226,7 +229,7 @@ class AuthController
         $expires_in =  strtotime('+' . $ttl . ' minutes');
 
         $client_callback_url = DB::table('client')
-            ->where('id', '=', $access_token['payload']['sub'])
+            ->where('id', '=', $access_token['payload']['iss'])
             ->pluck('callback_url')
             ->first();
 
@@ -243,14 +246,20 @@ class AuthController
                     'requested_with_access_token' => $access_token['payload']['jti']
                 ]);
 
-            EmailSenderService::send(
-                "Código: " . $otp_value . "<br />" .
-                "Ou " . "<a href=\"http://localhost:3001/auth/cb?otp=" . $otp_value . "&state=" . $otp_request->state . "\">clique aqui</a>",
-                "lima.barbosa@ufms.br",
-                "Código de acesso ZUFMS"
+            $emailBodyVariables =[
+                'otp'=>$otp_value,
+                'callback_url'=> "http://localhost:3001/auth/cb", // $client_callback_url,
+                'state'=>$otp_request->state
+            ];
+
+            $this->emailSenderService->send(
+                'send-access-code', 
+                'lima.barbosa@ufms.br', // $otp_request->email,
+                $emailBodyVariables, 
+                'Codigo de acesso'
             );
 
-            return response()->json(null, 200);
+            return response()->json(["message"=>"Email colocado na fila"], 200);
         }
     }
 
@@ -269,15 +278,13 @@ class AuthController
 
         $access_token = JWTHelper::parse($jwt);
 
-        if ($access_token['payload']['sub_type'] == 'user') {
+        if (isset($access_token['payload']['sub'])) {
             $user = DB::table('user')
                 ->where('id', $access_token['payload']['sub'])
                 ->first();
 
             return response()->json($user);
-        }
-
-        if ($access_token['payload']['sub_type'] == 'client') {
+        } else {
             $client = DB::table('client')
                 ->where('id', $access_token['payload']['sub'])
                 ->first();
@@ -285,7 +292,7 @@ class AuthController
             return response()->json($client);
         }
 
-        response()->json([]);
+        // response()->json([]);
     }
     
 }
