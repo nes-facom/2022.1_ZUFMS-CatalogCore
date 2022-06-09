@@ -192,7 +192,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/AccessTokenResponse"
+                $ref: "#/components/schemas/OtpResponse"
         "400":
           description: "Dados inválidos"
           content:
@@ -229,11 +229,7 @@ paths:
               schema:
                 type: array
                 items:
-                  properties:
-                    id:
-                      type: string
-                    email:
-                      type: string
+                  $ref: "#/components/schemas/User"
         "403":
           description: "Não autorizado"
           content:
@@ -263,11 +259,7 @@ paths:
           content:
             "application/json":
               schema:
-                properties:
-                  id:
-                    type: string
-                  email:
-                    type: string
+                $ref: "#/components/schemas/User"
         "400":
           description: "Dados inválidos"
           content:
@@ -347,7 +339,6 @@ paths:
           schema:
             type: "string"
             format: "uuid"
-
       requestBody:
         content:
           "application/json":
@@ -519,7 +510,9 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/User"
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
         "400":
           description: "Dados inválidos"
           content:
@@ -563,7 +556,9 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/User"
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
         "400":
           description: "Dados inválidos"
           content:
@@ -653,7 +648,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: "#/components/schemas/User"
+                type: array
+                items:
+                  $ref: "#/components/schemas/ZUFMSCore"
         "400":
           description: "Dados inválidos"
           content:
@@ -744,7 +741,7 @@ paths:
           content:
             "application/json":
               schema:
-                $ref: "#/components/schemas/User"
+                $ref: "#/components/schemas/ZUFMSCore"
         "400":
           description: "Dados inválidos"
           content:
@@ -942,6 +939,9 @@ components:
         email:
           type: string
           format: email
+        scope:
+          type: string
+          example: "admin"
         state: 
           type: string
     AccessTokenScope: 
@@ -1014,6 +1014,12 @@ components:
       properties:
         token:
           type: string
+    OtpResponse:
+      type: object
+      properties:
+        message:
+          enum: 
+            - OTP enviado
     ErrorResponse:
       type: object
       properties:
@@ -1177,27 +1183,37 @@ components:
     User: 
       type: object
       properties:
+        id: 
+          type: string
+          format: uuid
         email: 
           type: string
+          format: email
+        allowed_scopes:
+          type: array
+          items:
+            type: string
+            example: 'admin'
     UpdateUserRequest: 
       type: object
       properties:
-        mail:
+        email:
           type: string
-        scope_id:
+        allowed_scopes:
           type: array
           items:
-            type: integer
+            type: string
+            example: 'admin'
     CreateUserRequest: 
       type: object
       properties:
-        mail:
+        email:
           type: string
-        scope_id:
-            type: array
-            items:
-              type: integer
-
+        allowed_scopes:
+          type: array
+          items:
+            type: string
+            example: 'admin'
     ZUFMSCoreFile:
       type: string
       example: | 

@@ -20,7 +20,7 @@ class CRUDController extends Controller
         return $entity;
     }
 
-    private function validatedIfNecessary(string $action, Request $request) {
+    protected function validatedIfNecessary(string $action, Request $request) {
         if (isset($this->dtos[$action])) {
             return $this->dtos[$action]::fromRequest($request)
                     ->toArray();

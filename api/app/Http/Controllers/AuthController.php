@@ -259,7 +259,7 @@ class AuthController
                 'Codigo de acesso'
             );
 
-            return response()->json(["message"=>"Email colocado na fila"], 200);
+            return response()->json(["message"=>"OTP enviado"], 200);
         }
     }
 
