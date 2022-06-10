@@ -22,6 +22,7 @@ Route::get('/', function () {
 });
 
 Route::post('/teste', [TesteController::class, 'teste']);
+Route::post('/teste/validator', [TesteController::class, 'testeValidator']);
 Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
 
 

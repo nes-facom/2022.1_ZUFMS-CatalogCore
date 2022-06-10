@@ -30,6 +30,17 @@ class TesteController extends Controller
         $this->userService = $userService;
     }
 
+    public function testeValidator(Request $request){
+        dd($request);
+
+        $request->validate([
+            'id' => 'required|string|exists:user,id',
+            'email' => 'nullable|email|unique:user,email',
+            'scope_id' => 'nullable|array',
+            'scope_id.*' => 'integer|exists:scope,id'
+        ]);
+    }
+
     public function testeInsertSheetToDatabase(Request $request){
         $this->spreadSheetService->insertSheetToDatabase($request);
     }
