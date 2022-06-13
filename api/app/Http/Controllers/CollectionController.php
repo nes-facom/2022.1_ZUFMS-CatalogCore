@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Input\ListOccurrenceInputDTO;
 use App\Repository\GenericRepository;
 use App\Services\CollectionService;
 use App\Services\SpreadSheetService;
@@ -33,7 +34,7 @@ class CollectionController extends CRUDController
     }
 
     public function createMany(Request $request){
-
+        unset($request['access_token']);
         return $this->collectionService->insertMany($request);
     }
 
@@ -84,6 +85,4 @@ class CollectionController extends CRUDController
 
         return response()->json($autocomplete_query_result->toArray());
     }
-
-
 }
