@@ -11,13 +11,13 @@ class OtpRequestDTO extends DataTransferObject
     const available_otp_methods = ['email'];
 
     private function __construct(
-        public $otp_method, 
+        public $otp_method,
         public $email,
         public $state
     )
     { }
 
-    protected static function getValidationRules($rawInput) {        
+    protected static function getValidationRules($rawInput) {
         $is_email = Rule::requiredIf($rawInput['otp_method'] == 'email');
 
         return [

@@ -5,6 +5,7 @@ use \App\Http\Controllers\AuthController;
 use \App\Http\Controllers\CollectionController;
 use \App\Http\Controllers\UserController;
 use \App\Http\Controllers\TesteController;
+use Ramsey\Collection\Collection;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,9 +22,15 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::post('/teste', [TesteController::class, 'teste']);
-Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
+//teste users
+Route::get('/teste/users', [UserController::class, 'getAll']);
+Route::post('/teste/users', [UserController::class, 'createOne']);
+Route::get('/teste/users/{id}', [UserController::class, 'getOne']);
+Route::delete('/teste/users/{id}', [UserController::class, 'deleteOne']);
+Route::put('/teste/users/{id}', [UserController::class, 'updateOne']);
 
+Route::post('/teste/sheet/tojson', [CollectionController::class, 'uploadDocumentReturnJson']);
+Route::post('/teste/insertSheetToDatabase', [TesteController::class, 'testeInsertSheetToDatabase']);
 
 Route::post('/api/auth', [AuthController::class, 'authenticate']);
 
@@ -37,6 +44,6 @@ Route::group(['middleware' => ['apiJwt']], function(){
         ->middleware(['check.user.roles:admin']);
     Route::delete('/api/user/delete', [UserController::class, 'deleteUser'])
         ->middleware(['check.user.roles:admin']);
-    Route::post('/api/acervo/upload-file', [CollectionController::class, 'uploadDocument'])
+    Route::post('/api/acervo/upload-file', [CollectionController::class, 'uploadDocumentReturnJson'])
         ->middleware(['check.user.roles:admin|criador|editor']);
 });

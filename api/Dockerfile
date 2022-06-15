@@ -40,16 +40,18 @@ RUN useradd -u 1000 -ms /bin/bash -g www www
 # Copy existing application directory contents
 COPY . /var/www
 
+COPY php.ini $PHP_INI_DIR/
+
 # Copy existing application directory permissions
 COPY --chown=www:www . /var/www
 
 # Change current user to www
 USER www
 
-# Configure project 
+# Configure project
 RUN composer update
 RUN composer install --optimize-autoloader --no-dev
-RUN composer dump-autoload 
+RUN composer dump-autoload
 RUN php artisan route:clear
 RUN php artisan route:cache
 RUN php artisan config:clear

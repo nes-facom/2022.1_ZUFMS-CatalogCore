@@ -21,6 +21,8 @@ table user_allowed_scope {
   scope_id int [pk, ref: > scope.id]
 }
 
+Ref: user_allowed_scope.user_id > user.id [delete: cascade]
+
 table client_allowed_scope {
   client_id uuid [pk, ref: > client.id]
   scope_id int [pk, ref: > scope.id]
