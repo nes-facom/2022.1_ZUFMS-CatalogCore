@@ -16,19 +16,17 @@ class GenericRepository
         return DB::table($this->table_name);
     }
 
-    public function getOne($where) {
+    public function getOne($id) {
         return $this->db()
-            ->where($where)
-            ->first();
+            ->find($id);
     }
 
     public function getAll() {
         return $this->db()->get()->toArray();
     }
 
-
     public function createOne($data) {
-        $id = $this->db()->insertGetId($data);
+        $id = $this->db()->insertGetId($data,);
 
         return $this->db()->find($id);
     }
@@ -46,7 +44,7 @@ class GenericRepository
 
     public function updateOne($id, $data) {
         $this->db()
-            ->find('id', $id)
+            ->where('id', $id)
             ->update($data);
 
         return $this->db()

@@ -1,7 +1,6 @@
 table user {
   id uuid [pk, default: `uuid_generate_v4()`]
   email text [unique,not null]
-  password text [not null]
 }
 
 table client {
@@ -22,6 +21,8 @@ table user_allowed_scope {
   scope_id int [pk, ref: > scope.id]
 }
 
+Ref: user_allowed_scope.user_id > user.id [delete: cascade]
+
 table client_allowed_scope {
   client_id uuid [pk, ref: > client.id]
   scope_id int [pk, ref: > scope.id]
@@ -34,11 +35,11 @@ table scope_closure_table {
 
 table access_token {
   jti uuid [pk, default: `uuid_generate_v4()`]
-  refresh_token text 
+  refresh_token text
   sub_type access_token_sub_type [not null, default: 'user']
   expires_in timestamp [not null]
   issued_at timestamp [not null, default: `now()`]
-  scope text
+  scope text [not null]
 }
 
 enum access_token_sub_type {
@@ -60,6 +61,7 @@ table otp {
   value text [pk]
   email text [not null, ref: > user.email]
   state text 
+  issued_at timestamp [not null, default: `now()`]
   requested_with_access_token uuid [not null, ref: > access_token.jti]
 }
 
@@ -206,12 +208,12 @@ table geodeticDatum {
 
 table locality {
   id serial [pk]
-  value text 
-  decimalLatitude real 
+  value text
+  decimalLatitude real
   decimalLongitude real
   verbatimLatitude text [note: "virtual"]
   verbatimLongitude text [note: "virtual"]
-  coordinatePrecision real 
+  coordinatePrecision real
   geodeticDatum_id int [ref: > geodeticDatum.id]
   footprintWKT text
   minimumElevationInMeters real [note: "validar normalizacao"]
@@ -415,7 +417,7 @@ table specie {
   typeStatus text
   scientificName text
   scientificNameAuthorship text
-  acceptedNameUsage text [unique, not null, note: "virtual"] 
+  acceptedNameUsage text [unique, not null, note: "virtual"]
   subgenus_id int [ref: > subgenus.id]
   "artificial:subfamily_id" int [ref: > "artificial:subfamily".id]
   "artificial:subtribe_id" int [ref: > "artificial:subtribe".id]
@@ -434,7 +436,7 @@ table specie {
   vernacularName text
   nomenclaturalCode_id int [ref: > nomenclaturalCode.id]
   nameAccordingTo_id int [ref: > nameAccordingTo.id]
-  
+
   indexes {
     ("artificial:subfamily_id", "artificial:subtribe_id","artificial:tribe_id","artificial:superfamily_id","artificial:subclass_id","artificial:subphylum_id" ) [unique]
   }

@@ -16,27 +16,31 @@ class CRUDController extends Controller
     )
     { }
 
-    public function mapEntity($entity) {
+    protected function mapEntity($entity) {
         return $entity;
     }
 
     private function validatedIfNecessary(string $action, Request $request) {
         if (isset($this->dtos[$action])) {
-            try {
-                return $this->dtos[$action]::fromRequest($request)
+            return $this->dtos[$action]::fromRequest($request)
                     ->toArray();
-            } catch (DTOValidationException $e) {
-                return response()->json([
-                    'errors' => $e['errors']
-                ], 400);
-            }
         }
 
         return $request->all();
     }
 
     public function createOne(Request $request) {
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $input;
+        
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
+
+        unset($input['access_token']);
 
         $data = $this->repository->createOne($input);
 
@@ -46,10 +50,20 @@ class CRUDController extends Controller
     }
 
     public function updateOne(Request $request) {
-        $request->merge(['id' => $request->route('id')]);
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $id = $request->route('id');
+        $input;
+        
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
 
-        $data = $this->repository->updateOne($input);
+        unset($input['access_token']);
+
+        $data = $this->repository->updateOne($id, $input);
 
         $mapped_data = $this->mapEntity($data);
 
@@ -57,12 +71,18 @@ class CRUDController extends Controller
     }
 
     public function deleteOne(Request $request) {
-        $request->merge(['id' => $request->route('id')]);
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $id = $request->route('id');
+        $input;
+        
+        try {
+            $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        } catch (DTOValidationException $e) {
+            return response()->json([
+                'errors' => $e->errors
+            ], 400);
+        }
 
-        $data = $this->repository->deleteOne(
-            ArrayHelper::array_pick($input, $this->entity_pk)
-        );
+        $data = $this->repository->deleteOne($id, $input);
 
         $mapped_data = $this->mapEntity($data);
 
@@ -70,12 +90,9 @@ class CRUDController extends Controller
     }
 
     public function getOne(Request $request) {
-        $request->merge(['id' => $request->route('id')]);
-        $input = $this->validatedIfNecessary(__FUNCTION__, $request);
+        $id = $request->route('id');
 
-        $data = $this->repository->getOne(
-            ArrayHelper::array_pick($input, $this->entity_pk)
-        );
+        $data = $this->repository->getOne($id);
 
         $mapped_data = $this->mapEntity($data);
 

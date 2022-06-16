@@ -6,7 +6,6 @@ CREATE TYPE "access_token_sub_type" AS ENUM (
 CREATE TABLE "user" (
   "id" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
   "email" text UNIQUE NOT NULL,
-  "password" text NOT NULL
 );
 
 CREATE TABLE "client" (
@@ -65,6 +64,7 @@ CREATE TABLE "otp" (
   "value" text PRIMARY KEY,
   "email" text NOT NULL,
   "state" text,
+  "issued_at" timestamp NOT NULL DEFAULT (now()),
   "requested_with_access_token" uuid NOT NULL
 );
 
@@ -491,7 +491,7 @@ COMMENT ON COLUMN "biological_occurrence"."minimumDepthInMeters" IS 'validar nor
 
 COMMENT ON COLUMN "biological_occurrence"."maximumDepthInMeters" IS 'validar normalizacao (locality?)';
 
-ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
+ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("scope_id") REFERENCES "scope" ("id");
 

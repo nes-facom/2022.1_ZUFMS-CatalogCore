@@ -22,7 +22,7 @@ class SpreadSheetService
         $tableBody = [];
         for ($row = 3; $row <= $sheetDTO->getRowCount(); $row++) {
             $tableRow = [];
-
+            $tableRow['artificial:section'] = $sheetDTO->getSection();
             for ($col = 0; $col < count($tableHead); $col++) {
                 $value = $sheetDTO->getSheet()->getCellByColumnAndRow($col, $row)->getValue();
                 $tableRow[$tableHead[$col]] = $value == '' ? null : $value;
@@ -30,11 +30,7 @@ class SpreadSheetService
             array_push($tableBody, $tableRow);
         }
 
-        return response()->json([
-            'section' => $sheetDTO->getSection(),
-            'table-head' => $tableHead,
-            'table-body' => $tableBody,
-        ], 200);
+        return response()->json($tableBody, 200);
     }
 
     public function insertSheetToDatabase(Request $request){

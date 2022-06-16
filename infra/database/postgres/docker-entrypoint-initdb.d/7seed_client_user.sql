@@ -8,9 +8,9 @@ INSERT INTO "client_allowed_scope" (client_id, scope_id) VALUES
     ('4bc7dba9-46cc-41c2-802a-dcb5a76120c7', 5),
     ('150ea34a-dcd7-4eae-a535-3be3beee9a6a', 6);
 
-INSERT INTO "user" (id, email, password) VALUES
-    ('08f0a407-7afb-4ffd-ae4f-8f8121c7680a', 'admin@zufms.ufms.br', '$2a$10$QhgAK.zhQlgS03quwJYxg.RpmRpHrzjACA28yQFIlnXvb64U3O6g2'),
-    ('e99382b9-c091-4e4c-8eea-9c16befab88d', 'user@zufms.ufms.br', '$2a$10$QhgAK.zhQlgS03quwJYxg.RpmRpHrzjACA28yQFIlnXvb64U3O6g2');
+INSERT INTO "user" (id, email) VALUES
+    ('08f0a407-7afb-4ffd-ae4f-8f8121c7680a', 'admin@zufms.ufms.br'),
+    ('e99382b9-c091-4e4c-8eea-9c16befab88d', 'user@zufms.ufms.br');
 
 INSERT INTO "user_allowed_scope" (user_id, scope_id) VALUES 
     ('08f0a407-7afb-4ffd-ae4f-8f8121c7680a', 4),

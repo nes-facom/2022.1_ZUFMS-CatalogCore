@@ -29,7 +29,7 @@ class CollectionController extends CRUDController
     }
 
 
-    public function uploadDocument(Request $request){
+    public function uploadDocumentReturnJson(Request $request){
         return $this->spreadSheetService->sheetToJson($request);
     }
 

@@ -10,6 +10,7 @@ use App\DTO\Input\OtpTokenRequestDTO;
 use App\DTO\Input\OtpRequestDTO;
 use App\DTO\Input\ClientCredentialsTokenRequestDTO;
 use App\DTO\DTOValidationException;
+use App\Services\EmailSenderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
@@ -19,6 +20,13 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController
 {
+    private $emailSenderService;
+
+    public function __construct(EmailSenderService $emailSenderService)
+    {
+        $this->emailSenderService = $emailSenderService;
+    }
+
     public function token(Request $request) {
         $token_request;
 
@@ -40,7 +48,7 @@ class AuthController
                     'errors' => $e->errors
                 ], 400);
             }
-    
+
             // Check client existence/credentials
             $client = DB::table('client')
                 ->where('id', $token_request->client_id)
@@ -93,7 +101,7 @@ class AuthController
                 ->pluck('inherited_scope_name')
                 ->unique()
                 ->toArray();
-            
+
             $access_token_scope = implode(' ', $access_token_scope_array);
 
             $ttl = config('jwt.ttl');
@@ -197,7 +205,7 @@ class AuthController
                 ->pluck('inherited_scope_name')
                 ->unique()
                 ->toArray();
-        
+
             $access_token_scope = implode(' ', $access_token_scope_array);
 
             $ttl = config('jwt.ttl');
@@ -207,7 +215,8 @@ class AuthController
                 ->insertGetId([
                     'sub_type' => 'user',
                     'refresh_token' => $refresh_token,
-                    'expires_in' => date("Y-m-d h:m:s", $expires_in)
+                    'expires_in' => date("Y-m-d h:m:s", $expires_in),
+                    'scope' => $access_token_scope
                 ], 'jti');
 
             $jwt = JWTHelper::generate([
@@ -271,9 +280,15 @@ class AuthController
                     'requested_with_access_token' => $access_token['payload']['jti']
                 ]);
 
-            // TODO: Send e-mail with $client_callback_url+$otp and $otp_value
+            $emailBodyVariables =[
+                'otp'=>$otp_value,
+                'callback_url'=>$client_callback_url,
+                'state'=>$otp_request->state
+            ];
 
-            return response()->json(null, 200);
+            $this->emailSenderService->send('send-access-code', $otp_request->email, $emailBodyVariables, 'Codigo de acesso');
+
+            return response()->json(["message"=>"Email colocado na fila"], 200);
         }
     }
 }
