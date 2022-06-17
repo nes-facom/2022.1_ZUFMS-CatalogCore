@@ -30,14 +30,11 @@ class UserController extends CRUDController
     protected function mapEntity($entity) {
         $user_scope_names = DB::table('user_allowed_scope')
             ->join('scope', 'scope.id', '=', 'user_allowed_scope.scope_id')
-            ->where('user_id', $entity->id)
+            ->where('user_id', $entity->id ?? null)
             ->pluck('scope.name')
             ->toArray();
 
-        return [
-            ...((array)$entity),
-            'allowed_scopes' => $user_scope_names
-        ];
+        return array_merge((array)$entity, ['allowed_scopes' => $user_scope_names]);
     }
 
     /*

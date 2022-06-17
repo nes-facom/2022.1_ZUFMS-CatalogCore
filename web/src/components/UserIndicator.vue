@@ -16,7 +16,10 @@ defineEmits<{
     <button class="avatar-wrapper" @click.prevent="$emit('avatarClick')">
       <MaterialIcon name="person" class="text-sm" />
     </button>
-    {{ $props.name }}
+    <span class="mx-3">
+      {{ $props.name }}
+    </span>
+
     <button class="logout-wrapper" @click.prevent="$emit('logout')">
       <MaterialIcon name="logout" class="text-sm text-red-800" />
     </button>
@@ -25,7 +28,7 @@ defineEmits<{
 
 <style scoped>
 .user-indicator {
-  @apply select-none bg-[#C4C4C4] rounded-md p-2 h-full flex justify-between w-36 items-center;
+  @apply select-none bg-[#C4C4C4] rounded-md p-2 h-full flex justify-between w-fit items-center;
 }
 
 .user-indicator > .avatar-wrapper {

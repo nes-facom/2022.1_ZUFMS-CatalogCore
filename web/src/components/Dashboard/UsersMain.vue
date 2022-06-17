@@ -4,6 +4,15 @@ import MaterialIcon from "../icons/MaterialIcon.vue";
 import { computed, nextTick, reactive, ref, watch, watchEffect } from "vue";
 import { api } from "@/api";
 
+const userPropsInfo = {
+  id: { title: "Identificador", description: "" },
+  email: { title: "E-mail", description: "" },
+  allowed_scopes: {
+    title: "Escopos de autorização",
+    description: "(Separados por espaços)",
+  },
+};
+
 const users = ref<any>([]);
 
 const selectedUsers = reactive<any>({});
@@ -17,7 +26,10 @@ const fetchUsers = () =>
     .withAccessToken(localStorage.getItem("_at") ?? "")
     .users.usersGetAll()
     .then(({ data }) => {
-      users.value = data;
+      users.value = data.map((user) => ({
+        ...user,
+        allowed_scopes: user.allowed_scopes.join(" "),
+      }));
       nextTick(() => (someUpdateMade.value = false));
     });
 
@@ -52,17 +64,30 @@ const onClickUpdate = () => {
   if (insertingNewUser.value) {
     api
       .withAccessToken(localStorage.getItem("_at") ?? "")
-      .users.usersCreateOne(newUser.value)
+      .users.usersCreateOne({
+        ...newUser.value,
+        allowed_scopes: newUser.value.allowed_scopes.trim().split(" "),
+      })
       .then(() => {
         insertingNewUser.value = false;
         fetchUsers();
       });
   }
 
+  console.log(
+    users.value.map((user) => ({
+      ...user,
+      allowed_scopes: user.allowed_scopes.trim().split(" "),
+    }))
+  );
+
   users.value.forEach(({ id, ...userData }: any) =>
     api
       .withAccessToken(localStorage.getItem("_at") ?? "")
-      .users.usersUpdateOne(id, userData)
+      .users.usersUpdateOne(id, {
+        ...userData,
+        allowed_scopes: userData.allowed_scopes.trim().split(" "),
+      })
       .then(fetchUsers)
   );
 };
@@ -144,8 +169,11 @@ const filteredUsers = () =>
         <section class="mt-4 pl-16 flex">
           <div class="w-[20rem]" v-for="userProp in userProps" :key="userProp">
             <h4 class="text-white text-xl font-semibold mb-1">
-              {{ userProp }}
+              {{ userPropsInfo[userProp].title }}
             </h4>
+            <p class="text-gray-300/50 text-sm mb-3">
+              {{ userPropsInfo[userProp].description }}
+            </p>
           </div>
         </section>
       </header>
@@ -170,6 +198,10 @@ const filteredUsers = () =>
             :value="user[userProp as keyof typeof user]"
             @change="(el) => user[userProp as keyof typeof user] = (el.target as any)?.value"
           />
+          <input
+            disabled
+            class="bg-[#2E688C] opacity-40 grow h-full border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white"
+          />
         </div>
 
         <div class="flex w-full h-12" v-if="insertingNewUser">
@@ -182,6 +214,10 @@ const filteredUsers = () =>
               userProp === 'id' ? 'bg-[#2E688C] opacity-40' : 'bg-transparent'
             } w-[20rem] h-full border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
             @change="(el) => newUser[userProp as keyof typeof newUser] = (el.target as any)?.value"
+          />
+          <input
+            disabled
+            class="bg-[#2E688C] opacity-40 grow h-full border-2 border-[#2E688C] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white"
           />
         </div>
       </div>
