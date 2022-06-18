@@ -3,7 +3,7 @@
     "$schema": "https://json-schema.org/draft/2020-12/schema",
     "title": "ZUFMS Darwin Core Subset",
     "type": "object",
-    "required":["sex"],
+    "required":[],
     "properties": {
         "artificial:section": {
             "title": "Seção",
@@ -28,7 +28,7 @@
             "oneOf": [
                 {
                     "$zufmscore:initials": "ACA",
-                    "const": "Acantocephala"
+                    "const": "Acanthocephala"
                 },
                 {
                     "$zufmscore:initials": "AMP",
@@ -262,7 +262,7 @@
             "examples": [
                 "Oliver P. Pearson. 1985. Los tuco-tucos (genera Ctenomys) de los Parques Nacionales Lanin y Nahuel Huapi, Argentina Historia Natural, 5(37):337-343."
             ],
-            "default": "",
+
             "$zufmscore:repeat": true,
             "$zufmscore:section": "recordLevel"
         },
@@ -274,7 +274,7 @@
                 "Projeto Jauru",
                 "AQUARAP - Programa de Avaliação Rápida de Ambientes Aquáticos"
             ],
-            "default": "",
+
             "$zufmscore:repeat": true,
             "$zufmscore:section": "recordLevel"
         },
@@ -286,7 +286,7 @@
                 "P001",
                 "P020"
             ],
-            "default": "",
+
             "$zufmscore:repeat": true,
             "$zufmscore:section": "zufmscore:management"
         },
@@ -298,7 +298,7 @@
                 "AMPAA",
                 "AMPVJ"
             ],
-            "default": "",
+
             "$zufmscore:repeat": true,
             "$zufmscore:section": "zufmscore:management"
         },
@@ -310,7 +310,7 @@
                 "GR07/2017",
                 "GR01/2022"
             ],
-            "default": "",
+
             "$zufmscore:section": "zufmscore:management"
         },
         "catalogNumber": {
@@ -332,7 +332,7 @@
                 "AMP01765",
                 "AMP716"
             ],
-            "default": "",
+
             "$zufmscore:section": "occurence"
         },
         "recordedBy": {
@@ -482,7 +482,7 @@
             "title": "Referências Associadas",
             "$zufmscore:section": "occurence",
             "$zufmscore:repeat": true,
-            "default": "",
+
             "examples": [
                 "GALLARDO, Fabiana E.; RECHE, Vanina A.; MONTEIRO, Ricardo Ferreira. New data on Marthiella Buffington (Hymenoptera, Cynipoidea, Figitidae), with description of a new species. Rev. Bras. entomol., São Paulo ,  v. 58, n. 2, jun.  2014"
             ]
@@ -492,7 +492,7 @@
             "description": "o link ou pasta onde está a mídia associada",
             "title": "Mídia Associada",
             "$zufmscore:section": "occurence",
-            "default": "",
+
             "examples": [
                 "inbio.br/photo.jpg"
             ]
@@ -513,7 +513,7 @@
             "description": "espécime tombado que tenha relação com o registro",
             "title": "Item Relacionado ao Catálogo",
             "$zufmscore:section": "occurence",
-            "default": "",
+
             "examples": [
                 "ZUFMS-LEP00001|ZUFMS-COL00002",
                 "ZUFMS-AMP00001|ZUFMS-TEC00002"
@@ -524,7 +524,7 @@
             "description": "identificações anteriores, informando táxon, determinador, data e método utilizado",
             "title": "Identificações Anteriores",
             "$zufmscore:section": "occurence",
-            "default": "",
+
             "examples": [
                 "Anthus sp., ID de campo por G. Iglesias; Anthus correndera, ID do experto por C. Cicero 2009-02-12 baseado em morfologia"
             ]
@@ -543,7 +543,7 @@
             "description": "dia em algarismo arábico",
             "title": "Dia da Coleta",
             "$zufmscore:section": "event",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 1,
@@ -556,7 +556,7 @@
             "description": "mês em algarismo arábico",
             "title": "Mês da Coleta",
             "$zufmscore:section": "event",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 12,
@@ -569,7 +569,7 @@
             "description": "ano em algarismo arábico",
             "title": "Ano da Coleta",
             "$zufmscore:section": "event",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 2004,
@@ -578,26 +578,18 @@
             ]
         },
         "eventTime": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "format": "time"
-            },
+            "type": "string",
             "description": "hora única (hh:mm) ou intervalo (hh:mm/hh:mm)",
             "title": "Hora/Intervalo do Evento",
             "$zufmscore:section": "event",
-            "default": "",
+
             "examples": [
                 "19:00/21:00",
                 "22:23"
             ]
         },
         "eventDate": {
-            "type": "array",
-            "items": {
-                "type": "string",
-                "format": "date"
-            },
+            "type": "string",
             "description": "data (aaaa-mm-dd) ou intervalo (aaaa-mm-dd/aaaa-mm-dd), mas se não houver todas informações informar apenas mês (aaaa-mm) ou ano (aaaa)",
             "title": "Data/Intervalo do Evento",
             "$zufmscore:section": "event",
@@ -621,7 +613,7 @@
             "description": "descrição sucinta do método de coleta",
             "title": "Método de Coleta",
             "$zufmscore:section": "event",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "busca ativa"
@@ -632,7 +624,7 @@
             "description": "pode ser bioma, ecorregião que caracterize o ambiente natural do espécime",
             "title": "Habitat",
             "$zufmscore:section": "event",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "Pantanal"
@@ -643,7 +635,7 @@
             "description": "comentários sobre o evento",
             "title": "Observações do Evento",
             "$zufmscore:section": "event",
-            "default": "",
+
             "examples": [
                 "após das recentes chuvas o rio está quase na fase de inundação"
             ]
@@ -653,7 +645,7 @@
             "description": "pode ser um indicador da existencia de, b) uma referência a (publicação, link), ou c) texto das notas tomadas no campo sobre o evento",
             "title": "Anotações de Campo",
             "$zufmscore:section": "event",
-            "default": "",
+
             "examples": [
                 "notas disponíveis na Biblioteca Central"
             ]
@@ -663,7 +655,7 @@
             "description": "comentários ou notas que acompanham medições ou fatos; medidas concatenadas com \";\" informando unidade",
             "title": "Medidas",
             "$zufmscore:section": "measurementOrFact",
-            "default": "",
+
             "examples": [
                 "peso (g): 23",
                 "antebraço (mm): 47,1"
@@ -737,7 +729,7 @@
             "description": "o nome do município válido",
             "title": "Município",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "Campo Grande",
@@ -750,7 +742,7 @@
             "description": "quando há necessidade de informar distrito ou sub-região (ex.: Pantanal da Nhecolândia)",
             "title": "Sub-Região/Distrito",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "Taboco",
@@ -762,7 +754,7 @@
             "description": "a localidade abaixo de município ou distrito",
             "title": "Localidade",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "Fazenda Nhumirim",
@@ -776,7 +768,7 @@
             "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
             "title": "Latitude Decimal",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 -45.56732,
@@ -791,7 +783,7 @@
             "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
             "title": "Longitude Decimal",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 -45.56732,
@@ -828,7 +820,7 @@
             "description": "precisão em metros",
             "title": "Precisão da Coordenada (m)",
             "$zufmscore:section": "location",
-            "default": "",
+            "default": 0,
             "$zufmscore:repeat": true,
             "examples": [
                 10,
@@ -855,7 +847,7 @@
             "description": "quando não se sabe a coordenada exata; acesse http://boundingbox.klokantech.com/ para estimar o quadrante",
             "title": "Retângulo Envolvente",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "GPS: 019°18'00\"S--021°39'00\"S/056°22'00\"W--053°34'00\"W",
@@ -868,7 +860,7 @@
             "description": "limite inferior do intervalo da elevação",
             "title": "Altitude Mínima (m)",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 100,
@@ -881,7 +873,7 @@
             "description": "limite superior do intervalo da elevação",
             "title": "Altitude Máxima (m)",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 100,
@@ -894,7 +886,7 @@
             "description": "o nome do corpo d'água lótico/lêntico onde foi coletado; mais detalhes acesse http://www.getty.edu/research/tools/vocabularies/tgn/",
             "title": "Corpo D'Água",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "Rio Salobra",
@@ -907,7 +899,7 @@
             "description": "a menor profundidade de um intervalo de profundidades abaixo da superfície do local, em metros",
             "title": "Profundidade Mínima (m)",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 100,
@@ -920,7 +912,7 @@
             "description": "a maior profundidade de um intervalo de profundidades abaixo da superfície do local, em metros",
             "title": "Profundidade Máxima (m)",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 100,
@@ -933,7 +925,7 @@
             "description": "comentários sobre o local onde foi coletado",
             "title": "Observações do Local",
             "$zufmscore:section": "location",
-            "default": "",
+
             "$zufmscore:repeat": true,
             "examples": [
                 "debaixo de água desde 2005",
@@ -962,7 +954,7 @@
             "title": "Determinado Por",
             "$zufmscore:section": "identification",
             "$zufmscore:repeat": true,
-            "default": "",
+
             "examples": [
                 "GRACIOLLI, G.",
                 "James L. Patton",
@@ -973,10 +965,8 @@
             "type": "string",
             "description": "data da determsinação no formato aaaa-mm-dd",
             "title": "Data da Determinação",
-            "format": "date",
             "$zufmscore:section": "identification",
             "$zufmscore:repeat": true,
-            "default": "",
             "examples": [
                 "2012-03-27",
                 "2012-12-30",
@@ -1000,7 +990,7 @@
             "description": "similar ao Nome Científico Aceito, mas aqui utilizamos sem autoria",
             "title": "Nome Científico",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "examples": [
                 "Lysapsus limellum",
                 "Leptodactylus labyrinthicus",
@@ -1012,7 +1002,7 @@
             "description": "autor e ano, segundo o código de nomenclatura seguido",
             "title": "Autor do Nome Científico",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "examples": [
                 "(Cope, 1862)",
                 "(Spix, 1824)",
@@ -1326,7 +1316,7 @@
             "description": "se identificado",
             "title": "Epíteto Específico",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "$zufmscore:autocomplete": true,
             "examples": [
                 "limellum",
@@ -1339,7 +1329,7 @@
             "description": "se identificado",
             "title": "Epíteto Infraespecífico",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "$zufmscore:autocomplete": true,
             "examples": [
                 "concolor",
@@ -1352,7 +1342,7 @@
             "description": "informa até que nível taxonômico foi identificado",
             "title": "Nível do Táxon",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "$zufmscore:autocomplete": true,
             "examples": [
                 "subespécie"
@@ -1363,7 +1353,7 @@
             "description": "informa a condição taxonômica:",
             "title": "Status Taxonômico",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "$zufmscore:autocomplete": true,
             "examples": [
                 "em descrição",
@@ -1378,7 +1368,7 @@
             "description": "se for um táxon com problemas, informar o original",
             "title": "Nome Original Usado",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "examples": [
                 "Dilocarcinus pagei Stimpson, 1861"
             ]
@@ -1388,7 +1378,7 @@
             "description": "nome popular hifenizado",
             "title": "Nome Vulgar",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "$zufmscore:autocomplete": true,
             "examples": [
                 "caramujo-d'água"
@@ -1412,7 +1402,7 @@
             "description": "o sistema de classificação no qual este grupo está organizado",
             "title": "Sistema de Classificação",
             "$zufmscore:section": "taxon",
-            "default": "",
+
             "$zufmscore:autocomplete": true,
             "examples": [
                 "Frost, 2017"

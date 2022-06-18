@@ -10,7 +10,21 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv as ReaderCsv;
 
 class SpreadSheetService
 {
-
+    public function parseValue($value, $head){
+        switch ($head){
+            case "day":
+            case "month":
+            case "year":
+                return (int) $value;
+            case "decimalLatitude":
+            case "decimalLongitude":
+            case "minimumElevationInMeters":
+            case "maximumElevationInMeters":
+                return (float) $value;
+            default:
+                return $value;
+        }
+    }
     public function sheetToJson(Request $request){
         $sheetDTO = $this->readFile($request);
 
@@ -25,7 +39,11 @@ class SpreadSheetService
             $tableRow['artificial:section'] = $sheetDTO->getSection();
             for ($col = 0; $col < count($tableHead); $col++) {
                 $value = $sheetDTO->getSheet()->getCellByColumnAndRow($col, $row)->getValue();
-                $tableRow[$tableHead[$col]] = $value == '' ? null : $value;
+                $value = trim($value);
+                if($value == 'x' || $value == '' || $value == 'nulo' || $value == 'nenhum' ||  $value == 'nenhuma'){
+                    $value = null;
+                }
+                $tableRow[$tableHead[$col]] =   $this->parseValue($value,$tableHead[$col]);
             }
             array_push($tableBody, $tableRow);
         }

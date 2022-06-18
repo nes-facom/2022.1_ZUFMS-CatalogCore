@@ -5,7 +5,7 @@ CREATE TYPE "access_token_sub_type" AS ENUM (
 
 CREATE TABLE "user" (
   "id" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
-  "email" text UNIQUE NOT NULL,
+  "email" text UNIQUE NOT NULL
 );
 
 CREATE TABLE "client" (
@@ -185,7 +185,7 @@ CREATE TABLE "county" (
 
 CREATE TABLE "municipality" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "county_id" int NOT NULL
 );
 
@@ -228,7 +228,7 @@ CREATE TABLE "identifiedBy" (
 CREATE TABLE "identifiedBy_biological_occurrence" (
   "biological_occurrence_id" text PRIMARY KEY,
   "value" int,
-  "dateIdentified" date
+  "dateIdentified" text
 );
 
 CREATE TABLE "kingdom" (
@@ -274,7 +274,7 @@ CREATE TABLE "order" (
 
 CREATE TABLE "artificial:suborder" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "order_id" int NOT NULL
 );
 
@@ -347,16 +347,22 @@ CREATE TABLE "specie" (
   "scientificName" text,
   "scientificNameAuthorship" text,
   "acceptedNameUsage" text UNIQUE NOT NULL,
-  "subgenus_id" int,
-  "artificial:subfamily_id" int,
-  "artificial:subtribe_id" int,
-  "artificial:tribe_id" int,
-  "artificial:superfamily_id" int,
-  "artificial:infraorder_id" int,
-  "artificial:suborder_id" int,
-  "artificial:superorder_id" int,
-  "artificial:subclass_id" int,
+  "kingdom_id" int,
+  "phylum_id" int,
   "artificial:subphylum_id" int,
+  "class_id" int,
+  "artificial:subclass_id" int,
+  "artificial:superorder_id" int,
+  "order_id" int,
+  "artificial:suborder_id" int,
+  "artificial:infraorder_id" int,
+  "artificial:superfamily_id" int,
+  "family_id" int,
+  "artificial:subfamily_id" int,
+  "genus_id" int,
+  "artificial:tribe_id" int,
+  "artificial:subtribe_id" int,
+  "subgenus_id" int,
   "specificEpithet" text,
   "infraspecificEpithet" text,
   "taxonRank" text,
@@ -398,8 +404,8 @@ CREATE TABLE "biological_occurrence" (
   "day" text,
   "month" text,
   "year" text,
-  "eventTime" date[],
-  "eventDate" date[],
+  "eventTime" text,
+  "eventDate" text,
   "associatedOccurrences" text,
   "verbatimEventDate" text,
   "samplingProtocol" text,
@@ -567,25 +573,37 @@ ALTER TABLE "artificial:subtribe" ADD FOREIGN KEY ("tribe_id") REFERENCES "artif
 
 ALTER TABLE "subgenus" ADD FOREIGN KEY ("genus_id") REFERENCES "genus" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("subgenus_id") REFERENCES "subgenus" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("kingdom_id") REFERENCES "kingdom" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subfamily_id") REFERENCES "artificial:subfamily" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("phylum_id") REFERENCES "phylum" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subtribe_id") REFERENCES "artificial:subtribe" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subphylum_id") REFERENCES "artificial:subphylum" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:tribe_id") REFERENCES "artificial:tribe" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superfamily_id") REFERENCES "artificial:superfamily" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:infraorder_id") REFERENCES "artificial:infraorder" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:suborder_id") REFERENCES "artificial:suborder" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superorder_id") REFERENCES "artificial:superorder" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
 
 ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subclass_id") REFERENCES "artificial:subclass" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subphylum_id") REFERENCES "artificial:subphylum" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superorder_id") REFERENCES "artificial:superorder" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:suborder_id") REFERENCES "artificial:suborder" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:infraorder_id") REFERENCES "artificial:infraorder" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superfamily_id") REFERENCES "artificial:superfamily" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subfamily_id") REFERENCES "artificial:subfamily" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("genus_id") REFERENCES "genus" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:tribe_id") REFERENCES "artificial:tribe" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subtribe_id") REFERENCES "artificial:subtribe" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("subgenus_id") REFERENCES "subgenus" ("id");
 
 ALTER TABLE "specie" ADD FOREIGN KEY ("taxonomicStatus_id") REFERENCES "taxonomicStatus" ("id");
 

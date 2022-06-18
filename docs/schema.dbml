@@ -21,7 +21,7 @@ table user_allowed_scope {
   scope_id int [pk, ref: > scope.id]
 }
 
-Ref: user_allowed_scope.user_id > user.id [delete: cascade]
+//Ref: user_allowed_scope.user_id > user.id [delete: cascade]
 
 table client_allowed_scope {
   client_id uuid [pk, ref: > client.id]
@@ -193,7 +193,7 @@ table county {
 
 table municipality {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   county_id int [not null,ref: > county.id]
 
   indexes {
@@ -208,12 +208,12 @@ table geodeticDatum {
 
 table locality {
   id serial [pk]
-  value text
-  decimalLatitude real
+  value text 
+  decimalLatitude real 
   decimalLongitude real
   verbatimLatitude text [note: "virtual"]
   verbatimLongitude text [note: "virtual"]
-  coordinatePrecision real
+  coordinatePrecision real 
   geodeticDatum_id int [ref: > geodeticDatum.id]
   footprintWKT text
   minimumElevationInMeters real [note: "validar normalizacao"]
@@ -244,7 +244,7 @@ table identifiedBy {
 table identifiedBy_biological_occurrence {
   biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
   value int [ref: > identifiedBy.id]
-  dateIdentified date
+  dateIdentified text
   indexes {
     (value, biological_occurrence_id) [unique]
   }
@@ -313,7 +313,7 @@ table order {
 }
 table "artificial:suborder" {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
    order_id int [not null,ref: > order.id] 
   indexes {
     (value, order_id) [unique]
@@ -417,17 +417,23 @@ table specie {
   typeStatus text
   scientificName text
   scientificNameAuthorship text
-  acceptedNameUsage text [unique, not null, note: "virtual"]
-  subgenus_id int [ref: > subgenus.id]
-  "artificial:subfamily_id" int [ref: > "artificial:subfamily".id]
-  "artificial:subtribe_id" int [ref: > "artificial:subtribe".id]
-  "artificial:tribe_id" int [ref: > "artificial:tribe".id]
-  "artificial:superfamily_id" int [ref: > "artificial:superfamily".id]
-  "artificial:infraorder_id" int [ref: > "artificial:infraorder".id]
-  "artificial:suborder_id" int [ref: > "artificial:suborder".id]
-  "artificial:superorder_id" int [ref: > "artificial:superorder".id]
-  "artificial:subclass_id" int [ref: > "artificial:subclass".id]
+  acceptedNameUsage text [unique, not null, note: "virtual"] 
+  kingdom_id int [ref: > kingdom.id]
+  phylum_id int [ref: > phylum.id]
   "artificial:subphylum_id" int [ref: > "artificial:subphylum".id]
+  class_id int [ref: > class.id]
+  "artificial:subclass_id" int [ref: > "artificial:subclass".id]
+  "artificial:superorder_id" int [ref: > "artificial:superorder".id]
+  order_id int [ref: > order.id]
+  "artificial:suborder_id" int [ref: > "artificial:suborder".id]
+  "artificial:infraorder_id" int [ref: > "artificial:infraorder".id]
+  "artificial:superfamily_id" int [ref: > "artificial:superfamily".id]
+  family_id int [ref: > family.id]
+  "artificial:subfamily_id" int [ref: > "artificial:subfamily".id]
+  genus_id int [ref: > genus.id]
+  "artificial:tribe_id" int [ref: > "artificial:tribe".id]
+  "artificial:subtribe_id" int [ref: > "artificial:subtribe".id]
+  subgenus_id int [ref: > subgenus.id]
   specificEpithet text
   infraspecificEpithet text
   taxonRank text [note: "validar normalizacao"]
@@ -436,7 +442,7 @@ table specie {
   vernacularName text
   nomenclaturalCode_id int [ref: > nomenclaturalCode.id]
   nameAccordingTo_id int [ref: > nameAccordingTo.id]
-
+  
   indexes {
     ("artificial:subfamily_id", "artificial:subtribe_id","artificial:tribe_id","artificial:superfamily_id","artificial:subclass_id","artificial:subphylum_id" ) [unique]
   }
@@ -473,8 +479,8 @@ table biological_occurrence {
   day text [note: "virtual"]
   month text [note: "virtual"]
   year text [note: "virtual"]
-  eventTime date[]
-  eventDate date[]
+  eventTime text
+  eventDate text
   associatedOccurrences text
   verbatimEventDate text [note: "virtual"]
   samplingProtocol text

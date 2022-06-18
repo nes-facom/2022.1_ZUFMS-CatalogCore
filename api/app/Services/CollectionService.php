@@ -83,10 +83,19 @@ class CollectionService
         $insertedOccurrences = [];
         if (empty($validationErrors)) {
             try {
+                $listTest = [];
+
+
+              //  dd($listOccurrence);
                 foreach ($listOccurrence->occurrences as &$occurrence){
+
                    if( !$this->hasOccurrence($occurrence)){
                        $occurrenceArray = $occurrence->toArray();
-                       $isInserted = BiologicalOccurrenceView::query()->insert($occurrenceArray);
+                       DB::connection()->enableQueryLog();
+                      $isInserted =  DB::table('biological_occurrence_view')->insert($occurrenceArray);
+                       //$isInserted = DB::push($occurrenceArray);
+                       $queries = DB::getQueryLog();
+                      $listTest[] =  $queries;
                        if($isInserted){
                            $insertedOccurrences[]= $occurrenceArray;
                        }
@@ -100,13 +109,14 @@ class CollectionService
                 if($e instanceof DuplicatedKeyException) {
                     $error_description = $e->getMessage();
                 }
-
+                $error_string = $e->getMessage();
+                $error_array = explode("\n", $error_string,  3);
                 if($e->getCode() == 23505){
-                    $error_string = $e->getMessage();
-
-                    $error_array = explode("\n", $error_string,  3);
                     $error_description = $error_array[0].$error_array[1];
+                }else{
+                    $error_description = $error_array[0];
                 }
+
 
                 return response()->json(
                     array(
@@ -122,6 +132,7 @@ class CollectionService
                 , 400);
         }
         if(!empty($insertedOccurrences)){
+            dd($listTest);
             return response()->json(
                 $insertedOccurrences
 
@@ -131,7 +142,7 @@ class CollectionService
     }
 
     function hasOccurrence( OccurrenceInputDto $occurrence): bool {
-        $occurrenceFounded = DB::table('biological_occurrence')->where('occurrenceID', $occurrence->occurrenceID);
+        $occurrenceFounded = DB::table('biological_occurrence')->where('occurrenceID', $occurrence->occurrenceID)->first();
         return $occurrenceFounded != null;
     }
 }
