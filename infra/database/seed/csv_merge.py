@@ -3,7 +3,7 @@ from glob import glob
 import os
 
 os.system(
-    "libreoffice --headless --convert-to csv --infilter=CSV:44,34,76,1 infra/database/seed/colecoes/*.{xlsx,xls} --outdir infra/database/seed/csv")
+    "libreoffice --headless --convert-to csv --infilter=CSV:44,34,76,1 infra/database/seed/colecoes/*.xlsx --outdir infra/database/seed/csv")
 
 files_path = "infra/database/seed/csv/*.csv"
 
