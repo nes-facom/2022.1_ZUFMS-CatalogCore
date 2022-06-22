@@ -30,12 +30,18 @@ class CollectionController extends CRUDController
 
 
     public function uploadDocumentReturnJson(Request $request){
+        set_time_limit(0);
         return $this->spreadSheetService->sheetToJson($request);
+    }
+
+    public function file(Request $request){
+        set_time_limit(0);
+        return $this->spreadSheetService->insertSheetToDatabase($request);
     }
 
     public function createMany(Request $request){
         unset($request['access_token']);
-        return $this->collectionService->insertMany($request);
+        return $this->collectionService->insertManyFromRequest($request);
     }
 
     public function getAutocomplete(Request $request) {

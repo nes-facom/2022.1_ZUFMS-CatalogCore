@@ -24,7 +24,7 @@ Route::post('/auth/otp', [AuthController::class, 'otp']);
 
 Route::post('/occurrences/file/verify', [CollectionController::class, 'uploadDocumentReturnJson']);
 Route::post('/occurrences', [CollectionController::class, 'createMany']);
-
+Route::post('/occurrences/file', [CollectionController::class, 'file']);
 
 Route::middleware(['token', 'token.scope:users:read'])->group(function () {
     Route::get('/users', [UserController::class, 'getAll']);
@@ -50,9 +50,6 @@ Route::middleware(['token', 'token.scope:occurrences'])->group(function () {
 
     Route::put('/occurrences', [CollectionController::class, 'updateMany']);
     Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
-    Route::post('/occurrences/file', [CollectionController::class, 'file']);
-
     Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
     Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
-    Route::post('/occurrences/file', [CollectionController::class, 'file']);
 });

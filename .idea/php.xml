@@ -124,9 +124,24 @@
       <path value="$PROJECT_DIR$/api/vendor/symfony/polyfill-php80" />
       <path value="$PROJECT_DIR$/api/vendor/laravel/sail" />
       <path value="$PROJECT_DIR$/api/vendor/symfony/deprecation-contracts" />
+      <path value="$PROJECT_DIR$/api/vendor/pestphp/pest" />
+      <path value="$PROJECT_DIR$/api/vendor/pestphp/pest-plugin-laravel" />
+      <path value="$PROJECT_DIR$/api/vendor/pestphp/pest-plugin" />
+      <path value="$PROJECT_DIR$/api/vendor/swaggest/json-diff" />
+      <path value="$PROJECT_DIR$/api/vendor/swaggest/json-schema" />
+      <path value="$PROJECT_DIR$/api/vendor/phplang/scope-exit" />
+      <path value="$PROJECT_DIR$/api/vendor/json-mapper/json-mapper" />
+      <path value="$PROJECT_DIR$/api/vendor/psr/cache" />
+      <path value="$PROJECT_DIR$/api/vendor/doctrine/cache" />
+      <path value="$PROJECT_DIR$/api/vendor/doctrine/dbal" />
+      <path value="$PROJECT_DIR$/api/vendor/doctrine/event-manager" />
+      <path value="$PROJECT_DIR$/api/vendor/doctrine/deprecations" />
+      <path value="$PROJECT_DIR$/api/vendor/opis/json-schema" />
+      <path value="$PROJECT_DIR$/api/vendor/opis/string" />
+      <path value="$PROJECT_DIR$/api/vendor/opis/uri" />
     </include_path>
   </component>
-  <component name="PhpProjectSharedConfiguration" php_language_level="7.3" />
+  <component name="PhpProjectSharedConfiguration" php_language_level="8.0" />
   <component name="PhpUnit">
     <phpunit_settings>
       <PhpUnitSettings custom_loader_path="$PROJECT_DIR$/api/vendor/autoload.php" />

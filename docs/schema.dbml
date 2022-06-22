@@ -17,16 +17,18 @@ table scope {
 }
 
 table user_allowed_scope {
-  user_id uuid [pk, ref: > user.id]
+  user_id uuid [pk]
   scope_id int [pk, ref: > scope.id]
 }
 
-//Ref: user_allowed_scope.user_id > user.id [delete: cascade]
+Ref: user_allowed_scope.user_id > user.id [delete: cascade]
 
 table client_allowed_scope {
-  client_id uuid [pk, ref: > client.id]
+  client_id uuid [pk]
   scope_id int [pk, ref: > scope.id]
 }
+
+Ref: client_allowed_scope.client_id > client.id [delete: cascade]
 
 table scope_closure_table {
   ancestor int [pk, ref: > scope.id]

@@ -5,24 +5,24 @@ namespace App\Services;
 use App\DTO\Input\ListOccurrenceInputDTO;
 use App\DTO\Input\OccurrenceInputDTO;
 use App\Exceptions\DuplicatedKeyException;
-use App\Models\BiologicalOccurrenceView;
-use App\Repository\CollectionRepository;
+use App\Exceptions\ValidationOccurrenceException;
 use Exception;
 use Illuminate\Http\Request;
-use Opis\JsonSchema\{Errors\ErrorFormatter, Validator,};
 use Illuminate\Support\Facades\DB;
-use function Pest\Laravel\json;
+use Opis\JsonSchema\{Errors\ErrorFormatter, Validator,};
+use JsonMapper\JsonMapperFactory;
+use JsonMapper\JsonMapperInterface;
 
 
 class CollectionService
 {
 
     private Validator $validator;
-    private \JsonMapper\JsonMapperInterface $mapper;
+    private JsonMapperInterface $mapper;
 
     public function __construct()
     {
-        $this->mapper = (new \JsonMapper\JsonMapperFactory())->bestFit();
+        $this->mapper = (new JsonMapperFactory())->bestFit();
         $this->validator = new Validator();
         $this->validator->resolver()->registerFile(
             'https://inbio.ufms.br/zufms/zufmscore.schema.json',
@@ -30,17 +30,65 @@ class CollectionService
         );
 
     }
-
-    private function remove_null_values($json)
+    public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse
     {
-        return preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json);
+        try {
+            $listOccurrences = $this->validateJsonAndReturnListOccurrence($jsonBody);
+
+            try {
+                $insertedOccurrences = $this->insertListOccurrenceInDatabase($listOccurrences);
+
+            } catch (Exception $e) {
+                $error_description = "Um erro interno inesperado ocorreu";
+                $error_title = "Erro interno";
+                if ($e instanceof DuplicatedKeyException) {
+                    $error_description = $e->getMessage();
+                }
+                $error_string = $e->getMessage();
+                $error_array = explode("\n", $error_string, 3);
+                if ($e->getCode() == 23505) {
+                    $error_description = $error_array[0] . $error_array[1];
+                } else {
+                    $error_description = $error_array[0];
+                }
+
+                return response()->json(
+                    array(
+                        "errors" => array(array("code" => 4,
+                            "title" => $error_title,
+                            "description" => $error_description)),), 500);
+
+            }
+        } catch (ValidationOccurrenceException $e) {
+            return response()->json(
+                array('errors' => $e->errorsArray)
+                , 400);
+        }
+
+        if (!empty($insertedOccurrences)) {
+            return response()->json(
+                $insertedOccurrences
+                , 200);
+        } else {
+            return response()->json(
+                []
+                , 200);
+        }
     }
 
-    public function insertMany(Request $request)
+    public function insertManyFromRequest(Request $request): void
     {
         $vl = $request->all();
         $jsonBody = json_encode($vl);
+        $this->insertManyFromJson($jsonBody);
+    }
 
+    /**
+     * @return ListOccurrenceInputDTO list occurrence
+     * @throws ValidationOccurrenceException if has validation error
+     */
+    public function validateJsonAndReturnListOccurrence($jsonBody): ListOccurrenceInputDTO
+    {
         $jsonBody = $this->remove_null_values($jsonBody);
         $validationErrors = [];
         $body = json_decode($jsonBody);
@@ -55,14 +103,10 @@ class CollectionService
             $key = $keys[$i];
             $jsonOccurrence = $body[$key];
 
-            $occurrence = OccurrenceInputDTO::constructEmpty();
-
             $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
 
-
             if ($result->isValid()) {
-
-                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence,$this->mapper);
+                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
             } else {
                 $error = $result->error();
                 $formatter = new ErrorFormatter();
@@ -80,68 +124,42 @@ class CollectionService
                     );
             }
         }
-        $insertedOccurrences = [];
-        if (empty($validationErrors)) {
-            try {
-                $listTest = [];
-
-
-              //  dd($listOccurrence);
-                foreach ($listOccurrence->occurrences as &$occurrence){
-
-                   if( !$this->hasOccurrence($occurrence)){
-                       $occurrenceArray = $occurrence->toArray();
-                       DB::connection()->enableQueryLog();
-                      $isInserted =  DB::table('biological_occurrence_view')->insert($occurrenceArray);
-                       //$isInserted = DB::push($occurrenceArray);
-                       $queries = DB::getQueryLog();
-                      $listTest[] =  $queries;
-                       if($isInserted){
-                           $insertedOccurrences[]= $occurrenceArray;
-                       }
-                   }else{
-                       throw new DuplicatedKeyException("Ocorrência [". $occurrence->occurrenceID ."] já cadastrada na base de dados.");
-                   }
-                }
-            } catch (Exception $e) {
-                $error_description = "Um erro interno inesperado ocorreu";
-                $error_title = "Erro interno";
-                if($e instanceof DuplicatedKeyException) {
-                    $error_description = $e->getMessage();
-                }
-                $error_string = $e->getMessage();
-                $error_array = explode("\n", $error_string,  3);
-                if($e->getCode() == 23505){
-                    $error_description = $error_array[0].$error_array[1];
-                }else{
-                    $error_description = $error_array[0];
-                }
-
-
-                return response()->json(
-                    array(
-                        "errors" => array(array("code" => 4,
-                            "title" => $error_title,
-                            "description" => $error_description)),), 500);
-            }
-
+        if (!empty($validationErrors)) {
+            throw new ValidationOccurrenceException($validationErrors);
         } else {
-            return response()->json(
-                array('errors' => $validationErrors)
-
-                , 400);
+            return $listOccurrence;
         }
-        if(!empty($insertedOccurrences)){
-            dd($listTest);
-            return response()->json(
-                $insertedOccurrences
-
-                , 200);
-        }
-        return "";
     }
 
-    function hasOccurrence( OccurrenceInputDto $occurrence): bool {
+    private function remove_null_values($json)
+    {
+        return preg_replace('/,\s*"[^"]+":null|"[^"]+":null,?/', '', $json);
+    }
+
+    public function insertListOccurrenceInDatabase(ListOccurrenceInputDTO $listOccurrence)
+    {
+        $insertedOccurrences = [];
+
+        foreach ($listOccurrence->occurrences as &$occurrence) {
+
+            if (!$this->hasOccurrence($occurrence)) {
+                $occurrenceArray = $occurrence->toArray();
+                DB::connection()->enableQueryLog();
+                $isInserted = DB::table('biological_occurrence_view')->insert($occurrenceArray);
+                if ($isInserted) {
+                    $insertedOccurrences[] = $occurrenceArray;
+                }
+            } else {
+                throw new DuplicatedKeyException("Ocorrência [" . $occurrence->occurrenceID . "] já cadastrada na base de dados.");
+            }
+        }
+        return $insertedOccurrences;
+
+
+    }
+
+    function hasOccurrence(OccurrenceInputDto $occurrence): bool
+    {
         $occurrenceFounded = DB::table('biological_occurrence')->where('occurrenceID', $occurrence->occurrenceID)->first();
         return $occurrenceFounded != null;
     }
