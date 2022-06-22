@@ -1,10 +1,7 @@
 import { createRouter, createWebHistory } from "vue-router";
-import DashboardView from "@/views/DashboardView.vue";
-import HomeSidebar from "@/components/Dashboard/HomeSidebar.vue";
-import HomeMain from "@/components/Dashboard/HomeMain.vue";
+import HomeSidebar from "@/views/Dashboard/HomeSidebar.vue";
+import HomeMain from "@/views/Dashboard/HomeMain.vue";
 import LoginView from "@/views/LoginView.vue";
-import ZUFMSSpreadsheet from "@/components/ZUFMSSpreadsheet/index.vue";
-import SubmissionMain from "@/components/Dashboard/SubmissionMain.vue";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -23,25 +20,17 @@ const router = createRouter({
           },
         },
         {
-          path: "/etiquetas",
-          name: "etiquetas",
-          components: { default: ZUFMSSpreadsheet },
-        },
-        {
-          path: "/emprestimos",
-          name: "emprestimos",
-          components: { default: ZUFMSSpreadsheet },
-        },
-        {
           path: "/submissao",
           name: "submissao",
-          components: { default: SubmissionMain },
+          components: {
+            default: () => import("../views/Dashboard/SubmissionMain.vue"),
+          },
         },
         {
           path: "/usuarios",
           name: "usuarios",
           components: {
-            default: () => import("../components/Dashboard/UsersMain.vue"),
+            default: () => import("../views/Dashboard/UsersMain.vue"),
           },
         },
       ],
@@ -57,6 +46,14 @@ const router = createRouter({
       component: () => import("../views/AuthCallbackView.vue"),
     },
   ],
+});
+
+router.beforeEach((to, from) => {
+  const isAuthenticated = localStorage.getItem("_at") !== null;
+
+  if (!isAuthenticated && to.name !== "login") {
+    return { name: "login" };
+  }
 });
 
 export default router;

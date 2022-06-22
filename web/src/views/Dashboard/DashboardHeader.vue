@@ -1,6 +1,4 @@
 <script setup lang="ts">
-import MaterialIcon from "../icons/MaterialIcon.vue";
-
 const props = defineProps<{
   title: string;
   subtitle: string;

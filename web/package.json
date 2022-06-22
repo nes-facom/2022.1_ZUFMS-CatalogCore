@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "lodash": "^4.17.21",
+    "pinia": "^2.0.14",
     "vue": "^3.2.33",
     "vue-jwt-decode": "^0.1.0",
     "vue-router": "^4.0.14"
@@ -22,6 +23,7 @@
   "devDependencies": {
     "@cypress/vite-dev-server": "^2.2.2",
     "@cypress/vue": "^3.1.1",
+    "@openapitools/openapi-generator-cli": "^2.5.1",
     "@rushstack/eslint-patch": "^1.1.0",
     "@types/lodash": "^4.14.182",
     "@types/node": "^16.11.27",

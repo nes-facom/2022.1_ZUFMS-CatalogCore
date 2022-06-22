@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import TermInfo from "./TermInfo.vue";
 import Spreadsheet from "./Spreadsheet.vue";
-import MaterialIcon from "@/components/icons/MaterialIcon.vue";
+import MaterialIcon from "@/components/MaterialIcon.vue";
 import _ from "lodash/fp";
 import { nextTick, ref, watchEffect } from "vue";
 import { computed } from "@vue/reactivity";
@@ -11,6 +11,7 @@ const props = defineProps<{
   omitTerms?: string[];
   entries?: any[];
   submissionMode?: boolean;
+  showTermclassNavigation?: boolean;
 }>();
 
 const emit = defineEmits(["scrollY"]);
@@ -85,15 +86,15 @@ const scrollToTermclassIndex = (index: number) => {
 
   scrollTo(
     x +
-      mainScrollParent.value.scrollLeft -
-      (termclassCursor.value?.getBoundingClientRect()?.x ?? 0)
+    mainScrollParent.value.scrollLeft -
+    (termclassCursor.value?.getBoundingClientRect()?.x ?? 0)
   );
 };
 
 const goToNextTermclass = () =>
   scrollToTermclassIndex(
     currentTermclassIndex.value +
-      (sizes.length - 1 > currentTermclassIndex.value ? 1 : 0)
+    (sizes.length - 1 > currentTermclassIndex.value ? 1 : 0)
   );
 
 const goToPreviousTermclass = () =>
@@ -105,8 +106,8 @@ const termclassCursorPointer = ref(0);
 
 watchEffect(
   () =>
-    (termclassCursorPointer.value =
-      termclassNavigation.value?.getBoundingClientRect()?.bottom - 12)
+  (termclassCursorPointer.value =
+    termclassNavigation.value?.getBoundingClientRect()?.bottom - 12)
 );
 
 const onSpreadsheetScrollY = (ev: Event) => {
@@ -130,21 +131,16 @@ const changeTermclass = (termclass: string, i: number) => {
     scrollToTermclassIndex(termclassSizeIndex);
   }
 };
+
 </script>
 
 <template>
-  <main class="w-max h-full flex flex-col" ref="mainRef">
-    <section
-      v-if="props.submissionMode"
-      ref="termclassNavigation"
-      class="min-w-fit py-7 px-20 border-b-2 border-[#2E688C] relative flex mb-8"
-    >
+  <main :class="`w-max h-full flex flex-col ${props.showTermclassNavigation && 'overflow-y-hidden'}`" ref="mainRef">
+    <section v-if="props.submissionMode && props.showTermclassNavigation" ref="termclassNavigation"
+      class="min-w-fit py-7 px-20 border-b-2 border-[#2E688C] relative flex">
       <div class="flex items-start z-[1] fix">
         <div class="flex flex-col items-center fixed" ref="termclassCursor">
-          <div
-            id="current-icon"
-            class="flex rounded-full p-4 mb-3 w-fit bg-[#52bd8f]"
-          >
+          <div id="current-icon" class="flex rounded-full p-4 mb-3 w-fit bg-[#52bd8f]">
             <MaterialIcon name="assignment" class="text-white" />
           </div>
           <div class="max-w-[11rem] whitespace-normal">
@@ -153,10 +149,9 @@ const changeTermclass = (termclass: string, i: number) => {
                 {{ currentTermclass.title }}
               </h5>
               <span class="text-white/50">{{
-                counter[currentTermclass.name] === 1
-                  ? ""
-                  : ` [${currentTermclass.counter}/${
-                      counter[currentTermclass.name]
+                  counter[currentTermclass.name] === 1
+                    ? ""
+                    : ` [${currentTermclass.counter}/${counter[currentTermclass.name]
                     }]`
               }}</span>
             </div>
@@ -165,38 +160,24 @@ const changeTermclass = (termclass: string, i: number) => {
               {{ currentTermclass.description }}
             </p>
           </div>
-          <div
-            class="bg-[#2E688C] rounded-full p-[.25rem] fixed"
-            :style="{
-              top: termclassCursorPointer + 'px',
-            }"
-          >
+          <div class="bg-[#2E688C] rounded-full p-[.25rem] fixed" :style="{
+            top: termclassCursorPointer + 'px',
+          }">
             <div class="bg-[#52bd8f] rounded-full p-[.35rem]"></div>
           </div>
-          <button
-            v-if="currentTermclassIndex > 0"
-            @click="goToPreviousTermclass"
-            class="absolute left-0 top-0 text-[#99BBD0] transition-all hover:text-white text-md p-4"
-          >
+          <button v-if="currentTermclassIndex > 0" @click="goToPreviousTermclass"
+            class="absolute left-0 top-0 text-[#99BBD0] transition-all hover:text-white text-md p-4">
             <span class="material-icons-outlined">chevron_left</span>
           </button>
-          <button
-            v-if="currentTermclassIndex < sizes.length - 1"
-            @click="goToNextTermclass"
-            class="absolute right-0 top-0 text-[#99BBD0] transition-all hover:text-white text-md p-4"
-          >
+          <button v-if="currentTermclassIndex < sizes.length - 1" @click="goToNextTermclass"
+            class="absolute right-0 top-0 text-[#99BBD0] transition-all hover:text-white text-md p-4">
             <span class="material-icons-outlined">chevron_right</span>
           </button>
         </div>
       </div>
 
-      <div
-        :style="{ width: termclass.size * 20.75 + 'rem' }"
-        class="flex items-start"
-        v-for="termclass in sizes"
-        :key="termclass.name"
-        :id="termclass.name + termclass.counter"
-      >
+      <div :style="{ width: termclass.size * 20.75 + 'rem' }" class="flex items-start" v-for="termclass in sizes"
+        :key="termclass.name" :id="termclass.name + termclass.counter">
         <div class="flex flex-col items-center">
           <div class="flex opacity-40 rounded-full p-4 mb-3 w-fit bg-[#407494]">
             <span class="material-icons-outlined text-white"> assignment </span>
@@ -207,40 +188,26 @@ const changeTermclass = (termclass: string, i: number) => {
                 {{ termclassesDescription[termclass.name].title }}
               </h5>
               <span class="text-[#99BBD0]/50">{{
-                counter[termclass.name] === 1
-                  ? ""
-                  : ` [${termclass.counter}/${counter[termclass.name]}]`
+                  counter[termclass.name] === 1
+                    ? ""
+                    : ` [${termclass.counter}/${counter[termclass.name]}]`
               }}</span>
             </div>
             <p class="text-[#99BBD0] text-sm">
               {{ termclassesDescription[termclass.name].description }}
             </p>
           </div>
-          <div
-            class="bg-[#2E688C] rounded-full p-[.6rem] absolute -bottom-[.6rem]"
-          ></div>
+          <div class="bg-[#2E688C] rounded-full p-[.6rem] absolute -bottom-[.6rem]"></div>
         </div>
       </div>
     </section>
 
-    <header class="flex mb-5">
-      <TermInfo
-        v-for="term in termsList"
-        :key="term.name"
-        :title="term.title"
-        :description="term.description"
-        :class="currentTermclass.name !== term.termclass && 'opacity-10'"
-        width="20rem"
-      />
+    <header class="flex mt-8 mb-5">
+      <TermInfo v-for="term in termsList" :key="term.name" :title="term.title" :description="term.description"
+        :class="currentTermclass.name !== term.termclass && 'opacity-10'" width="20rem" />
     </header>
 
-    <Spreadsheet
-      class="h-full"
-      :terms="terms"
-      :submissionMode="props.submissionMode"
-      :currentTermclass="currentTermclass.name"
-      @scrollY="onSpreadsheetScrollY"
-      @changeTermclass="changeTermclass"
-    />
+    <Spreadsheet class="h-full" :terms="terms" :submissionMode="props.submissionMode"
+      :currentTermclass="currentTermclass.name" @scrollY="onSpreadsheetScrollY" @changeTermclass="changeTermclass" />
   </main>
 </template>

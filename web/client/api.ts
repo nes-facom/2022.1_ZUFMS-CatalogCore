@@ -76,19 +76,19 @@ export interface AuthenticationError {
      * @type {number}
      * @memberof AuthenticationError
      */
-    'code'?: AuthenticationErrorCodeEnum;
+    'code'?: number // AuthenticationErrorCodeEnum;
     /**
      * 
      * @type {string}
      * @memberof AuthenticationError
      */
-    'title'?: AuthenticationErrorTitleEnum;
+    'title'?: string // AuthenticationErrorTitleEnum;
     /**
      * 
      * @type {string}
      * @memberof AuthenticationError
      */
-    'description'?: AuthenticationErrorDescriptionEnum;
+    'description'?: string // AuthenticationErrorDescriptionEnum;
 }
 /**
  * 
@@ -144,6 +144,25 @@ export type ClientCredentialsAuthRequestTypeEnum = typeof ClientCredentialsAuthR
 /**
  * 
  * @export
+ * @interface CreateUserRequest
+ */
+export interface CreateUserRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof CreateUserRequest
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof CreateUserRequest
+     */
+    'allowed_scopes'?: Array<string>;
+}
+/**
+ * 
+ * @export
  * @interface DataNotFoundError
  */
 export interface DataNotFoundError {
@@ -152,13 +171,13 @@ export interface DataNotFoundError {
      * @type {number}
      * @memberof DataNotFoundError
      */
-    'code'?: DataNotFoundErrorCodeEnum;
+    'code'?: number // DataNotFoundErrorCodeEnum;
     /**
      * 
      * @type {string}
      * @memberof DataNotFoundError
      */
-    'title'?: DataNotFoundErrorTitleEnum;
+    'title'?: string // DataNotFoundErrorTitleEnum;
     /**
      * 
      * @type {string}
@@ -190,13 +209,13 @@ export interface DataValidationError {
      * @type {number}
      * @memberof DataValidationError
      */
-    'code'?: DataValidationErrorCodeEnum;
+    'code'?: number // DataValidationErrorCodeEnum;
     /**
      * 
      * @type {string}
      * @memberof DataValidationError
      */
-    'title'?: DataValidationErrorTitleEnum;
+    'title'?: string // DataValidationErrorTitleEnum;
     /**
      * 
      * @type {string}
@@ -253,19 +272,19 @@ export interface FileReadError {
      * @type {number}
      * @memberof FileReadError
      */
-    'code'?: FileReadErrorCodeEnum;
+    'code'?: number // FileReadErrorCodeEnum;
     /**
      * 
      * @type {string}
      * @memberof FileReadError
      */
-    'title'?: FileReadErrorTitleEnum;
+    'title'?: string // FileReadErrorTitleEnum;
     /**
      * 
      * @type {string}
      * @memberof FileReadError
      */
-    'description'?: FileReadErrorDescriptionEnum;
+    'description'?: string // FileReadErrorDescriptionEnum;
 }
 /**
  * 
@@ -291,19 +310,19 @@ export interface InsufficientPermissionsError {
      * @type {number}
      * @memberof InsufficientPermissionsError
      */
-    'code'?: InsufficientPermissionsErrorCodeEnum;
+    'code'?: number // InsufficientPermissionsErrorCodeEnum;
     /**
      * 
      * @type {string}
      * @memberof InsufficientPermissionsError
      */
-    'title'?: InsufficientPermissionsErrorTitleEnum;
+    'title'?: string // InsufficientPermissionsErrorTitleEnum;
     /**
      * 
      * @type {string}
      * @memberof InsufficientPermissionsError
      */
-    'description'?: InsufficientPermissionsErrorDescriptionEnum;
+    'description'?: string //  InsufficientPermissionsErrorDescriptionEnum;
 }
 /**
  * 
@@ -329,19 +348,19 @@ export interface InternalError {
      * @type {number}
      * @memberof InternalError
      */
-    'code'?: InternalErrorCodeEnum;
+    'code'?: number // InternalErrorCodeEnum;
     /**
      * 
      * @type {string}
      * @memberof InternalError
      */
-    'title'?: InternalErrorTitleEnum;
+    'title'?: string // InternalErrorTitleEnum;
     /**
      * 
      * @type {string}
      * @memberof InternalError
      */
-    'description'?: InternalErrorDescriptionEnum;
+    'description'?: string // InternalErrorDescriptionEnum;
 }
 /**
  * 
@@ -404,6 +423,12 @@ export interface OtpRequest {
      * @type {string}
      * @memberof OtpRequest
      */
+    'scope'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof OtpRequest
+     */
     'state'?: string;
 }
 
@@ -412,6 +437,26 @@ export const OtpRequestOtpMethodEnum = {
 } as const;
 
 export type OtpRequestOtpMethodEnum = typeof OtpRequestOtpMethodEnum[keyof typeof OtpRequestOtpMethodEnum];
+
+/**
+ * 
+ * @export
+ * @interface OtpResponse
+ */
+export interface OtpResponse {
+    /**
+     * 
+     * @type {string}
+     * @memberof OtpResponse
+     */
+    'message'?: OtpResponseMessageEnum;
+}
+
+export const OtpResponseMessageEnum = {
+    OtpEnviado: 'OTP enviado'
+} as const;
+
+export type OtpResponseMessageEnum = typeof OtpResponseMessageEnum[keyof typeof OtpResponseMessageEnum];
 
 /**
  * 
@@ -429,6 +474,25 @@ export interface RevokeAccessTokenRequest {
 /**
  * 
  * @export
+ * @interface UpdateUserRequest
+ */
+export interface UpdateUserRequest {
+    /**
+     * 
+     * @type {string}
+     * @memberof UpdateUserRequest
+     */
+    'email'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof UpdateUserRequest
+     */
+    'allowed_scopes'?: Array<string>;
+}
+/**
+ * 
+ * @export
  * @interface User
  */
 export interface User {
@@ -437,7 +501,19 @@ export interface User {
      * @type {string}
      * @memberof User
      */
+    'id'?: string;
+    /**
+     * 
+     * @type {string}
+     * @memberof User
+     */
     'email'?: string;
+    /**
+     * 
+     * @type {Array<string>}
+     * @memberof User
+     */
+    'allowed_scopes'?: Array<string>;
 }
 /**
  * 
@@ -1197,7 +1273,7 @@ export const AuthApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async authOtp(otpRequest?: OtpRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<AccessTokenResponse>> {
+        async authOtp(otpRequest?: OtpRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<OtpResponse>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.authOtp(otpRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1240,7 +1316,7 @@ export const AuthApiFactory = function (configuration?: Configuration, basePath?
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        authOtp(otpRequest?: OtpRequest, options?: any): AxiosPromise<AccessTokenResponse> {
+        authOtp(otpRequest?: OtpRequest, options?: any): AxiosPromise<OtpResponse> {
             return localVarFp.authOtp(otpRequest, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1526,10 +1602,12 @@ export const OccurrencesApiAxiosParamCreator = function (configuration?: Configu
         /**
          * Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv  Necessita de permissão `occurrences:read` ou maior 
          * @summary Realizar o processamento de um arquivo de ocorrências
+         * @param {any} [file] 
+         * @param {string} [section] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        occurrencesFileVerify: async (options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        occurrencesFileVerify: async (file?: any, section?: string, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/occurrences/file/verify`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -1541,16 +1619,28 @@ export const OccurrencesApiAxiosParamCreator = function (configuration?: Configu
             const localVarRequestOptions = { method: 'POST', ...baseOptions, ...options};
             const localVarHeaderParameter = {} as any;
             const localVarQueryParameter = {} as any;
+            const localVarFormParams = new ((configuration && configuration.formDataCtor) || FormData)();
 
             // authentication access_token required
             // http bearer authentication required
             await setBearerAuthToObject(localVarHeaderParameter, configuration)
 
 
+            if (file !== undefined) { 
+                localVarFormParams.append('file', file as any);
+            }
+    
+            if (section !== undefined) { 
+                localVarFormParams.append('section', section as any);
+            }
+    
+    
+            localVarHeaderParameter['Content-Type'] = 'multipart/form-data';
     
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
+            localVarRequestOptions.data = localVarFormParams;
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -1760,7 +1850,7 @@ export const OccurrencesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async occurrencesCreateMany(zUFMSCore?: Array<ZUFMSCore>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+        async occurrencesCreateMany(zUFMSCore?: Array<ZUFMSCore>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ZUFMSCore>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.occurrencesCreateMany(zUFMSCore, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1782,7 +1872,7 @@ export const OccurrencesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async occurrencesDeleteOne(occurrenceID: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+        async occurrencesDeleteOne(occurrenceID: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<ZUFMSCore>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.occurrencesDeleteOne(occurrenceID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1799,11 +1889,13 @@ export const OccurrencesApiFp = function(configuration?: Configuration) {
         /**
          * Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv  Necessita de permissão `occurrences:read` ou maior 
          * @summary Realizar o processamento de um arquivo de ocorrências
+         * @param {any} [file] 
+         * @param {string} [section] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async occurrencesFileVerify(options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ZUFMSCore>>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.occurrencesFileVerify(options);
+        async occurrencesFileVerify(file?: any, section?: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ZUFMSCore>>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.occurrencesFileVerify(file, section, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -1827,7 +1919,7 @@ export const OccurrencesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async occurrencesGetOne(occurrenceID: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+        async occurrencesGetOne(occurrenceID: string, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ZUFMSCore>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.occurrencesGetOne(occurrenceID, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1838,7 +1930,7 @@ export const OccurrencesApiFp = function(configuration?: Configuration) {
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async occurrencesUpdateMany(zUFMSCore?: Array<ZUFMSCore>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+        async occurrencesUpdateMany(zUFMSCore?: Array<ZUFMSCore>, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<Array<ZUFMSCore>>> {
             const localVarAxiosArgs = await localVarAxiosParamCreator.occurrencesUpdateMany(zUFMSCore, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
@@ -1884,7 +1976,7 @@ export const OccurrencesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        occurrencesCreateMany(zUFMSCore?: Array<ZUFMSCore>, options?: any): AxiosPromise<User> {
+        occurrencesCreateMany(zUFMSCore?: Array<ZUFMSCore>, options?: any): AxiosPromise<Array<ZUFMSCore>> {
             return localVarFp.occurrencesCreateMany(zUFMSCore, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1904,7 +1996,7 @@ export const OccurrencesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        occurrencesDeleteOne(occurrenceID: string, options?: any): AxiosPromise<User> {
+        occurrencesDeleteOne(occurrenceID: string, options?: any): AxiosPromise<ZUFMSCore> {
             return localVarFp.occurrencesDeleteOne(occurrenceID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1919,11 +2011,13 @@ export const OccurrencesApiFactory = function (configuration?: Configuration, ba
         /**
          * Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv  Necessita de permissão `occurrences:read` ou maior 
          * @summary Realizar o processamento de um arquivo de ocorrências
+         * @param {any} [file] 
+         * @param {string} [section] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        occurrencesFileVerify(options?: any): AxiosPromise<Array<ZUFMSCore>> {
-            return localVarFp.occurrencesFileVerify(options).then((request) => request(axios, basePath));
+        occurrencesFileVerify(file?: any, section?: string, options?: any): AxiosPromise<Array<ZUFMSCore>> {
+            return localVarFp.occurrencesFileVerify(file, section, options).then((request) => request(axios, basePath));
         },
         /**
          * Necessita de permissão `occurrences:read` ou maior
@@ -1945,7 +2039,7 @@ export const OccurrencesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        occurrencesGetOne(occurrenceID: string, options?: any): AxiosPromise<User> {
+        occurrencesGetOne(occurrenceID: string, options?: any): AxiosPromise<Array<ZUFMSCore>> {
             return localVarFp.occurrencesGetOne(occurrenceID, options).then((request) => request(axios, basePath));
         },
         /**
@@ -1955,7 +2049,7 @@ export const OccurrencesApiFactory = function (configuration?: Configuration, ba
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        occurrencesUpdateMany(zUFMSCore?: Array<ZUFMSCore>, options?: any): AxiosPromise<User> {
+        occurrencesUpdateMany(zUFMSCore?: Array<ZUFMSCore>, options?: any): AxiosPromise<Array<ZUFMSCore>> {
             return localVarFp.occurrencesUpdateMany(zUFMSCore, options).then((request) => request(axios, basePath));
         },
         /**
@@ -2044,12 +2138,14 @@ export class OccurrencesApi extends BaseAPI {
     /**
      * Realizar o upload e processamento de uma ou mais entradas formatadas em xlsx ou csv  Necessita de permissão `occurrences:read` ou maior 
      * @summary Realizar o processamento de um arquivo de ocorrências
+     * @param {any} [file] 
+     * @param {string} [section] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof OccurrencesApi
      */
-    public occurrencesFileVerify(options?: AxiosRequestConfig) {
-        return OccurrencesApiFp(this.configuration).occurrencesFileVerify(options).then((request) => request(this.axios, this.basePath));
+    public occurrencesFileVerify(file?: any, section?: string, options?: AxiosRequestConfig) {
+        return OccurrencesApiFp(this.configuration).occurrencesFileVerify(file, section, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2115,11 +2211,11 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
         /**
          * Necessita de permissão `users` ou maior
          * @summary Criar usuário
-         * @param {object} [body] 
+         * @param {CreateUserRequest} [createUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        usersCreateOne: async (body?: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        usersCreateOne: async (createUserRequest?: CreateUserRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             const localVarPath = `/users`;
             // use dummy base URL string because the URL constructor only accepts absolute URLs.
             const localVarUrlObj = new URL(localVarPath, DUMMY_BASE_URL);
@@ -2143,7 +2239,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(createUserRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2264,11 +2360,11 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
          * Necessita de permissão `users` ou maior
          * @summary Editar usuário
          * @param {string} id 
-         * @param {object} [body] 
+         * @param {UpdateUserRequest} [updateUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        usersUpdateOne: async (id: string, body?: object, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
+        usersUpdateOne: async (id: string, updateUserRequest?: UpdateUserRequest, options: AxiosRequestConfig = {}): Promise<RequestArgs> => {
             // verify required parameter 'id' is not null or undefined
             assertParamExists('usersUpdateOne', 'id', id)
             const localVarPath = `/users/{id}`
@@ -2295,7 +2391,7 @@ export const UsersApiAxiosParamCreator = function (configuration?: Configuration
             setSearchParams(localVarUrlObj, localVarQueryParameter);
             let headersFromBaseOptions = baseOptions && baseOptions.headers ? baseOptions.headers : {};
             localVarRequestOptions.headers = {...localVarHeaderParameter, ...headersFromBaseOptions, ...options.headers};
-            localVarRequestOptions.data = serializeDataIfNeeded(body, localVarRequestOptions, configuration)
+            localVarRequestOptions.data = serializeDataIfNeeded(updateUserRequest, localVarRequestOptions, configuration)
 
             return {
                 url: toPathString(localVarUrlObj),
@@ -2315,12 +2411,12 @@ export const UsersApiFp = function(configuration?: Configuration) {
         /**
          * Necessita de permissão `users` ou maior
          * @summary Criar usuário
-         * @param {object} [body] 
+         * @param {CreateUserRequest} [createUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async usersCreateOne(body?: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.usersCreateOne(body, options);
+        async usersCreateOne(createUserRequest?: CreateUserRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.usersCreateOne(createUserRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
         /**
@@ -2359,12 +2455,12 @@ export const UsersApiFp = function(configuration?: Configuration) {
          * Necessita de permissão `users` ou maior
          * @summary Editar usuário
          * @param {string} id 
-         * @param {object} [body] 
+         * @param {UpdateUserRequest} [updateUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        async usersUpdateOne(id: string, body?: object, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
-            const localVarAxiosArgs = await localVarAxiosParamCreator.usersUpdateOne(id, body, options);
+        async usersUpdateOne(id: string, updateUserRequest?: UpdateUserRequest, options?: AxiosRequestConfig): Promise<(axios?: AxiosInstance, basePath?: string) => AxiosPromise<User>> {
+            const localVarAxiosArgs = await localVarAxiosParamCreator.usersUpdateOne(id, updateUserRequest, options);
             return createRequestFunction(localVarAxiosArgs, globalAxios, BASE_PATH, configuration);
         },
     }
@@ -2380,12 +2476,12 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
         /**
          * Necessita de permissão `users` ou maior
          * @summary Criar usuário
-         * @param {object} [body] 
+         * @param {CreateUserRequest} [createUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        usersCreateOne(body?: object, options?: any): AxiosPromise<User> {
-            return localVarFp.usersCreateOne(body, options).then((request) => request(axios, basePath));
+        usersCreateOne(createUserRequest?: CreateUserRequest, options?: any): AxiosPromise<User> {
+            return localVarFp.usersCreateOne(createUserRequest, options).then((request) => request(axios, basePath));
         },
         /**
          * Necessita de permissão `users` ou maior
@@ -2420,12 +2516,12 @@ export const UsersApiFactory = function (configuration?: Configuration, basePath
          * Necessita de permissão `users` ou maior
          * @summary Editar usuário
          * @param {string} id 
-         * @param {object} [body] 
+         * @param {UpdateUserRequest} [updateUserRequest] 
          * @param {*} [options] Override http request option.
          * @throws {RequiredError}
          */
-        usersUpdateOne(id: string, body?: object, options?: any): AxiosPromise<User> {
-            return localVarFp.usersUpdateOne(id, body, options).then((request) => request(axios, basePath));
+        usersUpdateOne(id: string, updateUserRequest?: UpdateUserRequest, options?: any): AxiosPromise<User> {
+            return localVarFp.usersUpdateOne(id, updateUserRequest, options).then((request) => request(axios, basePath));
         },
     };
 };
@@ -2440,13 +2536,13 @@ export class UsersApi extends BaseAPI {
     /**
      * Necessita de permissão `users` ou maior
      * @summary Criar usuário
-     * @param {object} [body] 
+     * @param {CreateUserRequest} [createUserRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public usersCreateOne(body?: object, options?: AxiosRequestConfig) {
-        return UsersApiFp(this.configuration).usersCreateOne(body, options).then((request) => request(this.axios, this.basePath));
+    public usersCreateOne(createUserRequest?: CreateUserRequest, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).usersCreateOne(createUserRequest, options).then((request) => request(this.axios, this.basePath));
     }
 
     /**
@@ -2488,13 +2584,13 @@ export class UsersApi extends BaseAPI {
      * Necessita de permissão `users` ou maior
      * @summary Editar usuário
      * @param {string} id 
-     * @param {object} [body] 
+     * @param {UpdateUserRequest} [updateUserRequest] 
      * @param {*} [options] Override http request option.
      * @throws {RequiredError}
      * @memberof UsersApi
      */
-    public usersUpdateOne(id: string, body?: object, options?: AxiosRequestConfig) {
-        return UsersApiFp(this.configuration).usersUpdateOne(id, body, options).then((request) => request(this.axios, this.basePath));
+    public usersUpdateOne(id: string, updateUserRequest?: UpdateUserRequest, options?: AxiosRequestConfig) {
+        return UsersApiFp(this.configuration).usersUpdateOne(id, updateUserRequest, options).then((request) => request(this.axios, this.basePath));
     }
 }
 

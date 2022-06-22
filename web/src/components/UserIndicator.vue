@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import MaterialIcon from "@/components/icons/MaterialIcon.vue";
+import MaterialIcon from "@/components/MaterialIcon.vue";
 
 defineProps<{
   name: string;
@@ -31,7 +31,7 @@ defineEmits<{
   @apply select-none bg-[#C4C4C4] rounded-md p-2 h-full flex justify-between w-fit items-center;
 }
 
-.user-indicator > .avatar-wrapper {
+.user-indicator>.avatar-wrapper {
   @apply bg-[#E9E9E9] h-full w-8 rounded-md flex items-center justify-center;
 }
 

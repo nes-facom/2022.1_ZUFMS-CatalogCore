@@ -1,7 +1,9 @@
+import { REDIS_ADAPTER_HOST } from "./config";
+
 export const createOtpRequestStorage = async () => {
   return {
     set: (state: string, email: string) =>
-      fetch(`http://localhost:3030/${state}`, {
+      fetch(`http://${REDIS_ADAPTER_HOST}/${state}`, {
         method: "POST",
         headers: {
           Accept: "application/json",
@@ -10,7 +12,7 @@ export const createOtpRequestStorage = async () => {
         body: JSON.stringify({ email }),
       }),
     get: (state: string): Promise<string> =>
-      fetch(`http://localhost:3030/${state}`)
+      fetch(`http://${REDIS_ADAPTER_HOST}/${state}`)
         .then((response) => response.json())
         .then(({ email }) => email),
   };
