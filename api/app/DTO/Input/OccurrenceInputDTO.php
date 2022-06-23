@@ -53,7 +53,7 @@ class OccurrenceInputDTO
     public ?string $stateProvince;
     public ?string $county;
     public string $municipality;
-    public ?string $locality;
+    public string $locality;
     public ?float $decimalLatitude;
     public ?float $decimalLongitude;
     public ?string $verbatimLatitude;
@@ -296,7 +296,7 @@ class OccurrenceInputDTO
 
     public static function constructEmpty(): OccurrenceInputDTO
     {
-        return new OccurrenceInputDTO(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"",null,0.0,0.0,null,null,0.0,null,null,0.0,0.0,null,0.0,0.0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"");
+        return new OccurrenceInputDTO(null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,0,0,0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"",'',0.0,0.0,null,null,0.0,null,null,0.0,0.0,null,0.0,0.0,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,"");
     }
     public static function validate($request,Validator $validator): \Opis\JsonSchema\ValidationResult
     {

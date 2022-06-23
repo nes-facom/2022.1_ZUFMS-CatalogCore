@@ -144,7 +144,6 @@ class CollectionService
 
             if (!$this->hasOccurrence($occurrence)) {
                 $occurrenceArray = $occurrence->toArray();
-                DB::connection()->enableQueryLog();
                 $isInserted = DB::table('biological_occurrence_view')->insert($occurrenceArray);
                 if ($isInserted) {
                     $insertedOccurrences[] = $occurrenceArray;
