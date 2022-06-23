@@ -45,7 +45,7 @@ CREATE TABLE "access_token" (
   "sub_type" access_token_sub_type NOT NULL DEFAULT 'user',
   "expires_in" timestamp NOT NULL,
   "issued_at" timestamp NOT NULL DEFAULT (now()),
-  "scope" text
+  "scope" text NOT NULL
 );
 
 CREATE TABLE "access_token_user_sub" (
@@ -103,16 +103,16 @@ CREATE TABLE "artificial:flaskLocation" (
   "value" text UNIQUE NOT NULL
 );
 
-CREATE TABLE "recordedBy" (
-  "id" serial PRIMARY KEY,
-  "value" text UNIQUE NOT NULL
+CREATE TABLE "recordedBy_biological_occurrence" (
+  "value" text,
+  "biological_occurrence_id" text PRIMARY KEY,
+  "recordNumber" text
 );
 
-CREATE TABLE "recordedBy_biological_occurrence" (
-  "recordedBy_id" int,
-  "biological_occurrence_id" text,
-  "recordNumber" text,
-  PRIMARY KEY ("recordedBy_id", "biological_occurrence_id")
+CREATE TABLE "identifiedBy_biological_occurrence" (
+  "biological_occurrence_id" text PRIMARY KEY,
+  "value" text,
+  "dateIdentified" text
 );
 
 CREATE TABLE "preparations" (
@@ -218,17 +218,6 @@ CREATE TABLE "waterBody" (
 CREATE TABLE "identificationQualifier" (
   "id" serial PRIMARY KEY,
   "value" text UNIQUE NOT NULL
-);
-
-CREATE TABLE "identifiedBy" (
-  "id" serial PRIMARY KEY,
-  "value" text UNIQUE NOT NULL
-);
-
-CREATE TABLE "identifiedBy_biological_occurrence" (
-  "biological_occurrence_id" text PRIMARY KEY,
-  "value" int,
-  "dateIdentified" text
 );
 
 CREATE TABLE "kingdom" (
@@ -423,6 +412,8 @@ CREATE TABLE "biological_occurrence" (
   "relationshipOfResource" text
 );
 
+CREATE UNIQUE INDEX ON "identifiedBy_biological_occurrence" ("value", "biological_occurrence_id");
+
 CREATE UNIQUE INDEX ON "country" ("value", "continent_id");
 
 CREATE UNIQUE INDEX ON "stateProvince" ("value", "country_id");
@@ -432,8 +423,6 @@ CREATE UNIQUE INDEX ON "county" ("value", "stateProvince_id");
 CREATE UNIQUE INDEX ON "municipality" ("value", "county_id");
 
 CREATE UNIQUE INDEX ON "locality" ("value", "decimalLatitude", "decimalLongitude", "municipality_id");
-
-CREATE UNIQUE INDEX ON "identifiedBy_biological_occurrence" ("value", "biological_occurrence_id");
 
 CREATE UNIQUE INDEX ON "phylum" ("value", "kingdom_id");
 
@@ -497,13 +486,13 @@ COMMENT ON COLUMN "biological_occurrence"."minimumDepthInMeters" IS 'validar nor
 
 COMMENT ON COLUMN "biological_occurrence"."maximumDepthInMeters" IS 'validar normalizacao (locality?)';
 
-ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE;
-
 ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("scope_id") REFERENCES "scope" ("id");
 
-ALTER TABLE "client_allowed_scope" ADD FOREIGN KEY ("client_id") REFERENCES "client" ("id");
+ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "client_allowed_scope" ADD FOREIGN KEY ("scope_id") REFERENCES "scope" ("id");
+
+ALTER TABLE "client_allowed_scope" ADD FOREIGN KEY ("client_id") REFERENCES "client" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "scope_closure_table" ADD FOREIGN KEY ("ancestor") REFERENCES "scope" ("id");
 
@@ -521,9 +510,9 @@ ALTER TABLE "otp" ADD FOREIGN KEY ("email") REFERENCES "user" ("email");
 
 ALTER TABLE "otp" ADD FOREIGN KEY ("requested_with_access_token") REFERENCES "access_token" ("jti");
 
-ALTER TABLE "recordedBy_biological_occurrence" ADD FOREIGN KEY ("recordedBy_id") REFERENCES "recordedBy" ("id");
-
 ALTER TABLE "recordedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
+
+ALTER TABLE "identifiedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
 
 ALTER TABLE "country" ADD FOREIGN KEY ("continent_id") REFERENCES "continent" ("id");
 
@@ -538,10 +527,6 @@ ALTER TABLE "locality" ADD FOREIGN KEY ("geodeticDatum_id") REFERENCES "geodetic
 ALTER TABLE "locality" ADD FOREIGN KEY ("municipality_id") REFERENCES "municipality" ("id");
 
 ALTER TABLE "locality" ADD FOREIGN KEY ("verbatimLocality_id") REFERENCES "verbatimLocality" ("id");
-
-ALTER TABLE "identifiedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
-
-ALTER TABLE "identifiedBy_biological_occurrence" ADD FOREIGN KEY ("value") REFERENCES "identifiedBy" ("id");
 
 ALTER TABLE "phylum" ADD FOREIGN KEY ("kingdom_id") REFERENCES "kingdom" ("id");
 

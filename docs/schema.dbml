@@ -102,15 +102,19 @@ table "artificial:flaskLocation" {
   value text [unique,not null]
 }
 
-table recordedBy {
-  id serial [pk]
-  value text [unique,not null]
-} 
-
 table recordedBy_biological_occurrence {
-  recordedBy_id int [pk, ref: > recordedBy.id]
+  value text
   biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
-  recordNumber text 
+  recordNumber text
+}
+
+table identifiedBy_biological_occurrence {
+  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
+  value text
+  dateIdentified text
+  indexes {
+    (value, biological_occurrence_id) [unique]
+  }
 }
 
 table preparations {
@@ -210,12 +214,12 @@ table geodeticDatum {
 
 table locality {
   id serial [pk]
-  value text 
-  decimalLatitude real 
+  value text
+  decimalLatitude real
   decimalLongitude real
   verbatimLatitude text [note: "virtual"]
   verbatimLongitude text [note: "virtual"]
-  coordinatePrecision real 
+  coordinatePrecision real
   geodeticDatum_id int [ref: > geodeticDatum.id]
   footprintWKT text
   minimumElevationInMeters real [note: "validar normalizacao"]
@@ -238,19 +242,7 @@ table identificationQualifier {
   value text [unique,not null]
 }
 
-table identifiedBy {
-  id serial [pk]
-  value text [unique,not null]
-}
 
-table identifiedBy_biological_occurrence {
-  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
-  value int [ref: > identifiedBy.id]
-  dateIdentified text
-  indexes {
-    (value, biological_occurrence_id) [unique]
-  }
-}
 
 table kingdom {
   id serial [pk]
