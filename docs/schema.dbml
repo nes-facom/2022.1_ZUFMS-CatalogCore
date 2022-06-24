@@ -102,21 +102,6 @@ table "artificial:flaskLocation" {
   value text [unique,not null]
 }
 
-table recordedBy_biological_occurrence {
-  value text
-  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
-  recordNumber text
-}
-
-table identifiedBy_biological_occurrence {
-  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
-  value text
-  dateIdentified text
-  indexes {
-    (value, biological_occurrence_id) [unique]
-  }
-}
-
 table preparations {
   id serial [pk]
   value text [unique,not null]
@@ -253,7 +238,7 @@ table phylum {
   id serial [pk]
   value text [not null, unique]
   kingdom_id int [not null,ref: > kingdom.id]
-  
+
   indexes {
     (value, kingdom_id) [unique]
   }
@@ -262,7 +247,7 @@ table phylum {
 table "artificial:subphylum" {
   id serial [pk]
   value text [not null, unique]
-  phylum_id int [not null,ref: > phylum.id] 
+  phylum_id int [not null,ref: > phylum.id]
   indexes {
     (value, phylum_id) [unique]
   }
@@ -281,7 +266,7 @@ table class {
 table "artificial:subclass" {
   id serial [pk]
   value text [not null,unique]
-   class_id int [not null,ref: > class.id] 
+   class_id int [not null,ref: > class.id]
   indexes {
     (value, class_id) [unique]
   }
@@ -290,7 +275,7 @@ table "artificial:subclass" {
 table "artificial:superorder" {
   id serial [pk]
   value text [not null,unique]
-   class_id int [not null,ref: > class.id] 
+   class_id int [not null,ref: > class.id]
   indexes {
     (value, class_id) [unique]
   }
@@ -308,7 +293,7 @@ table order {
 table "artificial:suborder" {
   id serial [pk]
   value text [not null, unique]
-   order_id int [not null,ref: > order.id] 
+   order_id int [not null,ref: > order.id]
   indexes {
     (value, order_id) [unique]
   }
@@ -316,7 +301,7 @@ table "artificial:suborder" {
 table "artificial:infraorder" {
   id serial [pk]
   value text [not null,unique]
-   order_id int [not null,ref: > order.id] 
+   order_id int [not null,ref: > order.id]
   indexes {
     (value, order_id) [unique]
   }
@@ -325,7 +310,7 @@ table "artificial:infraorder" {
 table "artificial:superfamily" {
   id serial [pk]
   value text [not null, unique]
-   order_id int [not null,ref: > order.id] 
+   order_id int [not null,ref: > order.id]
   indexes {
     (value, order_id) [unique]
   }
@@ -366,7 +351,7 @@ table genus {
 table "artificial:tribe" {
   id serial [pk]
   value text [not null, unique]
-   family_id int [not null,ref: > family.id] 
+   family_id int [not null,ref: > family.id]
   indexes {
     (value, family_id) [unique]
   }
@@ -375,7 +360,7 @@ table "artificial:tribe" {
 table "artificial:subtribe" {
   id serial [pk]
   value text [not null, unique]
-   tribe_id int [not null,ref: > "artificial:tribe".id] 
+   tribe_id int [not null,ref: > "artificial:tribe".id]
   indexes {
     (value, tribe_id) [unique]
   }
@@ -411,7 +396,7 @@ table specie {
   typeStatus text
   scientificName text
   scientificNameAuthorship text
-  acceptedNameUsage text [unique, not null, note: "virtual"] 
+  acceptedNameUsage text [unique, not null, note: "virtual"]
   kingdom_id int [ref: > kingdom.id]
   phylum_id int [ref: > phylum.id]
   "artificial:subphylum_id" int [ref: > "artificial:subphylum".id]
@@ -436,7 +421,7 @@ table specie {
   vernacularName text
   nomenclaturalCode_id int [ref: > nomenclaturalCode.id]
   nameAccordingTo_id int [ref: > nameAccordingTo.id]
-  
+
   indexes {
     ("artificial:subfamily_id", "artificial:subtribe_id","artificial:tribe_id","artificial:superfamily_id","artificial:subclass_id","artificial:subphylum_id" ) [unique]
   }
@@ -456,9 +441,13 @@ table biological_occurrence {
   "artificial:flaskLocation_id" int [ref: > "artificial:flaskLocation".id]
   "artificial:shippingGuide" text
   catalogNumber text [unique]
-  otherCatalogNumbers text 
+  otherCatalogNumbers text
   preparations_id int [ref: > preparations.id]
   individualCount text
+  identifiedBy text
+  recordedBy text
+  dateIdentified text
+  recordNumber text
   sex_id int [ref: > sex.id]
   lifeStage_id int [ref: > lifeStage.id]
   reproductiveCondition_id int [ref: > reproductiveCondition.id]

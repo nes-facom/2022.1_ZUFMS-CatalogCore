@@ -103,18 +103,6 @@ CREATE TABLE "artificial:flaskLocation" (
   "value" text UNIQUE NOT NULL
 );
 
-CREATE TABLE "recordedBy_biological_occurrence" (
-  "value" text,
-  "biological_occurrence_id" text PRIMARY KEY,
-  "recordNumber" text
-);
-
-CREATE TABLE "identifiedBy_biological_occurrence" (
-  "biological_occurrence_id" text PRIMARY KEY,
-  "value" text,
-  "dateIdentified" text
-);
-
 CREATE TABLE "preparations" (
   "id" serial PRIMARY KEY,
   "value" text UNIQUE NOT NULL
@@ -379,6 +367,10 @@ CREATE TABLE "biological_occurrence" (
   "otherCatalogNumbers" text,
   "preparations_id" int,
   "individualCount" text,
+  "identifiedBy" text,
+  "recordedBy" text,
+  "dateIdentified" text,
+  "recordNumber" text,
   "sex_id" int,
   "lifeStage_id" int,
   "reproductiveCondition_id" int,
@@ -411,8 +403,6 @@ CREATE TABLE "biological_occurrence" (
   "identificationQualifier_id" int,
   "relationshipOfResource" text
 );
-
-CREATE UNIQUE INDEX ON "identifiedBy_biological_occurrence" ("value", "biological_occurrence_id");
 
 CREATE UNIQUE INDEX ON "country" ("value", "continent_id");
 
@@ -509,10 +499,6 @@ ALTER TABLE "access_token_client_sub" ADD FOREIGN KEY ("client_id") REFERENCES "
 ALTER TABLE "otp" ADD FOREIGN KEY ("email") REFERENCES "user" ("email");
 
 ALTER TABLE "otp" ADD FOREIGN KEY ("requested_with_access_token") REFERENCES "access_token" ("jti");
-
-ALTER TABLE "recordedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
-
-ALTER TABLE "identifiedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
 
 ALTER TABLE "country" ADD FOREIGN KEY ("continent_id") REFERENCES "continent" ("id");
 

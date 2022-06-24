@@ -1,4 +1,4 @@
-INSERT INTO "biological_occurrence_view" (
+/*INSERT INTO "biological_occurrence_view" (
     "artificial:section",
     "dcterms:modified",
     "informationWithheld",
@@ -263,3 +263,4 @@ VALUES
         'Frost, 2017',
         'presa'
     );
+*/

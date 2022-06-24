@@ -12,7 +12,7 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
   "artificial:shippingGuide",
   "catalogNumber",
   "otherCatalogNumbers",
-  "recordedBy_biological_occurrence".value AS "recordedBy",
+  "recordedBy",
   "recordNumber",
   "preparations".value AS "preparations",
   "individualCount",
@@ -62,7 +62,7 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
   "maximumDepthInMeters",
   "locationRemarks",
   "identificationQualifier".value AS "identificationQualifier",
-  "identifiedBy_biological_occurrence".value AS "identifiedBy",
+  "identifiedBy",
   "dateIdentified",
   "typeStatus",
   "scientificName",
@@ -101,7 +101,6 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
   LEFT JOIN "datasetName" ON "datasetName".id = bo."datasetName_id"
   LEFT JOIN "artificial:shelfLocation" ON "artificial:shelfLocation".id = bo."artificial:shelfLocation_id"
   LEFT JOIN "artificial:flaskLocation" ON "artificial:flaskLocation".id = bo."artificial:flaskLocation_id"
-  LEFT JOIN "recordedBy_biological_occurrence" ON "recordedBy_biological_occurrence".biological_occurrence_id = bo."occurrenceID"
   LEFT JOIN "preparations" ON "preparations".id = bo."preparations_id"
   LEFT JOIN "sex" ON "sex".id = bo."sex_id"
   LEFT JOIN "lifeStage" ON "lifeStage".id = bo."lifeStage_id"
@@ -120,7 +119,6 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
 	LEFT JOIN "geodeticDatum" ON "geodeticDatum".id = "locality"."geodeticDatum_id"
   LEFT JOIN "waterBody" ON "waterBody".id = bo."waterBody_id"
   LEFT JOIN "identificationQualifier" ON "identificationQualifier".id = bo."identificationQualifier_id"
-  LEFT JOIN "identifiedBy_biological_occurrence" ON "identifiedBy_biological_occurrence"."biological_occurrence_id" = bo."occurrenceID"
   LEFT JOIN "specie" ON "specie".id = bo."specie_id"
   	LEFT JOIN "subgenus" ON "subgenus".id = "specie"."subgenus_id"
 	LEFT JOIN "genus" ON "genus".id = "specie"."genus_id"
@@ -136,14 +134,14 @@ CREATE OR REPLACE VIEW "biological_occurrence_view" AS SELECT
 	LEFT JOIN "artificial:suborder" ON "artificial:suborder".id = "specie"."artificial:suborder_id"
 	LEFT JOIN "artificial:superorder" ON "artificial:superorder".id = "specie"."artificial:superorder_id"
 	LEFT JOIN "artificial:subclass" ON "artificial:subclass".id = "specie"."artificial:subclass_id"
-	LEFT JOIN "artificial:subphylum" ON "artificial:subphylum".id = "specie"."artificial:subphylum_id"	
+	LEFT JOIN "artificial:subphylum" ON "artificial:subphylum".id = "specie"."artificial:subphylum_id"
 	LEFT JOIN "taxonomicStatus" ON "taxonomicStatus".id = "specie"."taxonomicStatus_id"
 	LEFT JOIN "nomenclaturalCode" ON "nomenclaturalCode".id = "specie"."nomenclaturalCode_id"
 	LEFT JOIN "nameAccordingTo" ON "nameAccordingTo".id = "specie"."nameAccordingTo_id"
 	LEFT JOIN "artificial:subfamily" ON "artificial:subfamily".id = "specie"."artificial:subfamily_id";
 
 
-
+/*
 CREATE OR REPLACE FUNCTION func_setof_biological_occurrence (new_ref anyelement) RETURNS setof biological_occurrence AS $$
 BEGIN
 WITH "inserted_continent_id" AS (
@@ -326,26 +324,13 @@ SELECT COALESCE((SELECT id FROM "inserted_specie_id"), (SELECT id FROM "specie" 
 INSERT INTO "locality" ("value", "decimalLatitude", "decimalLongitude", "verbatimLatitude", "verbatimLongitude", "coordinatePrecision", "geodeticDatum_id", "footprintWKT", "minimumElevationInMeters", "maximumElevationInMeters", "municipality_id", "verbatimLocality_id") (SELECT new_ref."locality" AS value, new_ref."decimalLatitude", new_ref."decimalLongitude", new_ref."verbatimLatitude", new_ref."verbatimLongitude", new_ref."coordinatePrecision", "geodeticDatum_id".id AS "geodeticDatum_id", new_ref."footprintWKT", new_ref."minimumElevationInMeters", new_ref."maximumElevationInMeters", "municipality_id".id AS "municipality_id", "verbatimLocality_id".id AS "verbatimLocality_id" FROM  "geodeticDatum_id", "municipality_id", "verbatimLocality_id") ON CONFLICT DO NOTHING RETURNING id
     ), "locality_id" AS (
 SELECT COALESCE((SELECT id FROM "inserted_locality_id"), (SELECT locality.id FROM "locality", "municipality_id" WHERE  value = COALESCE(new_ref."locality", '')  AND "decimalLongitude" = new_ref."decimalLongitude" AND "decimalLatitude" = new_ref."decimalLatitude" AND locality."municipality_id" = "municipality_id".id)) AS id
-    ),
-    "inserted_recordedBy_id" AS (
-INSERT INTO "recordedBy" (value) (SELECT unnest(string_to_array(new_ref."recordedBy", ';')) AS value WHERE new_ref."recordedBy" IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-    ), "recordedBy_id" AS (
-SELECT COALESCE((SELECT id FROM "inserted_recordedBy_id"), (SELECT id FROM "recordedBy" WHERE value = ANY (string_to_array(new_ref."recordedBy", '; ')))) AS id
-    ), "inserted_identifiedBy_id" AS (
-INSERT INTO "identifiedBy" (value) (SELECT unnest(string_to_array(new_ref."recordedBy", ';')) AS value WHERE new_ref."recordedBy" IS NOT NULL) ON CONFLICT DO NOTHING RETURNING id
-    ), "identifiedBy_id" AS (
-SELECT COALESCE((SELECT id FROM "inserted_identifiedBy_id"), (SELECT id FROM "identifiedBy" WHERE value = ANY (string_to_array(new_ref."identifiedBy", '; ')))) AS id
-    ),
-
-
-    "insert_biological_occurrence" AS (
-INSERT INTO "biological_occurrence" ("occurrenceID", "artificial:section_id", "dcterms:modified", "informationWithheld", "basisOfRecord_id", "institutionCode_id", "collectionCode_id", "dcterms:bibliographicCitation", "datasetName_id", "artificial:shelfLocation_id", "artificial:flaskLocation_id", "artificial:shippingGuide", "catalogNumber", "otherCatalogNumbers", "preparations_id", "individualCount", "sex_id", "lifeStage_id", "reproductiveCondition_id", "establishmentMeans_id", "behavior_id", "occurrenceRemarks", "disposition_id", "associatedReferences", "associatedMedia", "previousIdentifications", "associatedOccurrences","fieldNumber", "day", "month", "year", "eventTime", "eventDate", "verbatimEventDate", "samplingProtocol", "habitat_id", "eventRemarks", "fieldNotes", "measurementRemarks", "specie_id", "locality_id", "waterBody_id", "minimumDepthInMeters", "maximumDepthInMeters", "locationRemarks", "identificationQualifier_id", "relationshipOfResource") (SELECT new_ref."occurrenceID", "artificial:section_id".id AS "artificial:section_id" , new_ref."dcterms:modified", new_ref."informationWithheld", "basisOfRecord_id".id AS "basisOfRecord_id", "institutionCode_id".id AS "institutionCode_id", "collectionCode_id".id AS "collectionCode_id", new_ref."dcterms:bibliographicCitation", "datasetName_id".id AS "datasetName_id", "artificial:shelfLocation_id".id AS "artificial:shelfLocation_id", "artificial:flaskLocation_id".id AS "artificial:flaskLocation_id", new_ref."artificial:shippingGuide", new_ref."catalogNumber", new_ref."otherCatalogNumbers", "preparations_id".id AS "preparations_id", new_ref."individualCount", "sex_id".id AS "sex_id", "lifeStage_id".id AS "lifeStage_id", "reproductiveCondition_id".id AS "reproductiveCondition_id", "establishmentMeans_id".id AS "establishmentMeans_id", "behavior_id".id AS "behavior_id", new_ref."occurrenceRemarks", "disposition_id".id AS "disposition_id", new_ref."associatedReferences", new_ref."associatedMedia", new_ref."previousIdentifications",new_ref."associatedOccurrences", new_ref."fieldNumber", new_ref."day", new_ref."month", new_ref."year", new_ref."eventTime", new_ref."eventDate", new_ref."verbatimEventDate", new_ref."samplingProtocol", "habitat_id".id AS "habitat_id", new_ref."eventRemarks", new_ref."fieldNotes", new_ref."measurementRemarks", "specie_id".id AS "specie_id", "locality_id".id AS "locality_id", "waterBody_id".id AS "waterBody_id", new_ref."minimumDepthInMeters", new_ref."maximumDepthInMeters", new_ref."locationRemarks", "identificationQualifier_id".id AS "identificationQualifier_id", new_ref."relationshipOfResource" FROM "artificial:section_id", "basisOfRecord_id", "institutionCode_id", "collectionCode_id", "datasetName_id", "artificial:shelfLocation_id", "artificial:flaskLocation_id", "preparations_id", "sex_id", "lifeStage_id", "reproductiveCondition_id", "establishmentMeans_id", "behavior_id", "disposition_id", "habitat_id", "specie_id", "locality_id", "waterBody_id", "identificationQualifier_id" WHERE "artificial:section_id".id IS NOT NULL AND new_ref."dcterms:modified" IS NOT NULL)
-    ),"insert_recordedBy_biological_occurrence" AS (
-INSERT INTO "recordedBy_biological_occurrence" ("recordedBy_id", "biological_occurrence_id", "recordNumber") (SELECT id AS "recordedBy_id", new_ref."occurrenceID", new_ref."recordNumber" FROM "recordedBy_id") ON CONFLICT DO NOTHING
-    ) INSERT INTO "identifiedBy_biological_occurrence" (value, "biological_occurrence_id", "dateIdentified") (SELECT id AS value, new_ref."occurrenceID", new_ref."dateIdentified" FROM "identifiedBy_id" ) ON CONFLICT DO NOTHING;
+    ), "insert_biological_occurrence" AS (
+INSERT INTO "biological_occurrence" ("occurrenceID", "artificial:section_id", "dcterms:modified", "informationWithheld", "basisOfRecord_id", "institutionCode_id", "collectionCode_id", "dcterms:bibliographicCitation", "datasetName_id", "artificial:shelfLocation_id", "artificial:flaskLocation_id", "artificial:shippingGuide", "catalogNumber", "otherCatalogNumbers", "preparations_id", "individualCount", "identifiedBy", "recordedBy", "dateIdentified", "recordNumber", "sex_id", "lifeStage_id", "reproductiveCondition_id", "establishmentMeans_id", "behavior_id", "occurrenceRemarks", "disposition_id", "associatedReferences", "associatedMedia", "previousIdentifications", "associatedOccurrences","fieldNumber", "day", "month", "year", "eventTime", "eventDate", "verbatimEventDate", "samplingProtocol", "habitat_id", "eventRemarks", "fieldNotes", "measurementRemarks", "specie_id", "locality_id", "waterBody_id", "minimumDepthInMeters", "maximumDepthInMeters", "locationRemarks", "identificationQualifier_id", "relationshipOfResource") (SELECT new_ref."occurrenceID", "artificial:section_id".id AS "artificial:section_id" , new_ref."dcterms:modified", new_ref."informationWithheld", "basisOfRecord_id".id AS "basisOfRecord_id", "institutionCode_id".id AS "institutionCode_id", "collectionCode_id".id AS "collectionCode_id", new_ref."dcterms:bibliographicCitation", "datasetName_id".id AS "datasetName_id", "artificial:shelfLocation_id".id AS "artificial:shelfLocation_id", "artificial:flaskLocation_id".id AS "artificial:flaskLocation_id", new_ref."artificial:shippingGuide", new_ref."catalogNumber", new_ref."otherCatalogNumbers", "preparations_id".id AS "preparations_id", new_ref."individualCount", new_ref."identifiedBy", new_ref."recordedBy", new_ref."dateIdentified", new_ref."recordNumber", "sex_id".id AS "sex_id", "lifeStage_id".id AS "lifeStage_id", "reproductiveCondition_id".id AS "reproductiveCondition_id", "establishmentMeans_id".id AS "establishmentMeans_id", "behavior_id".id AS "behavior_id", new_ref."occurrenceRemarks", "disposition_id".id AS "disposition_id", new_ref."associatedReferences", new_ref."associatedMedia", new_ref."previousIdentifications",new_ref."associatedOccurrences", new_ref."fieldNumber", new_ref."day", new_ref."month", new_ref."year", new_ref."eventTime", new_ref."eventDate", new_ref."verbatimEventDate", new_ref."samplingProtocol", "habitat_id".id AS "habitat_id", new_ref."eventRemarks", new_ref."fieldNotes", new_ref."measurementRemarks", "specie_id".id AS "specie_id", "locality_id".id AS "locality_id", "waterBody_id".id AS "waterBody_id", new_ref."minimumDepthInMeters", new_ref."maximumDepthInMeters", new_ref."locationRemarks", "identificationQualifier_id".id AS "identificationQualifier_id", new_ref."relationshipOfResource" FROM "artificial:section_id", "basisOfRecord_id", "institutionCode_id", "collectionCode_id", "datasetName_id", "artificial:shelfLocation_id", "artificial:flaskLocation_id", "preparations_id", "sex_id", "lifeStage_id", "reproductiveCondition_id", "establishmentMeans_id", "behavior_id", "disposition_id", "habitat_id", "specie_id", "locality_id", "waterBody_id", "identificationQualifier_id" WHERE "artificial:section_id".id IS NOT NULL AND new_ref."dcterms:modified" IS NOT NULL) );
 END
 $$ LANGUAGE plpgsql;
 
 CREATE OR REPLACE RULE "_INSERT" AS
     ON INSERT TO biological_occurrence_view
     DO INSTEAD SELECT func_setof_biological_occurrence(NEW.*);
+
+*/
