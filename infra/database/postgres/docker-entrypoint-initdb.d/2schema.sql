@@ -321,9 +321,9 @@ CREATE TABLE "nameAccordingTo" (
 CREATE TABLE "specie" (
   "id" serial PRIMARY KEY,
   "typeStatus" text,
-  "scientificName" text,
+  "scientificName" text UNIQUE NOT NULL,
   "scientificNameAuthorship" text,
-  "acceptedNameUsage" text UNIQUE NOT NULL,
+  "acceptedNameUsage" text UNIQUE,
   "kingdom_id" int,
   "phylum_id" int,
   "artificial:subphylum_id" int,

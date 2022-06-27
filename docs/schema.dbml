@@ -394,9 +394,9 @@ table nameAccordingTo {
 table specie {
   id serial [pk]
   typeStatus text
-  scientificName text
+  scientificName text [unique, not null]
   scientificNameAuthorship text
-  acceptedNameUsage text [unique, not null, note: "virtual"]
+  acceptedNameUsage text [unique,note: "virtual"]
   kingdom_id int [ref: > kingdom.id]
   phylum_id int [ref: > phylum.id]
   "artificial:subphylum_id" int [ref: > "artificial:subphylum".id]
