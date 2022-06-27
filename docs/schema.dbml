@@ -17,16 +17,18 @@ table scope {
 }
 
 table user_allowed_scope {
-  user_id uuid [pk, ref: > user.id]
+  user_id uuid [pk]
   scope_id int [pk, ref: > scope.id]
 }
 
 Ref: user_allowed_scope.user_id > user.id [delete: cascade]
 
 table client_allowed_scope {
-  client_id uuid [pk, ref: > client.id]
+  client_id uuid [pk]
   scope_id int [pk, ref: > scope.id]
 }
+
+Ref: client_allowed_scope.client_id > client.id [delete: cascade]
 
 table scope_closure_table {
   ancestor int [pk, ref: > scope.id]
@@ -98,17 +100,6 @@ table "artificial:shelfLocation" {
 table "artificial:flaskLocation" {
   id serial [pk]
   value text [unique,not null]
-}
-
-table recordedBy {
-  id serial [pk]
-  value text [unique,not null]
-} 
-
-table recordedBy_biological_occurrence {
-  recordedBy_id int [pk, ref: > recordedBy.id]
-  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
-  recordNumber text 
 }
 
 table preparations {
@@ -193,7 +184,7 @@ table county {
 
 table municipality {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   county_id int [not null,ref: > county.id]
 
   indexes {
@@ -203,26 +194,26 @@ table municipality {
 
 table geodeticDatum {
   id serial [pk]
-  value text [not null]
+  value text [unique, not null]
 }
 
 table locality {
   id serial [pk]
-  value text [not null]
-  decimalLatitude text [not null]
-  decimalLongitude text [not null]
+  value text
+  decimalLatitude real
+  decimalLongitude real
   verbatimLatitude text [note: "virtual"]
   verbatimLongitude text [note: "virtual"]
-  coordinatePrecision text 
+  coordinatePrecision real
   geodeticDatum_id int [ref: > geodeticDatum.id]
   footprintWKT text
-  minimumElevationInMeters text [note: "validar normalizacao"]
-  maximumElevationInMeters text [note: "validar normalizacao"]
-  municipality_id int [ref: > municipality.id]
+  minimumElevationInMeters real [note: "validar normalizacao"]
+  maximumElevationInMeters real [note: "validar normalizacao"]
+  municipality_id int [ref: > municipality.id, not null]
   verbatimLocality_id int [ref: > verbatimLocality.id]
 
   indexes {
-    (value, decimalLatitude, decimalLongitude) [unique]
+    (value, decimalLatitude, decimalLongitude,municipality_id ) [unique]
   }
 }
 
@@ -236,19 +227,7 @@ table identificationQualifier {
   value text [unique,not null]
 }
 
-table identifiedBy {
-  id serial [pk]
-  value text [unique,not null]
-}
 
-table identifiedBy_biological_occurrence {
-  biological_occurrence_id text [pk, ref: > biological_occurrence.occurrenceID]
-  value int [ref: > identifiedBy.id]
-  dateIdentified date
-  indexes {
-    (value, biological_occurrence_id) [unique]
-  }
-}
 
 table kingdom {
   id serial [pk]
@@ -257,18 +236,18 @@ table kingdom {
 
 table phylum {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   kingdom_id int [not null,ref: > kingdom.id]
-  
+
   indexes {
     (value, kingdom_id) [unique]
   }
 }
 
-table "artificial:subPhylum" {
+table "artificial:subphylum" {
   id serial [pk]
-  value text [not null]
-  phylum_id int [not null,ref: > phylum.id] 
+  value text [not null, unique]
+  phylum_id int [not null,ref: > phylum.id]
   indexes {
     (value, phylum_id) [unique]
   }
@@ -276,7 +255,7 @@ table "artificial:subPhylum" {
 
 table class {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   phylum_id int [not null,ref: > phylum.id]
 
   indexes {
@@ -284,19 +263,19 @@ table class {
   }
 }
 
-table "artificial:subClass" {
+table "artificial:subclass" {
   id serial [pk]
-  value text [not null]
-   class_id int [not null,ref: > class.id] 
+  value text [not null,unique]
+   class_id int [not null,ref: > class.id]
   indexes {
     (value, class_id) [unique]
   }
 }
 
-table "artificial:superOrder" {
+table "artificial:superorder" {
   id serial [pk]
-  value text [not null]
-   class_id int [not null,ref: > class.id] 
+  value text [not null,unique]
+   class_id int [not null,ref: > class.id]
   indexes {
     (value, class_id) [unique]
   }
@@ -304,34 +283,34 @@ table "artificial:superOrder" {
 
 table order {
   id serial [pk]
-  value text [not null]
+  value text [not null,unique]
   class_id int [not null,ref: > class.id]
 
   indexes {
     (value, class_id) [unique]
   }
 }
-table "artificial:subOrder" {
+table "artificial:suborder" {
   id serial [pk]
-  value text [not null]
-   order_id int [not null,ref: > order.id] 
+  value text [not null, unique]
+   order_id int [not null,ref: > order.id]
   indexes {
     (value, order_id) [unique]
   }
 }
-table "artificial:infraOrder" {
+table "artificial:infraorder" {
   id serial [pk]
-  value text [not null]
-   order_id int [not null,ref: > order.id] 
+  value text [not null,unique]
+   order_id int [not null,ref: > order.id]
   indexes {
     (value, order_id) [unique]
   }
 }
 
-table "artificial:superFamily" {
+table "artificial:superfamily" {
   id serial [pk]
-  value text [not null]
-   order_id int [not null,ref: > order.id] 
+  value text [not null, unique]
+   order_id int [not null,ref: > order.id]
   indexes {
     (value, order_id) [unique]
   }
@@ -339,7 +318,7 @@ table "artificial:superFamily" {
 
 table family {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   order_id int [not null,ref: > order.id]
 
   indexes {
@@ -349,9 +328,9 @@ table family {
 
 
 
-table "artificial:subFamily" {
+table "artificial:subfamily" {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   family_id int [not null,ref: > family.id]
 
   indexes {
@@ -361,7 +340,7 @@ table "artificial:subFamily" {
 
 table genus {
   id serial [pk]
-  value text [not null]
+  value text [not null, unique]
   family_id int [not null,ref: > family.id]
 
   indexes {
@@ -371,25 +350,25 @@ table genus {
 
 table "artificial:tribe" {
   id serial [pk]
-  value text [not null]
-   family_id int [not null,ref: > family.id] 
+  value text [not null, unique]
+   family_id int [not null,ref: > family.id]
   indexes {
     (value, family_id) [unique]
   }
 }
 
-table "artificial:subTribe" {
+table "artificial:subtribe" {
   id serial [pk]
-  value text [not null]
-   tribe_id int [not null,ref: > "artificial:tribe".id] 
+  value text [not null, unique]
+   tribe_id int [not null,ref: > "artificial:tribe".id]
   indexes {
     (value, tribe_id) [unique]
   }
 }
 
-table subGenus {
+table subgenus {
   id serial [pk]
-  value text [not null]
+  value text [not null,unique]
   genus_id int [not null,ref: > genus.id]
 
   indexes {
@@ -415,19 +394,25 @@ table nameAccordingTo {
 table specie {
   id serial [pk]
   typeStatus text
-  scientificName text
+  scientificName text [unique, not null]
   scientificNameAuthorship text
-  acceptedNameUsage text [note: "virtual"]
-  subGenus_id int [ref: > subGenus.id]
-  "artificial:subFamily_id" int [ref: > "artificial:subFamily".id]
-  "artificial:subTribe_id" int [ref: > "artificial:subTribe".id]
+  acceptedNameUsage text [unique,note: "virtual"]
+  kingdom_id int [ref: > kingdom.id]
+  phylum_id int [ref: > phylum.id]
+  "artificial:subphylum_id" int [ref: > "artificial:subphylum".id]
+  class_id int [ref: > class.id]
+  "artificial:subclass_id" int [ref: > "artificial:subclass".id]
+  "artificial:superorder_id" int [ref: > "artificial:superorder".id]
+  order_id int [ref: > order.id]
+  "artificial:suborder_id" int [ref: > "artificial:suborder".id]
+  "artificial:infraorder_id" int [ref: > "artificial:infraorder".id]
+  "artificial:superfamily_id" int [ref: > "artificial:superfamily".id]
+  family_id int [ref: > family.id]
+  "artificial:subfamily_id" int [ref: > "artificial:subfamily".id]
+  genus_id int [ref: > genus.id]
   "artificial:tribe_id" int [ref: > "artificial:tribe".id]
-  "artificial:superFamily_id" int [ref: > "artificial:superFamily".id]
-  "artificial:infraOrder_id" int [ref: > "artificial:infraOrder".id]
-  "artificial:subOrder_id" int [ref: > "artificial:subOrder".id]
-  "artificial:superOrder_id" int [ref: > "artificial:superOrder".id]
-  "artificial:subClass_id" int [ref: > "artificial:subClass".id]
-  "artificial:subPhylum_id" int [ref: > "artificial:subPhylum".id]
+  "artificial:subtribe_id" int [ref: > "artificial:subtribe".id]
+  subgenus_id int [ref: > subgenus.id]
   specificEpithet text
   infraspecificEpithet text
   taxonRank text [note: "validar normalizacao"]
@@ -436,6 +421,10 @@ table specie {
   vernacularName text
   nomenclaturalCode_id int [ref: > nomenclaturalCode.id]
   nameAccordingTo_id int [ref: > nameAccordingTo.id]
+
+  indexes {
+    ("artificial:subfamily_id", "artificial:subtribe_id","artificial:tribe_id","artificial:superfamily_id","artificial:subclass_id","artificial:subphylum_id" ) [unique]
+  }
 }
 
 table biological_occurrence {
@@ -452,9 +441,13 @@ table biological_occurrence {
   "artificial:flaskLocation_id" int [ref: > "artificial:flaskLocation".id]
   "artificial:shippingGuide" text
   catalogNumber text [unique]
-  otherCatalogNumbers text 
+  otherCatalogNumbers text
   preparations_id int [ref: > preparations.id]
   individualCount text
+  identifiedBy text
+  recordedBy text
+  dateIdentified text
+  recordNumber text
   sex_id int [ref: > sex.id]
   lifeStage_id int [ref: > lifeStage.id]
   reproductiveCondition_id int [ref: > reproductiveCondition.id]
@@ -469,8 +462,8 @@ table biological_occurrence {
   day text [note: "virtual"]
   month text [note: "virtual"]
   year text [note: "virtual"]
-  eventTime date[]
-  eventDate date[]
+  eventTime text
+  eventDate text
   associatedOccurrences text
   verbatimEventDate text [note: "virtual"]
   samplingProtocol text

@@ -2,27 +2,46 @@
 
 namespace App\Http\Controllers;
 
+use App\DTO\Input\ListOccurrenceInputDTO;
+use App\Repository\GenericRepository;
+use App\Services\CollectionService;
 use App\Services\SpreadSheetService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
-class CollectionController extends Controller
+class CollectionController extends CRUDController
 {
+    private CollectionService  $collectionService;
     private $spreadSheetService;
 
     /**
      * @param $spreadSheetService
      */
-    public function __construct(SpreadSheetService $spreadSheetService)
+    public function __construct(SpreadSheetService $spreadSheetService, CollectionService  $collectionService)
     {
+        parent::__construct(
+           new GenericRepository('biological_occurrence_view',"OccurrenceID"),
+        );
         $this->spreadSheetService = $spreadSheetService;
+        $this->collectionService=$collectionService;
     }
 
 
     public function uploadDocumentReturnJson(Request $request){
+        set_time_limit(0);
         return $this->spreadSheetService->sheetToJson($request);
+    }
+
+    public function file(Request $request){
+        set_time_limit(0);
+        return $this->spreadSheetService->insertSheetToDatabase($request);
+    }
+
+    public function createMany(Request $request){
+        unset($request['access_token']);
+        return $this->collectionService->insertManyFromRequest($request);
     }
 
     public function getAutocomplete(Request $request) {
