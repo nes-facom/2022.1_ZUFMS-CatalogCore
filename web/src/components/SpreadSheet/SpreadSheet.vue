@@ -1,26 +1,30 @@
 <script setup lang="ts">
-import { useOccurrencesStore, ZUFMSCore } from "@/store/occurrences";
+import type { ZUFMSCore } from "@/store/occurrences";
 import SpreadSheetCore from "../SpreadSheet/SpreadSheetCore.vue";
 import SpreadSheetHeader from "../SpreadSheet/SpreadSheetHeader.vue";
 import SpreadSheetNavigation from "../SpreadSheet/SpreadSheetNavigation.vue";
-import SpreadSheetPagination from '../SpreadSheet/SpreadSheetPagination.vue'
+import SpreadSheetSubmission from "./SpreadSheetSubmission.vue";
 
 const props = defineProps<{
-    mode?: 'submission' | 'occurrences'
-    showTermclassNavigation?: boolean;
-    omitTerms?: string[]
-    filter?: { [key in keyof ZUFMSCore]?: string }
-}
->();
+  mode?: "submission" | "occurrences";
+  showTermclassNavigation?: boolean;
+  omitTerms?: string[];
+  filter?: { [key in keyof ZUFMSCore]?: string };
+}>();
 
-const occurrencesStore = useOccurrencesStore()
+const omitTerms =
+  props.mode === "occurrences"
+    ? (["artificial:section"] as (keyof ZUFMSCore)[])
+    : [];
 </script>
 
 <template>
-    <main>
-        <SpreadSheetNavigation v-if="props.submissionMode && props.showTermclassNavigation" />
-        <SpreadSheetHeader />
-        <SpreadSheetCore :occurrences="occurrencesStore.occurrences" />
-        <SpreadSheetPagination />
-    </main>
+  <main class="w-full">
+    <SpreadSheetNavigation
+      v-if="props.mode === 'submission' && props.showTermclassNavigation"
+    />
+    <SpreadSheetHeader :omit-terms="omitTerms" />
+    <SpreadSheetSubmission v-if="props.mode === 'submission'" />
+    <SpreadSheetCore v-else :omit-terms="omitTerms" />
+  </main>
 </template>

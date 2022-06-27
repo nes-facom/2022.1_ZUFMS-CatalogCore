@@ -3,6 +3,8 @@ import SpreadSheet from "@/components/SpreadSheet/SpreadSheet.vue";
 import MaterialIcon from "@/components/MaterialIcon.vue";
 import { ref } from "vue";
 import DashboardHeader from "./DashboardHeader.vue";
+import { useOccurrencesStore } from "@/store/occurrences";
+import SpreadSheetPagination from "@/components/SpreadSheet/SpreadSheetPagination.vue";
 
 const props = defineProps<{
   sidebarState: {
@@ -11,15 +13,29 @@ const props = defineProps<{
 }>();
 
 const searchBoxValue = ref("");
+
+const occurrencesStore = useOccurrencesStore();
+
+const showHeader = ref(true);
+
+const onSpreadSheetScroll = (ev: Event) => {
+  if ((ev.target as any)?.scrollTop === 0) {
+    //  showHeader.value = true;
+  } else {
+    showHeader.value = false;
+  }
+};
 </script>
 
 <template>
-  <div class="flex flex-col w-full h-full pt-10">
+  <div :class="`${showHeader && 'pt-10'} flex flex-col w-full h-full`">
     <DashboardHeader
+      v-if="showHeader"
       class="px-16"
       title="Todos os registros"
       subtitle="Listagem de todos os registros cadastrados"
     />
+
     <section
       class="flex justify-between w-full min-w-fit flex px-16 py-5 border-b-2 border-[#2E688C]"
     >
@@ -46,9 +62,20 @@ const searchBoxValue = ref("");
         </button>
         <button
           @click="() => {}"
-          :disabled="!false"
+          :disabled="!occurrencesStore.hasSomeOccurrenceSelected"
           :class="`${
-            false
+            occurrencesStore.hasSomeOccurrenceSelected
+              ? 'hover:bg-green-600 hover:border-green-700'
+              : 'opacity-30 cursor-default'
+          } w-fit p-2 mr-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
+        >
+          <MaterialIcon name="download" />
+        </button>
+        <button
+          @click="() => {}"
+          :disabled="!occurrencesStore.hasSomeOccurrenceChange"
+          :class="`${
+            occurrencesStore.hasSomeOccurrenceChange
               ? 'hover:bg-green-600 hover:border-green-700'
               : 'opacity-30 cursor-default'
           } w-fit p-2 mr-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
@@ -57,9 +84,9 @@ const searchBoxValue = ref("");
         </button>
         <button
           @click="() => {}"
-          :disabled="!false"
+          :disabled="!occurrencesStore.hasSomeOccurrenceSelected"
           :class="`${
-            false
+            occurrencesStore.hasSomeOccurrenceSelected
               ? 'hover:bg-red-600 hover:border-red-700'
               : 'opacity-30 cursor-default'
           } w-fit p-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
@@ -69,11 +96,24 @@ const searchBoxValue = ref("");
       </div>
     </section>
 
-    <div class="flex-1 w-full pl-16 pb-16 overflow-x-scroll">
+    <div
+      class="flex-1 w-full pl-16 pb-10 overflow-x-scroll"
+      @scroll="onSpreadSheetScroll"
+    >
       <SpreadSheet
+        mode="occurrences"
         :omit-terms="['artificial:section']"
         :filter="{ 'artificial:section': props.sidebarState.section }"
       />
+      <div
+        class="w-full flex items-center justify-center sticky bottom-0 left-0"
+      >
+        <SpreadSheetPagination
+          class="bg-[#024168]/90 rounded-md p-1 backdrop-blur"
+          :pages="occurrencesStore.pages"
+          :pages-shown="6"
+        />
+      </div>
     </div>
   </div>
 </template>

@@ -1,52 +1,70 @@
 <script setup lang="ts">
-import { termsInputs } from "@/store/occurrences";
+import _ from "lodash";
+import { termsInputs, useOccurrencesStore } from "@/store/occurrences";
 import type { ZUFMSCore } from "@/store/occurrences";
 
 const props = defineProps<{
-  occurrences?: ZUFMSCore[];
-  currentTermclass?: string;
+  omitTerms?: (keyof ZUFMSCore)[];
 }>();
-const emit = defineEmits(["submit", "changeTermclass"]);
 const inputWidth = "20rem";
 
-const onInput = () => {};
+const occurrencesStore = useOccurrencesStore();
 
-const termclassNamesDiff = (asd: any) => asd;
+occurrencesStore.fetchOccurrences();
+
+const onInput =
+  (term: keyof ZUFMSCore, occurrenceID: ZUFMSCore["occurrenceID"]) =>
+  (ev: Event) => {
+    const value = (ev as any).target.value as string;
+
+    occurrencesStore.changeOccurrenceTermValue(occurrenceID, term, value);
+
+    occurrencesStore.fetchAutocompleteValues(term, value);
+  };
+
+const onCheckboxChange = (occurrenceID: ZUFMSCore["occurrenceID"]) => () =>
+  occurrencesStore.toggleOccurrenceSelection(occurrenceID);
 </script>
 
 <template>
   <section class="w-max h-full flex">
-    <form @submit.prevent="emit('submit')">
+    <div>
       <div
-        v-for="(occurrence, i) in props.occurrences"
+        v-for="(occurrence, i) in occurrencesStore.pageOccurrences"
         :key="'row_' + occurrence.occurrenceID"
         class="w-full h-12 odd:bg-[#104F76] even:bg-[#0C496F]"
       >
-        <input type="checkbox" class="-ml-6 mr-2" @change="() => {}" />
-        <template v-for="(term, j) in termsInputs" :key="term.name + '_' + i">
+        <input
+          type="checkbox"
+          class="-ml-6 mr-2"
+          @change="onCheckboxChange(occurrence.occurrenceID)()"
+          :checked="
+            occurrencesStore.selectedOccurrences[occurrence.occurrenceID]
+          "
+        />
+        <template
+          v-for="term in termsInputs.filter(term => !props.omitTerms?.includes(term.name as keyof ZUFMSCore) ?? true) as any[]"
+          :key="term.name + '_' + i"
+        >
           <input
             :style="{ width: inputWidth }"
             :class="`transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
-            :autofocus="i === occurrences?.length - 1 && j === 0"
             :placeholder="term.placeholder"
-            :tabindex="termclassNamesDiff(term.termclass)"
-            :value="occurrence[term.name as keyof ZUFMSCore]"
+            :value="occurrencesStore.$state.occurrenceChanges?.[occurrence['occurrenceID']]?.[term.name as keyof ZUFMSCore] ?? occurrence[term.name as keyof ZUFMSCore]"
             :list="term.name"
-            @input="onInput"
-            @focus="
-              () =>
-                props.currentTermclass !== term.termclass &&
-                emit('changeTermclass', term.termclass, j)
-            "
-            :name="`entry[${i}][${term.name}]`"
+            @input="(ev) => onInput(term.name as keyof ZUFMSCore, occurrence['occurrenceID'])(ev)"
+            :name="`occurrence[${i}][${term.name}]`"
           />
-          <datalist v-if="term.autocomplete" :id="term.name">
-            <option v-for="value in term.autocompleteValues" :key="value">
+          <datalist v-if="true || term.autocomplete" :id="term.name">
+            <option
+              v-for="value in occurrencesStore.$state.autocompleteValues[term.name as keyof ZUFMSCore]"
+              :key="_.uniqueId(value)"
+            >
               {{ value }}
             </option>
           </datalist>
         </template>
       </div>
-    </form>
+    </div>
   </section>
 </template>

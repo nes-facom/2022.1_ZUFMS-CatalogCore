@@ -7,7 +7,7 @@ const props = defineProps<{
 
 <template>
   <header class="w-full min-w-fit flex pt-5 pb-10 border-b-2 border-[#2E688C]">
-    <div class="flex-1">
+    <div class="flex-1 select-none">
       <h3 class="text-white text-3xl font-semibold">
         {{ props.title }}
       </h3>

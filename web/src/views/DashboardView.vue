@@ -6,9 +6,7 @@ import MaterialIcon from "@/components/MaterialIcon.vue";
 import UserIndicator from "@/components/UserIndicator.vue";
 import OpacityTransition from "@/components/transitions/OpacityTransition.vue";
 import SlideTransition from "@/components/transitions/SlideTransition.vue";
-import { api } from "@/api";
-import router from "@/router";
-import VueJwtDecode from "vue-jwt-decode";
+import { useAuthStore } from "@/store/auth";
 
 const sidebarState = ref({});
 
@@ -21,28 +19,11 @@ const navLinks = [
   { title: "Submissão", to: "/submissao" },
 ];
 
-const userEmail = ref<string>();
+const authStore = useAuthStore();
 
-fetch("https://localhost:3000/v1/auth/userinfo", {
-  headers: {
-    Authorization: "Bearer " + window.localStorage.getItem("_at") ?? "",
-  },
-})
-  .then((response) => response.json())
-  .then((userData) => {
-    userEmail.value = userData.email.split("@")[0];
-  });
-
-const parsedJwt = VueJwtDecode.decode(window.localStorage.getItem("_at") ?? "");
-
-if (parsedJwt.scope.split(" ").includes("users:read")) {
+if (authStore.scopes.includes("users:read")) {
   navLinks.push({ title: "Usuários", to: "/usuarios" });
 }
-
-const onLogout = () => {
-  window.localStorage.removeItem("_at");
-  router.replace("/login");
-};
 
 const sidebarOnFocus = ref(true);
 </script>
@@ -52,25 +33,41 @@ const sidebarOnFocus = ref(true);
     <header class="navbar">
       <ZUFMSLogo />
       <nav class="navbar-links">
-        <RouterLink v-for="navLink in navLinks" exactActiveClass="navbar-link-active" :key="navLink.title"
-          :to="navLink.to">
+        <RouterLink
+          v-for="navLink in navLinks"
+          exactActiveClass="navbar-link-active"
+          :key="navLink.title"
+          :to="navLink.to"
+        >
           {{ navLink.title }}
         </RouterLink>
       </nav>
-      <UserIndicator :name="userEmail ?? 'Carregando...'" @avatarClick="onLogout" @logout="onLogout" />
+      <UserIndicator />
     </header>
     <div class="page-body">
       <RouterView name="sidebar" v-slot="{ Component }">
-        <aside tabindex="0" v-if="Component" :class="`sidebar-wrapper ${sidebarOnFocus ? 'w-1/6 overflow-y-scroll' : 'w-20 overflow-hidden'
-        }`" @focus="sidebarOnFocus = true" @blur="sidebarOnFocus = false" @mouseleave="sidebarOnFocus = false"
-          @mouseenter="sidebarOnFocus = true">
+        <aside
+          tabindex="0"
+          v-if="Component"
+          :class="`sidebar-wrapper ${
+            sidebarOnFocus ? 'w-1/6 overflow-y-scroll' : 'w-20 overflow-hidden'
+          }`"
+          @focus="sidebarOnFocus = true"
+          @blur="sidebarOnFocus = false"
+          @mouseleave="sidebarOnFocus = false"
+          @mouseenter="sidebarOnFocus = true"
+        >
           <OpacityTransition>
             <div v-if="!sidebarOnFocus" class="sidebar-overlay">
               <MaterialIcon name="chevron_right" class="text-5xl" />
             </div>
           </OpacityTransition>
           <SlideTransition>
-            <component :is="Component" class="w-full" @stateChange="onSidebarStateChange" />
+            <component
+              :is="Component"
+              class="w-full"
+              @stateChange="onSidebarStateChange"
+            />
           </SlideTransition>
         </aside>
       </RouterView>
@@ -94,7 +91,7 @@ const sidebarOnFocus = ref(true);
 }
 
 .navbar-links {
-  @apply flex w-[32rem] justify-between text-[1.2rem] text-[#85ABC2];
+  @apply flex mx-24 w-[32rem] justify-between text-[1.2rem] text-[#85ABC2];
 }
 
 .navbar-link-active {

@@ -63,7 +63,7 @@ class CollectionController extends Controller
 
         $where_clause = ['ILIKE', $validated['value'] . '%'];
 
-        $autocomplete_query_result = DB::table(column)
+        $autocomplete_query_result = DB::table($column)
             ->offset($start)
             ->limit($limit)
             ->where('value', ...$where_clause)

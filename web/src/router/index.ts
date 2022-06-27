@@ -2,6 +2,7 @@ import { createRouter, createWebHistory } from "vue-router";
 import HomeSidebar from "@/views/Dashboard/HomeSidebar.vue";
 import HomeMain from "@/views/Dashboard/HomeMain.vue";
 import LoginView from "@/views/LoginView.vue";
+import { useAuthStore } from "@/store/auth";
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -10,6 +11,7 @@ const router = createRouter({
       path: "/",
       name: "dashboard",
       component: () => import("../views/DashboardView.vue"),
+      meta: { requiresAuth: true },
       children: [
         {
           path: "/",
@@ -18,6 +20,7 @@ const router = createRouter({
             default: HomeMain,
             sidebar: HomeSidebar,
           },
+          meta: { requiresAuth: true },
         },
         {
           path: "/submissao",
@@ -25,6 +28,7 @@ const router = createRouter({
           components: {
             default: () => import("../views/Dashboard/SubmissionMain.vue"),
           },
+          meta: { requiresAuth: true },
         },
         {
           path: "/usuarios",
@@ -32,6 +36,7 @@ const router = createRouter({
           components: {
             default: () => import("../views/Dashboard/UsersMain.vue"),
           },
+          meta: { requiresAuth: true },
         },
       ],
     },
@@ -48,10 +53,10 @@ const router = createRouter({
   ],
 });
 
-router.beforeEach((to, from) => {
-  const isAuthenticated = localStorage.getItem("_at") !== null;
+router.beforeEach((to) => {
+  const authStore = useAuthStore();
 
-  if (!isAuthenticated && to.name !== "login") {
+  if (!authStore.isAuthenticated && to.meta.requiresAuth) {
     return { name: "login" };
   }
 });

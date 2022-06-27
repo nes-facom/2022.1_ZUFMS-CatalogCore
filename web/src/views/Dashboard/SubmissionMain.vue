@@ -3,6 +3,8 @@ import ZUFMSSpreadsheet from "@/components/ZUFMSSpreadsheet/index.vue";
 import { ref } from "vue";
 import MaterialIcon from "@/components/MaterialIcon.vue";
 import DashboardHeader from "./DashboardHeader.vue";
+import SpreadSheet from "@/components/SpreadSheet/SpreadSheet.vue";
+import SlideTransition from "@/components/transitions/SlideTransition.vue";
 
 defineProps<{
   sidebarState: {
@@ -10,82 +12,84 @@ defineProps<{
   };
 }>();
 
-const dropfile = ref(false);
-
-const onDragOver = (event: DragEvent) => {
-  console.log("isFile", event.dataTransfer?.types.indexOf("Files") !== -1);
-
-  console.log(event.dataTransfer?.files.item(0))
-
-  if (!dropfile.value) {
-    dropfile.value = true;
-  }
-};
-
-const onDragLeave = () => {
-  if (dropfile.value) {
-    dropfile.value = false;
-  }
-};
-
-const onDrop = onDragLeave;
-
-const showTermclassNavigation = ref(true)
+const showTermclassNavigation = ref(true);
+const showHeader = ref(true);
 </script>
 
 <template>
-  <div :class="`flex flex-col w-full h-full pt-10 ${dropfile && 'disable-pointer-events'
-  }`" @dragover.prevent="onDragOver" @dragleave.prevent="onDragLeave" @drop.prevent="onDrop">
-    <Transition name="slide">
-      <DashboardHeader class="px-16" title="Nova submissão" subtitle="Submeta um novo registro à coleção">
+  <div :class="`${showHeader && 'pt-10'} flex flex-col w-full h-full`">
+    <SlideTransition>
+      <DashboardHeader
+        v-if="showHeader"
+        class="px-16"
+        title="Nova submissão"
+        subtitle="Submeta um novo registro à coleção"
+      >
         <template v-slot:buttons>
           <div class="flex">
-            <button @click="showTermclassNavigation = !showTermclassNavigation"
-              :class="`${showTermclassNavigation ? 'bg-[#52BD8F] hover:bg-[#369169]' : 'bg-[#737373] hover:bg-[#787878]'} w-fit transition-all hover:drop-shadow-xl drop-shadow-md p-4 rounded-full flex items-center justify-center`">
-              <MaterialIcon :name="showTermclassNavigation ? 'visibility' : 'visibility_off'" class="text-white" />
+            <button
+              @click="showTermclassNavigation = !showTermclassNavigation"
+              :class="`${
+                showTermclassNavigation
+                  ? 'bg-[#52BD8F] hover:bg-[#369169]'
+                  : 'bg-[#737373] hover:bg-[#787878]'
+              } mr-2 w-fit transition-all hover:drop-shadow-xl drop-shadow-md p-4 rounded-full flex items-center justify-center`"
+            >
+              <MaterialIcon
+                :name="
+                  showTermclassNavigation ? 'visibility' : 'visibility_off'
+                "
+                class="text-white"
+              />
             </button>
 
             <div
-              class="bg-[#52BD8F] transition-all hover:drop-shadow-xl hover:bg-[#369169] drop-shadow-md p-4 rounded-full flex items-center justify-center">
+              class="bg-[#52BD8F] transition-all hover:drop-shadow-xl hover:bg-[#369169] drop-shadow-md p-4 rounded-full flex items-center justify-center"
+            >
               <input class="w-20 h-20 opacity-0 absolute" type="file" />
               <MaterialIcon name="file_upload" class="text-white" />
             </div>
           </div>
         </template>
       </DashboardHeader>
-    </Transition>
-    <div class="flex-1 w-full pl-16 overflow-x-scroll h-full">
-      <ZUFMSSpreadsheet submission-mode :showTermclassNavigation="showTermclassNavigation" />
-    </div>
+      <div v-else>
+        <div class="flex absolute top-14 right-10 z-[3]">
+          <button
+            @click="showTermclassNavigation = !showTermclassNavigation"
+            :class="`${
+              showTermclassNavigation
+                ? 'bg-[#52BD8F] hover:bg-[#369169]'
+                : 'bg-[#737373] hover:bg-[#787878]'
+            } mr-2 w-fit transition-all hover:drop-shadow-xl drop-shadow-md p-4 rounded-full flex items-center justify-center`"
+          >
+            <MaterialIcon
+              :name="showTermclassNavigation ? 'visibility' : 'visibility_off'"
+              class="text-white"
+            />
+          </button>
 
-    <div v-if="dropfile"
-      class="z-[2] fixed top-0 left-0 w-full h-full bg-black/40 border-4 border-dashed border-[#52BD8F] flex items-center justify-center">
-      <div class="p-4 bg-white rounded-lg animate-wiggle">
-        <div class="flex flex-col justify-center bg-white border-2 border-dashed border-[#52BD8F] p-10 rounded-lg">
-          <MaterialIcon name="upload" class="text-gray-700 text-center text-4xl mb-2" />
-          <h3 class="text-2xl text-gray-800 font-semibold">
-            Importar arquivo .csv
-          </h3>
-          <p class="text-[#99BBD0]">Solte o arquivo .csv importar</p>
+          <div
+            class="bg-[#52BD8F] transition-all hover:drop-shadow-xl hover:bg-[#369169] drop-shadow-md p-4 rounded-full flex items-center justify-center"
+          >
+            <input class="w-20 h-20 opacity-0 absolute" type="file" />
+            <MaterialIcon name="file_upload" class="text-white" />
+          </div>
         </div>
       </div>
+    </SlideTransition>
+    <div class="flex-1 w-full pl-16 overflow-x-scroll h-full">
+      <ZUFMSSpreadsheet
+        submission-mode
+        :showTermclassNavigation="showTermclassNavigation"
+        @scroll-y="
+          () => {
+            showHeader = false;
+            showTermclassNavigation = false;
+          }
+        "
+      />
     </div>
   </div>
 </template>
 
-<style scoped>
-.disable-pointer-events * {
-  pointer-events: none;
-}
-
-.slide-enter-active,
-.slide-leave-active {
-  transition: all 0.1s ease-in-out;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-  transform: translateY(-100px);
-  opacity: 0;
-}
-</style>
+<style scoped></style>
