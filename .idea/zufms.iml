@@ -130,6 +130,18 @@
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/polyfill-php80" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/laravel/sail" />
       <excludeFolder url="file://$MODULE_DIR$/api/vendor/symfony/deprecation-contracts" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/swaggest/json-diff" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/swaggest/json-schema" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/phplang/scope-exit" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/json-mapper/json-mapper" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/psr/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/cache" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/dbal" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/event-manager" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/doctrine/deprecations" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/opis/json-schema" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/opis/string" />
+      <excludeFolder url="file://$MODULE_DIR$/api/vendor/opis/uri" />
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
