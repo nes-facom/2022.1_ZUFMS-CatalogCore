@@ -32,10 +32,10 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
     ...arr,
     {
       name,
-      placeholder: value?.examples?.[0],
-      value: value["default"],
-      autocomplete: value["$zufmscore:autocomplete"],
-      autocompleteValues: value?.examples,
+      placeholder: (value as any).examples?.[0],
+      value: (value as any)["default"] ?? "",
+      autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
+      autocompleteValues: (value as any).examples,
       termclass: value["$zufmscore:termclass"],
     },
   ],
@@ -172,14 +172,15 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
     },
 
     async downloadSelectedOccurrences() {
+      /*
       return this.occurrences.reduce(
         (occurrences, occurrencesPage) => [
           ...occurrences,
           ...occurrencesPage
             .filter(
-              (occurrence) => this.selectedOccurrences[occurrence.occurrenceID]
+              (occurrence: ZUFMSCore) => this.selectedOccurrences[occurrence.occurrenceID]
             )
-            .map((occurrence) =>
+            .map((occurrence: ZUFMSCore) =>
               this.hasSomeTermSelected
                 ? _.pick(occurrence, Object.keys(this.selectedTerms))
                 : occurrence
@@ -187,6 +188,9 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
         ],
         [] as Partial<ZUFMSCore>[]
       );
+      */
+
+      return [];
     },
 
     async uploadOccurrences() {

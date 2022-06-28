@@ -23,7 +23,7 @@ const fn = async () => {
       scope: "admin",
     });
 
-    window.localStorage.setItem("_at", tokenResponse.data.access_token ?? "");
+    localStorage.setItem("_at", tokenResponse.data.access_token ?? "");
 
     router.replace("/");
   } catch (err) {

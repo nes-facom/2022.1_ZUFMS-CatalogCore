@@ -80,14 +80,11 @@ export const useAuthStore = defineStore("authStore", {
     },
     async fetchUserInfo() {
       try {
-        const response = await fetch(
-          "https://localhost:3000/v1/auth/userinfo",
-          {
-            headers: {
-              Authorization: "Bearer " + this.accessToken,
-            },
-          }
-        );
+        const response = await fetch("https://localhost/v1/auth/userinfo", {
+          headers: {
+            Authorization: "Bearer " + this.accessToken,
+          },
+        });
 
         const userInfo = await response.json();
 

@@ -2,10 +2,7 @@
 import { ref, watch, watchEffect } from "vue";
 import SequenceButton from "@/components/SequenceButton.vue";
 import Button from "@/components/Button.vue";
-import { otpRequestStorage, serviceApi } from "@/api";
 import router from "@/router";
-import { generateOtpState } from "@/util/auth";
-import _ from "lodash";
 import { useAuthStore } from "@/store/auth";
 
 const loginStep = ref<"email" | "code">("email");

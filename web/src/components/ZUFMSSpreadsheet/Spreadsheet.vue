@@ -56,7 +56,7 @@ const submit = (ev: Event) => {
 
   const submissionData = new Array(rows.value).fill({});
 
-  for (const [key, value] of formData.entries()) {
+  for (const [key, value] of (formData as any).entries()) {
     const [term, index] = key.split("_");
     const indexNumber = parseInt(index, 10) - 1;
 
