@@ -19,17 +19,46 @@ class CollectionService
 
     private Validator $validator;
     private JsonMapperInterface $mapper;
+    public array $available_term_columns;
+    public array $available_sections;
 
     public function __construct()
     {
+        $this->fillAvailableTermColumnsAndAvailableSections();
         $this->mapper = (new JsonMapperFactory())->bestFit();
         $this->validator = new Validator();
         $this->validator->resolver()->registerFile(
             'https://inbio.ufms.br/zufms/zufmscore.schema.json',
             base_path() . '/resources/assets/zufmscore.schema.json'
         );
-
     }
+
+    private function fillAvailableTermColumnsAndAvailableSections(): void
+    {
+        $string = file_get_contents(base_path() . '/resources/assets/zufmscore.schema.json');
+        $json_a = json_decode($string, true);
+        $properties =$json_a['properties'];
+        $keys = array_keys($properties);
+        $size = count($properties);
+        $availableColumns = [];
+        $availableSections = [];
+        for ($i = 0; $i < $size; $i++) {
+            $key =   $keys[$i];
+            $availableColumns[] =$key;
+
+            if($key == 'artificial:section'){
+
+                $sections = $properties[$key]['oneOf'];
+
+                foreach ($sections as &$section){
+                    $availableSections[] = $section['const'];
+                }
+            }
+        }
+        $this->available_sections = $availableSections;
+        $this->available_term_columns =  $availableColumns;
+    }
+
     public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse
     {
         try {
@@ -81,6 +110,21 @@ class CollectionService
         $vl = $request->all();
         $jsonBody = json_encode($vl);
         $this->insertManyFromJson($jsonBody);
+    }
+
+    public function getAll($input): array
+    {
+        $validated = $input;
+        $start = isset($validated['start']) ? (int) $validated['start'] : NULL;
+        $limit = isset($validated['limit']) ? (int) $validated['limit'] : NULL;
+        $sortBy = isset($validated['sortBy']) ? (string) $validated['sortBy'] :  'occurrenceID';
+        $section = isset($validated['artificial:section']) ? (string) $validated['artificial:section'] :  null;
+
+       $query = DB::table('biological_occurrence_view')->orderBy($sortBy);
+        if($section != null){
+            $query = $query->where('artificial:section',"=" ,$section);
+        }
+      return $query->limit($limit)->offset($start)->get()->toArray();
     }
 
     /**

@@ -28,7 +28,6 @@ class CollectionController extends CRUDController
         $this->collectionService=$collectionService;
     }
 
-
     public function uploadDocumentReturnJson(Request $request){
         set_time_limit(0);
         return $this->spreadSheetService->sheetToJson($request);
@@ -42,6 +41,52 @@ class CollectionController extends CRUDController
     public function createMany(Request $request){
         unset($request['access_token']);
         return $this->collectionService->insertManyFromRequest($request);
+    }
+    /*
+    * @Override
+    */
+    public function getAll(Request $request): \Illuminate\Http\JsonResponse
+    {
+        unset($request['access_token']);
+
+        $available_term_columns = $this->collectionService->available_term_columns;
+        $available_sections = $this->collectionService->available_sections;
+
+        $validator = Validator::make($request->all(), [
+            'sortBy' => [Rule::in($available_term_columns)],
+            'artificial:section' => [Rule::in($available_sections)],
+            'limit' => 'integer',
+            'start' => 'integer'
+        ]);
+
+        if ($validator->fails()) {
+            $errors = array_map(fn (string $description) => [
+                'code' => 2,
+                'title' => 'Dado inválido',
+                'description' => $description
+            ],  $validator->errors()->all());
+
+            return response()->json([
+                'errors' => $errors
+            ]);
+        }
+        $validated = $validator->safe();
+
+        $occurrences = [];
+        try {
+            $occurrences = $this->collectionService->getAll($validated);
+        }catch (\Exception $e){
+            return response()->json([
+                'errors' => [
+                    [
+                        'code'=> 2,
+                        'title'=> 'Erro interno',
+                        'description' => "Um erro interno inesperado ocorreu",
+                    ]
+                ]
+            ], 500);
+        }
+        return response()->json($occurrences);
     }
 
     public function getAutocomplete(Request $request) {
@@ -82,7 +127,7 @@ class CollectionController extends CRUDController
 
         $where_clause = ['ILIKE', $validated['value'] . '%'];
 
-        $autocomplete_query_result = DB::table(column)
+        $autocomplete_query_result = DB::table($column)
             ->offset($start)
             ->limit($limit)
             ->where('value', ...$where_clause)
