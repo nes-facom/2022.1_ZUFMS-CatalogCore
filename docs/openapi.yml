@@ -23,9 +23,9 @@ servers:
         default: "localhost"
       port:
         enum:
-          - ":3000"
           - ""
-        default: ":3000"
+          - ":3000"
+        default: ""
 tags:
   - name: auth
   - name: users

@@ -254,7 +254,7 @@ class AuthController
 
             $this->emailSenderService->send(
                 'send-access-code', 
-                'lima.barbosa@ufms.br', // $otp_request->email,
+                $otp_request->email,
                 $emailBodyVariables, 
                 'Codigo de acesso'
             );
