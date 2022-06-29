@@ -50,4 +50,8 @@ class GenericRepository
         return $this->db()
             ->find('id', $id);
     }
+
+    public function count() {
+        return $this->db()->count();
+    }
 }

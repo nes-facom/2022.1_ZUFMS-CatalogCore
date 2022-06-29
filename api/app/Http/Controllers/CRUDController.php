@@ -106,4 +106,10 @@ class CRUDController extends Controller
 
         return response()->json($mapped_data);
     }
+
+    public function count(Request $request) {
+        $data = $this->repository->count();
+
+        return response()->json($data);
+    }
 }
