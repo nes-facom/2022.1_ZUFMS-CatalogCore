@@ -5,6 +5,7 @@ import MaterialIcon from "@/components/MaterialIcon.vue";
 import DashboardHeader from "./DashboardHeader.vue";
 import SpreadSheet from "@/components/SpreadSheet/SpreadSheet.vue";
 import SlideTransition from "@/components/transitions/SlideTransition.vue";
+import { useSubmissionStore } from "@/store/submission";
 
 defineProps<{
   sidebarState: {
@@ -14,6 +15,12 @@ defineProps<{
 
 const showTermclassNavigation = ref(true);
 const showHeader = ref(true);
+
+const submissionStore = useSubmissionStore();
+
+const onChangeFileUpload = (e: Event) => {
+  submissionStore.loadFromCsv(e.target.files[0]);
+};
 </script>
 
 <template>
@@ -44,9 +51,13 @@ const showHeader = ref(true);
             </button>
 
             <div
-              class="bg-[#52BD8F] transition-all hover:drop-shadow-xl hover:bg-[#369169] drop-shadow-md p-4 rounded-full flex items-center justify-center"
+              class="cursor-pointer bg-[#52BD8F] transition-all hover:drop-shadow-xl hover:bg-[#369169] drop-shadow-md p-4 rounded-full flex items-center justify-center"
             >
-              <input class="w-20 h-20 opacity-0 absolute" type="file" />
+              <input
+                class="w-20 h-20 opacity-0 absolute cursor-pointer"
+                type="file"
+                @change="onChangeFileUpload"
+              />
               <MaterialIcon name="file_upload" class="text-white" />
             </div>
           </div>

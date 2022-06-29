@@ -1,7 +1,7 @@
 import { defineStore } from "pinia";
 
 export type Message = {
-  iconName: "error" | "warning";
+  iconName: "error" | "warning" | "done";
   colorClass?: string;
   title: string;
   description?: string;
@@ -18,3 +18,12 @@ export const useToastStore = defineStore("toastStore", {
     },
   },
 });
+
+export const descriptionFromResponseError = (
+  err: unknown
+): string | undefined =>
+  (err as any)?.response?.data.errors?.reduce(
+    (message: string, e: { title: string; description: string }) =>
+      `${message}${e.title}: ${e.description}\n`,
+    ""
+  );

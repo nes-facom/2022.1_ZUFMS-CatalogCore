@@ -105,11 +105,11 @@ class CollectionService
         }
     }
 
-    public function insertManyFromRequest(Request $request): void
+    public function insertManyFromRequest(Request $request): \Illuminate\Http\JsonResponse
     {
         $vl = $request->all();
         $jsonBody = json_encode($vl);
-        $this->insertManyFromJson($jsonBody);
+        return $this->insertManyFromJson($jsonBody);
     }
 
     public function getAll($input): array

@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import _ from "lodash";
+import { ref, watchEffect } from "vue";
 import { termsInputs, useOccurrencesStore } from "@/store/occurrences";
 import type { ZUFMSCore } from "@/store/occurrences";
 
@@ -11,6 +12,17 @@ const inputWidth = "20rem";
 const occurrencesStore = useOccurrencesStore();
 
 occurrencesStore.fetchOccurrences();
+
+const occurrences = ref<ZUFMSCore[]>([]);
+
+watchEffect(() => {
+  occurrencesStore.isFetchingPage = true;
+
+  occurrencesStore.currentPageOccurrences.then((data) => {
+    occurrences.value = data;
+    occurrencesStore.isFetchingPage = false;
+  });
+});
 
 const onInput =
   (term: keyof ZUFMSCore, occurrenceID: ZUFMSCore["occurrenceID"]) =>
@@ -24,13 +36,25 @@ const onInput =
 
 const onCheckboxChange = (occurrenceID: ZUFMSCore["occurrenceID"]) => () =>
   occurrencesStore.toggleOccurrenceSelection(occurrenceID);
+
+const termValueIsInAutocomplete = (occurrence: ZUFMSCore, term: any) =>
+  !(
+    occurrencesStore.autocompleteValues[term.name as keyof ZUFMSCore]?.includes(
+      (
+        occurrencesStore.$state.occurrenceChanges?.[
+          occurrence["occurrenceID"]
+        ]?.[term.name as keyof ZUFMSCore] ??
+        occurrence[term.name as keyof ZUFMSCore]
+      ).toString()
+    ) ?? true
+  );
 </script>
 
 <template>
   <section class="w-max h-full flex">
     <div>
       <div
-        v-for="(occurrence, i) in occurrencesStore.pageOccurrences"
+        v-for="(occurrence, i) in occurrences"
         :key="'row_' + occurrence.occurrenceID"
         class="w-full h-12 odd:bg-[#104F76] even:bg-[#0C496F]"
       >
@@ -47,15 +71,19 @@ const onCheckboxChange = (occurrenceID: ZUFMSCore["occurrenceID"]) => () =>
           :key="term.name + '_' + i"
         >
           <input
+            :pattern="term.pattern"
             :style="{ width: inputWidth }"
-            :class="`transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
+            :class="`transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] invalid:border-red-500 ${
+              termValueIsInAutocomplete(occurrence, term) &&
+              '!border-yellow-500'
+            } text-white`"
             :placeholder="term.placeholder"
             :value="occurrencesStore.$state.occurrenceChanges?.[occurrence['occurrenceID']]?.[term.name as keyof ZUFMSCore] ?? occurrence[term.name as keyof ZUFMSCore]"
             :list="term.name"
             @input="(ev) => onInput(term.name as keyof ZUFMSCore, occurrence['occurrenceID'])(ev)"
             :name="`occurrence[${i}][${term.name}]`"
           />
-          <datalist v-if="true || term.autocomplete" :id="term.name">
+          <datalist v-if="term.autocomplete" :id="term.name">
             <option
               v-for="value in occurrencesStore.$state.autocompleteValues[term.name as keyof ZUFMSCore]"
               :key="_.uniqueId(value)"

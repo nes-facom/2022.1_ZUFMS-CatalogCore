@@ -12,7 +12,7 @@ class CRUDController extends Controller
     public function __construct(
         public GenericRepository $repository,
         public array $dtos = [],
-        public array $entity_pk = ['id'],
+        public string $entity_pk = 'id',
     )
     { }
 

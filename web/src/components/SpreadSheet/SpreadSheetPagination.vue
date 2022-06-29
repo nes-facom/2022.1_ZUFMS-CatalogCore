@@ -1,26 +1,30 @@
 <script setup lang="ts">
 import { useOccurrencesStore } from "@/store/occurrences";
 import _ from "lodash";
-import { ref, watchEffect } from "vue";
+import { ref, watchEffect, computed } from "vue";
 import MaterialIcon from "../MaterialIcon.vue";
 const props = defineProps<{
-  pages: number;
-  pagesShown?: number;
+  maxPagesShown?: number;
 }>();
 
-const pagesShown = props.pagesShown ?? props.pages;
+const occurrencesStore = useOccurrencesStore();
+
+const pagesShown = computed(() =>
+  Math.min(
+    props.maxPagesShown ?? occurrencesStore.pages,
+    occurrencesStore.pages
+  )
+);
 
 const currentPage = ref(1);
 const previousPage = () =>
   (currentPage.value = Math.max(1, --currentPage.value));
 const nextPage = () =>
-  (currentPage.value = Math.min(props.pages, ++currentPage.value));
+  (currentPage.value = Math.min(occurrencesStore.pages, ++currentPage.value));
 
 const isMiddlePage = (n: number) =>
-  Math.ceil(pagesShown / 2) < n &&
-  n < props.pages - Math.ceil(pagesShown / 2) + 1;
-
-const occurrencesStore = useOccurrencesStore();
+  Math.ceil(pagesShown.value / 2) < n &&
+  n < occurrencesStore.pages - Math.ceil(pagesShown.value / 2) + 1;
 
 watchEffect(() => occurrencesStore.$patch({ currentPage: currentPage.value }));
 </script>
@@ -35,10 +39,17 @@ watchEffect(() => occurrencesStore.$patch({ currentPage: currentPage.value }));
       <MaterialIcon name="chevron_left" class="text-md" />
     </button>
 
-    <template v-if="pagesShown === props.pages">
+    <template
+      v-if="
+        pagesShown === occurrencesStore.pages || occurrencesStore.pages <= 6
+      "
+    >
       <button
         :class="`py-1 px-4 rounded flex items-center justify-center ${
-          currentPage === n && 'bg-[#52BD8F] text-white'
+          currentPage === n &&
+          `bg-[#52BD8F] text-white ${
+            occurrencesStore.isFetchingPage && 'animate-pulse'
+          }`
         }`"
         @click="currentPage = n"
         v-for="n in pagesShown"
@@ -51,7 +62,10 @@ watchEffect(() => occurrencesStore.$patch({ currentPage: currentPage.value }));
     <template v-else>
       <button
         :class="`py-1 px-4 rounded flex items-center justify-center ${
-          currentPage === n && 'bg-[#52BD8F] text-white'
+          currentPage === n &&
+          `bg-[#52BD8F] text-white ${
+            occurrencesStore.isFetchingPage && 'animate-pulse'
+          }`
         }`"
         @click="currentPage = n"
         v-for="n in Math.ceil(pagesShown / 2)"
@@ -73,12 +87,15 @@ watchEffect(() => occurrencesStore.$patch({ currentPage: currentPage.value }));
 
       <button
         :class="`py-1 px-4 rounded flex items-center justify-center ${
-          currentPage === n && 'bg-[#52BD8F] text-white'
+          currentPage === n &&
+          `bg-[#52BD8F] text-white ${
+            occurrencesStore.isFetchingPage && 'animate-pulse'
+          }`
         }`"
         @click="currentPage = n"
         v-for="n in _.range(
-          props.pages - Math.ceil(pagesShown / 2) + 1,
-          props.pages + 1
+          occurrencesStore.pages - Math.ceil(pagesShown / 2) + 1,
+          occurrencesStore.pages + 1
         )"
         :key="n"
       >
@@ -88,7 +105,9 @@ watchEffect(() => occurrencesStore.$patch({ currentPage: currentPage.value }));
 
     <button
       @click="nextPage()"
-      :disabled="currentPage === props.pages"
+      :disabled="
+        currentPage === occurrencesStore.pages || occurrencesStore.pages === 0
+      "
       class="disabled:opacity-10 py-2 px-4 flex items-center justify-center"
     >
       <MaterialIcon name="chevron_right" />

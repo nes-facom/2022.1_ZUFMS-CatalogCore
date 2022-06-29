@@ -3,6 +3,8 @@ import { defineStore } from "pinia";
 import * as zufmscore from "@/util/zufmscore";
 import { userApi } from "@/api";
 import _ from "lodash";
+import { wait } from "@/util/async";
+import { descriptionFromResponseError, useToastStore } from "./toast";
 
 export type ZUFMSCore = Required<ApiZUFMSCore>;
 
@@ -36,6 +38,7 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
       value: (value as any)["default"] ?? "",
       autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
       autocompleteValues: (value as any).examples,
+      pattern: (value as any).pattern,
       termclass: value["$zufmscore:termclass"],
     },
   ],
@@ -50,37 +53,52 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
 );
 
 type State = {
-  occurrences: ZUFMSCore[];
+  occurrences: Record<number, ZUFMSCore[]>;
   occurrencesPerPage: number;
   currentPage: number;
+  pages: number;
   selectedTerms: { [key in keyof ZUFMSCore]?: true };
   occurrenceChanges: Record<ZUFMSCore["occurrenceID"], Partial<ZUFMSCore>>;
   autocompleteValues: { [key in keyof ZUFMSCore]?: string[] };
   selectedOccurrences: Record<ZUFMSCore["occurrenceID"], true>;
   currentSection: ZUFMSCore["artificial:section"];
+  isFetchingPage: boolean;
+  pageOccurrences: (
+    page: number,
+    section: ZUFMSCore["artificial:section"]
+  ) => Promise<ZUFMSCore[]>;
 };
 
 export const useOccurrencesStore = defineStore("occurrencesStore", {
   state: () =>
     ({
-      occurrences: [],
+      occurrences: {},
       occurrencesPerPage: 10,
       currentPage: 1,
+      pages: 0,
       occurrenceChanges: {},
       autocompleteValues: {},
       selectedOccurrences: {},
       selectedTerms: {},
-      currentSection: "AMP",
+      currentSection: "Amphibia",
+      isFetchingPage: false,
     } as State),
 
   getters: {
-    pages: (state) =>
-      Math.ceil(state.occurrences.length / state.occurrencesPerPage),
     pageOccurrences: (state) =>
-      state.occurrences.slice(
-        state.currentPage * state.occurrencesPerPage,
-        state.currentPage * state.occurrencesPerPage + state.occurrencesPerPage
+      _.memoize(
+        async (page: number, section: ZUFMSCore["artificial:section"]) =>
+          (
+            await userApi.occurrences.occurrencesGetAll(
+              undefined,
+              state.occurrencesPerPage * (page - 1),
+              state.occurrencesPerPage,
+              section
+            )
+          ).data as unknown as ZUFMSCore[]
       ),
+    currentPageOccurrences: (state) =>
+      state.pageOccurrences(state.currentPage, state.currentSection),
     hasSomeOccurrenceSelected: (state) =>
       Object.keys(state.selectedOccurrences).length > 0,
     hasSomeOccurrenceChange: (state) =>
@@ -88,15 +106,50 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
     hasSomeTermSelected: (state) => Object.keys(state.selectedTerms).length > 0,
   },
   actions: {
-    fetchOccurrences() {
-      this.occurrences = _.range(100).map(
-        (i) =>
-          ({
-            occurrenceID: `ZUFMSAMP-${i}`,
-            "artificial:section": "AMP",
-            "dcterms:modified": new Date().toLocaleDateString("pt-BR"),
-          } as any)
+    async getSections() {
+      return await userApi.occurrences.occurrencesAutocomplete(
+        "artificial:section",
+        ""
       );
+    },
+
+    async loadFromCsv(file: File) {
+      const toastStore = useToastStore();
+
+      try {
+        await userApi.occurrences.occurrencesFile({
+          data: file,
+        });
+
+        toastStore.pushMessage({
+          title: "CSV carregado com sucesso",
+          iconName: "done",
+        });
+
+        this.fetchOccurrences();
+      } catch (err) {
+        toastStore.pushMessage({
+          title: "Erro ao carregar CSV",
+          iconName: "error",
+          description: descriptionFromResponseError(err),
+          time: 5000,
+        });
+      }
+    },
+
+    async fetchOccurrences() {
+      const occurrencesCount = await fetch(
+        `https://localhost/v1/occurrences/count?artificial:section=${this.currentSection}`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("_at") ?? ""}`,
+          },
+        }
+      ).then((data) => data.json());
+
+      this.pages = Math.ceil(occurrencesCount / this.occurrencesPerPage);
+
+      this.pageOccurrences.cache.clear?.();
     },
 
     async fetchAutocompleteValues(term: keyof ZUFMSCore, value?: string) {

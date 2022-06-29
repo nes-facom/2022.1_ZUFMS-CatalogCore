@@ -25,6 +25,10 @@ const onSpreadSheetScroll = (ev: Event) => {
     showHeader.value = false;
   }
 };
+
+const onChangeFileUpload = (e: Event) => {
+  occurrencesStore.createFromCsv(e.target.files[0]);
+};
 </script>
 
 <template>
@@ -50,16 +54,16 @@ const onSpreadSheetScroll = (ev: Event) => {
         />
       </div>
       <div class="flex">
-        <button
-          @click="() => {}"
-          :class="`${
-            !false
-              ? 'hover:bg-green-600 hover:border-green-700'
-              : 'bg-green-600  cursor-default'
-          } w-fit p-2 mr-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]`"
+        <div
+          class="cursor-pointer hover:bg-green-600 hover:border-green-700 w-fit p-2 mr-2 flex items-center justify-center rounded-md text-gray-300 border-2 border-[#2E688C]"
         >
-          <MaterialIcon name="upload" />
-        </button>
+          <input
+            class="w-20 h-20 opacity-0 absolute cursor-pointer"
+            type="file"
+            @change="onChangeFileUpload"
+          />
+          <MaterialIcon name="file_upload" class="text-white" />
+        </div>
         <button
           @click="() => {}"
           :disabled="!occurrencesStore.hasSomeOccurrenceSelected"
@@ -110,8 +114,7 @@ const onSpreadSheetScroll = (ev: Event) => {
       >
         <SpreadSheetPagination
           class="bg-[#024168]/90 rounded-md p-1 backdrop-blur"
-          :pages="occurrencesStore.pages"
-          :pages-shown="6"
+          :max-pages-shown="6"
         />
       </div>
     </div>

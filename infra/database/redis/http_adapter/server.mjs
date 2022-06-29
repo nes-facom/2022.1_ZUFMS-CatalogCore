@@ -47,5 +47,5 @@ app.post("/:state", async (req, res) => {
 });
 
 app.listen(config.port, () => {
-  console.log(`Example app listening on port ${config.port}`);
+  console.log(`App listening on port ${config.port}`);
 });

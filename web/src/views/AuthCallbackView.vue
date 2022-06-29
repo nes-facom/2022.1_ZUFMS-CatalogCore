@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { otpRequestStorage, serviceApi } from "@/api";
 import router from "@/router";
+import { wait } from "@/util/async";
 
 const query = router.currentRoute.value.query;
 
@@ -24,6 +25,8 @@ const fn = async () => {
     });
 
     localStorage.setItem("_at", tokenResponse.data.access_token ?? "");
+
+    await wait(1000);
 
     router.replace("/");
   } catch (err) {

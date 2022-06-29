@@ -1,5 +1,6 @@
 CREATE TABLE audit (
-    table_name text not null,
+    id uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
+    table_name name not null,
     record_pks text[],
     timestamp timestamp with time zone not null default current_timestamp,
     action char(1) NOT NULL check (action in ('I','D','U')),
@@ -27,15 +28,15 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
-CREATE OR REPLACE FUNCTION get_table_pks(table_name TEXT) RETURNS TEXT[] AS $$
+CREATE OR REPLACE FUNCTION get_table_pks(table_name name) RETURNS TEXT[] AS $$
     SELECT array_agg(attname::TEXT) as pks
         FROM pg_index
         JOIN pg_attribute ON attrelid = indrelid AND attnum = ANY(indkey) 
-        WHERE indrelid = table_name::regclass AND indisprimary
+        WHERE indrelid = to_regclass(quote_ident(table_name)) AND indisprimary
         GROUP BY indrelid;
 $$ LANGUAGE SQL;
 
-CREATE OR REPLACE FUNCTION get_record_pks(table_record jsonb, table_name TEXT) RETURNS TEXT[] AS $$
+CREATE OR REPLACE FUNCTION get_record_pks(table_record jsonb, table_name name) RETURNS TEXT[] AS $$
     SELECT array_agg(table_record->pk::TEXT) FROM unnest(get_table_pks(table_name)) AS pk
 $$ LANGUAGE SQL;
 
@@ -43,15 +44,15 @@ CREATE OR REPLACE FUNCTION audit_trigger() RETURNS trigger AS $$
 BEGIN
     if (TG_OP = 'UPDATE') then
         insert into audit (table_name,record_pks,action,old_data,new_data,query) 
-            values (TG_TABLE_NAME::TEXT,get_record_pks(row_to_json(NEW)::jsonb, TG_TABLE_NAME::TEXT),substring(TG_OP,1,1),jsonb_diff_val(row_to_json(OLD)::JSONB, row_to_json(NEW)::JSONB),jsonb_diff_val(row_to_json(NEW)::JSONB, row_to_json(OLD)::JSONB),current_query());
+            values (TG_TABLE_NAME,get_record_pks(row_to_json(NEW)::jsonb, TG_TABLE_NAME),substring(TG_OP,1,1),jsonb_diff_val(row_to_json(OLD)::JSONB, row_to_json(NEW)::JSONB),jsonb_diff_val(row_to_json(NEW)::JSONB, row_to_json(OLD)::JSONB),current_query());
         RETURN NEW;
     elsif (TG_OP = 'DELETE') then
         insert into audit (table_name,record_pks,action,old_data,query) 
-            values (TG_TABLE_NAME::TEXT,get_record_pks(row_to_json(NEW)::jsonb, TG_TABLE_NAME::TEXT),substring(TG_OP,1,1),row_to_json(OLD)::JSONB,current_query());
+            values (TG_TABLE_NAME,get_record_pks(row_to_json(NEW)::jsonb, TG_TABLE_NAME),substring(TG_OP,1,1),row_to_json(OLD)::JSONB,current_query());
         RETURN OLD;
     elsif (TG_OP = 'INSERT') then
         insert into audit (table_name,record_pks,action,new_data,query) 
-            values (TG_TABLE_NAME::TEXT,get_record_pks(row_to_json(NEW)::jsonb, TG_TABLE_NAME::TEXT),substring(TG_OP,1,1),row_to_json(NEW)::JSONB,current_query());
+            values (TG_TABLE_NAME,get_record_pks(row_to_json(NEW)::jsonb, TG_TABLE_NAME),substring(TG_OP,1,1),row_to_json(NEW)::JSONB,current_query());
         RETURN NEW;
     else
         RAISE WARNING '[AUDIT.IF_MODIFIED_FUNC] - Other action occurred: %, at %',TG_OP,now();

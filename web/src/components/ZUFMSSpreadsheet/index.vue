@@ -235,7 +235,11 @@ const changeTermclass = (termclass: string, i: number) => {
         :key="term.name"
         :title="term.title"
         :description="term.description"
-        :class="currentTermclass.name !== term.termclass && 'opacity-10'"
+        :class="
+          props.showTermclassNavigation &&
+          currentTermclass.name !== term.termclass &&
+          'opacity-10'
+        "
         width="20rem"
       />
     </header>
@@ -244,7 +248,9 @@ const changeTermclass = (termclass: string, i: number) => {
       class="h-full"
       :terms="terms"
       :submissionMode="props.submissionMode"
-      :currentTermclass="currentTermclass.name"
+      :currentTermclass="
+        props.showTermclassNavigation ? currentTermclass.name : undefined
+      "
       @scrollY="onSpreadsheetScrollY"
       @changeTermclass="changeTermclass"
     />

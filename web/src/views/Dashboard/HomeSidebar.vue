@@ -1,19 +1,21 @@
 <script setup lang="ts">
-import * as zufmscore from "@/util/zufmscore";
+import { useOccurrencesStore } from "@/store/occurrences";
 import { ref, watchEffect } from "vue";
 
-const emit = defineEmits<{
-  (e: "stateChange", newState: { section: string }): void;
-}>();
-
-const zufmsCoreSections = zufmscore.sections;
+const zufmsCoreSections = ref<string[]>([]);
 
 const currentSectionIndex = ref(0);
 
+const occurrencesStore = useOccurrencesStore();
+
+occurrencesStore
+  .getSections()
+  .then((sections) => (zufmsCoreSections.value = sections.data));
+
 watchEffect(() => {
-  emit("stateChange", {
-    section: zufmsCoreSections[currentSectionIndex.value],
-  });
+  occurrencesStore.currentSection =
+    zufmsCoreSections.value[currentSectionIndex.value];
+  occurrencesStore.fetchOccurrences();
 });
 
 const changeSelectedSection = (sectionIndex: number) => {
@@ -22,8 +24,8 @@ const changeSelectedSection = (sectionIndex: number) => {
 </script>
 
 <template>
-  <div class="px-5">
-    <div class="w-full border-b border-gray-400 text-gray-400 mb-2">
+  <div class="px-5 mb-5">
+    <div class="w-full min-w-max border-b border-gray-400 text-gray-400 mb-2">
       <h3>Seções</h3>
     </div>
     <div>
@@ -37,6 +39,22 @@ const changeSelectedSection = (sectionIndex: number) => {
         }`"
       >
         {{ section }}
+      </div>
+    </div>
+  </div>
+  <div class="px-5">
+    <div class="w-full min-w-max border-b border-gray-400 text-gray-400 mb-2">
+      <h3>Informação retida</h3>
+    </div>
+    <div>
+      <div
+        @click="false"
+        :class="`transition-colors select-none py-2 px-4 cursor-pointer rounded-md border border-transparent hover:border hover:border-[#9D9D9D] text-[#5B5B5B]' ${
+          false &&
+          'font-semibold bg-[#C4C4C4] border !border-[#9D9D9D] min-w-fit'
+        }`"
+      >
+        Ocultar
       </div>
     </div>
   </div>

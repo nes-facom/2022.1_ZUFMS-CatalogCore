@@ -2,11 +2,12 @@ import { ZUFMSCore as ApiZUFMSCore } from "client";
 import { defineStore } from "pinia";
 import * as zufmscore from "@/util/zufmscore";
 import { userApi } from "@/api";
+import { useToastStore, descriptionFromResponseError } from "./toast";
 
 export type ZUFMSCore = Required<ApiZUFMSCore>;
 
 type Termclass = {
-  name: string;
+  name: keyof ZUFMSCore;
   start: number;
   counter: number;
   size: number;
@@ -21,6 +22,7 @@ type State = {
   currentTermclassGlobalCounter: number;
   rows: number;
   error?: Error;
+  autocompleteValues: { [key in keyof ZUFMSCore]?: string[] };
 };
 
 export const { counter, sizes } = zufmscore.termclassSizes;
@@ -37,6 +39,7 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
       value: (value as any)["default"] ?? "",
       autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
       autocompleteValues: (value as any).examples,
+      pattern: (value as any).pattern,
       termclass: value["$zufmscore:termclass"],
     },
   ],
@@ -54,8 +57,9 @@ export const useSubmissionStore = defineStore("submissionStore", {
   state: () =>
     ({
       currentTermclassIndex: 0,
-      occurrences: {},
+      occurrences: [] as ZUFMSCore[],
       rows: 1,
+      autocompleteValues: {},
     } as State),
   getters: {
     currentTermclass: (state) => ({
@@ -75,14 +79,51 @@ export const useSubmissionStore = defineStore("submissionStore", {
 
   actions: {
     async loadFromCsv(file: File) {
+      const toastStore = useToastStore();
+
       try {
         const response = await userApi.occurrences.occurrencesFileVerify(file);
 
         this.occurrences = response.data;
+        this.rows = this.occurrences.length;
       } catch (err) {
-        if (err instanceof Error) {
-          this.error = err;
+        toastStore.pushMessage({
+          title: "Erro ao carregar CSV",
+          iconName: "error",
+          description: descriptionFromResponseError(err),
+          time: 5000,
+        });
+      }
+    },
+
+    changeOccurrenceTermValue<T extends keyof ZUFMSCore>(
+      occurrenceIndex: number,
+      term: T,
+      value: ZUFMSCore[T]
+    ) {
+      this.occurrences[occurrenceIndex] = {
+        ...(this.occurrences[occurrenceIndex] ?? {}),
+        [term]: value,
+      };
+    },
+    async fetchAutocompleteValues(term: keyof ZUFMSCore, value?: string) {
+      try {
+        const autocompleteValues = (
+          await userApi.occurrences.occurrencesAutocomplete(term, value ?? "")
+        ).data;
+
+        if ((autocompleteValues as any).errors) {
+          throw (autocompleteValues as any).errors;
         }
+
+        this.autocompleteValues[term] = [
+          ...new Set([
+            ...(this.autocompleteValues[term] ?? []),
+            ...(autocompleteValues ?? []),
+          ]).values(),
+        ].sort();
+      } catch (err) {
+        console.error(err);
       }
     },
     nextTermclass() {
@@ -111,6 +152,24 @@ export const useSubmissionStore = defineStore("submissionStore", {
       }
 
       this.occurrences[index][term] = value;
+    },
+    async createOccurrences() {
+      const toastStore = useToastStore();
+
+      try {
+        const response = await userApi.occurrences.occurrencesCreateMany(
+          this.occurrences
+        );
+
+        console.log(response.data);
+      } catch (err) {
+        toastStore.pushMessage({
+          title: "Erro ao submeter ocorrências",
+          iconName: "error",
+          description: descriptionFromResponseError(err),
+          time: 5000,
+        });
+      }
     },
   },
 });

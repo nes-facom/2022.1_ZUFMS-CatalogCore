@@ -14,6 +14,8 @@ toastStore.$onAction(({ name, args }) => {
   if (name === "pushMessage") {
     message.value = args[0];
 
+    console.log("hey");
+
     wait(message.value?.time ?? toastStore.defaultTime).then(
       () => (message.value = undefined)
     );

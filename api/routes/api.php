@@ -37,7 +37,7 @@ Route::middleware(['token', 'token.scope:users'])->group(function () {
 
 Route::middleware(['token', 'token.scope:occurrences:read'])->group(function () {
     Route::get('/occurrences', [CollectionController::class, 'getAll']);
-    Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
+    // Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
     Route::get('/occurrences/count', [CollectionController::class, 'count']);
     Route::get('/occurrences/autocomplete', [CollectionController::class, 'getAutocomplete']);
     Route::post('/occurrences/file/verify', [CollectionController::class, 'uploadDocumentReturnJson']);
@@ -46,8 +46,8 @@ Route::middleware(['token', 'token.scope:occurrences:read'])->group(function () 
 Route::middleware(['token', 'token.scope:occurrences'])->group(function () {
     Route::post('/occurrences', [CollectionController::class, 'createMany']);
     Route::post('/occurrences/file', [CollectionController::class, 'file']);
-    Route::put('/occurrences', [CollectionController::class, 'updateMany']);
-    Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
-    Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
-    Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
+    // Route::put('/occurrences', [CollectionController::class, 'updateMany']);
+    // Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
+    // Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
+    // Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
 });
