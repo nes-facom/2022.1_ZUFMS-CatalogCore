@@ -103,18 +103,6 @@ CREATE TABLE "artificial:flaskLocation" (
   "value" text UNIQUE NOT NULL
 );
 
-CREATE TABLE "recordedBy" (
-  "id" serial PRIMARY KEY,
-  "value" text UNIQUE NOT NULL
-);
-
-CREATE TABLE "recordedBy_biological_occurrence" (
-  "recordedBy_id" int,
-  "biological_occurrence_id" text,
-  "recordNumber" text,
-  PRIMARY KEY ("recordedBy_id", "biological_occurrence_id")
-);
-
 CREATE TABLE "preparations" (
   "id" serial PRIMARY KEY,
   "value" text UNIQUE NOT NULL
@@ -185,28 +173,28 @@ CREATE TABLE "county" (
 
 CREATE TABLE "municipality" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "county_id" int NOT NULL
 );
 
 CREATE TABLE "geodeticDatum" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL
+  "value" text UNIQUE NOT NULL
 );
 
 CREATE TABLE "locality" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
-  "decimalLatitude" text NOT NULL,
-  "decimalLongitude" text NOT NULL,
+  "value" text,
+  "decimalLatitude" real,
+  "decimalLongitude" real,
   "verbatimLatitude" text,
   "verbatimLongitude" text,
-  "coordinatePrecision" text,
+  "coordinatePrecision" real,
   "geodeticDatum_id" int,
   "footprintWKT" text,
-  "minimumElevationInMeters" text,
-  "maximumElevationInMeters" text,
-  "municipality_id" int,
+  "minimumElevationInMeters" real,
+  "maximumElevationInMeters" real,
+  "municipality_id" int NOT NULL,
   "verbatimLocality_id" int
 );
 
@@ -220,17 +208,6 @@ CREATE TABLE "identificationQualifier" (
   "value" text UNIQUE NOT NULL
 );
 
-CREATE TABLE "identifiedBy" (
-  "id" serial PRIMARY KEY,
-  "value" text UNIQUE NOT NULL
-);
-
-CREATE TABLE "identifiedBy_biological_occurrence" (
-  "biological_occurrence_id" text PRIMARY KEY,
-  "value" int,
-  "dateIdentified" date
-);
-
 CREATE TABLE "kingdom" (
   "id" serial PRIMARY KEY,
   "value" text UNIQUE NOT NULL
@@ -238,91 +215,91 @@ CREATE TABLE "kingdom" (
 
 CREATE TABLE "phylum" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "kingdom_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:subPhylum" (
+CREATE TABLE "artificial:subphylum" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "phylum_id" int NOT NULL
 );
 
 CREATE TABLE "class" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "phylum_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:subClass" (
+CREATE TABLE "artificial:subclass" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "class_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:superOrder" (
+CREATE TABLE "artificial:superorder" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "class_id" int NOT NULL
 );
 
 CREATE TABLE "order" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "class_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:subOrder" (
+CREATE TABLE "artificial:suborder" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "order_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:infraOrder" (
+CREATE TABLE "artificial:infraorder" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "order_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:superFamily" (
+CREATE TABLE "artificial:superfamily" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "order_id" int NOT NULL
 );
 
 CREATE TABLE "family" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "order_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:subFamily" (
+CREATE TABLE "artificial:subfamily" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "family_id" int NOT NULL
 );
 
 CREATE TABLE "genus" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "family_id" int NOT NULL
 );
 
 CREATE TABLE "artificial:tribe" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "family_id" int NOT NULL
 );
 
-CREATE TABLE "artificial:subTribe" (
+CREATE TABLE "artificial:subtribe" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "tribe_id" int NOT NULL
 );
 
-CREATE TABLE "subGenus" (
+CREATE TABLE "subgenus" (
   "id" serial PRIMARY KEY,
-  "value" text NOT NULL,
+  "value" text UNIQUE NOT NULL,
   "genus_id" int NOT NULL
 );
 
@@ -344,19 +321,25 @@ CREATE TABLE "nameAccordingTo" (
 CREATE TABLE "specie" (
   "id" serial PRIMARY KEY,
   "typeStatus" text,
-  "scientificName" text,
+  "scientificName" text UNIQUE NOT NULL,
   "scientificNameAuthorship" text,
-  "acceptedNameUsage" text,
-  "subGenus_id" int,
-  "artificial:subFamily_id" int,
-  "artificial:subTribe_id" int,
+  "acceptedNameUsage" text UNIQUE,
+  "kingdom_id" int,
+  "phylum_id" int,
+  "artificial:subphylum_id" int,
+  "class_id" int,
+  "artificial:subclass_id" int,
+  "artificial:superorder_id" int,
+  "order_id" int,
+  "artificial:suborder_id" int,
+  "artificial:infraorder_id" int,
+  "artificial:superfamily_id" int,
+  "family_id" int,
+  "artificial:subfamily_id" int,
+  "genus_id" int,
   "artificial:tribe_id" int,
-  "artificial:superFamily_id" int,
-  "artificial:infraOrder_id" int,
-  "artificial:subOrder_id" int,
-  "artificial:superOrder_id" int,
-  "artificial:subClass_id" int,
-  "artificial:subPhylum_id" int,
+  "artificial:subtribe_id" int,
+  "subgenus_id" int,
   "specificEpithet" text,
   "infraspecificEpithet" text,
   "taxonRank" text,
@@ -384,6 +367,10 @@ CREATE TABLE "biological_occurrence" (
   "otherCatalogNumbers" text,
   "preparations_id" int,
   "individualCount" text,
+  "identifiedBy" text,
+  "recordedBy" text,
+  "dateIdentified" text,
+  "recordNumber" text,
   "sex_id" int,
   "lifeStage_id" int,
   "reproductiveCondition_id" int,
@@ -398,8 +385,8 @@ CREATE TABLE "biological_occurrence" (
   "day" text,
   "month" text,
   "year" text,
-  "eventTime" date[],
-  "eventDate" date[],
+  "eventTime" text,
+  "eventDate" text,
   "associatedOccurrences" text,
   "verbatimEventDate" text,
   "samplingProtocol" text,
@@ -417,6 +404,103 @@ CREATE TABLE "biological_occurrence" (
   "relationshipOfResource" text
 );
 
+CREATE TABLE "rascunho" (
+    "artificial:section" text,
+    "dcterms:modified" text,
+    "informationWithheld" text,
+    "basisOfRecord" text,
+    "institutionCode" text,
+    "collectionCode" text,
+    "dcterms:bibliographicCitation" text,
+    "datasetName" text,
+    "artificial:shelfLocation" text,
+    "artificial:flaskLocation" text,
+    "artificial:shippingGuide" text,
+    "catalogNumber" text,
+    "otherCatalogNumbers" text,
+    "recordedBy" text,
+    "recordNumber" text,
+    "preparations" text,
+    "individualCount" text,
+    "sex" text,
+    "lifeStage" text,
+    "reproductiveCondition" text,
+    "establishmentMeans" text,
+    "behavior" text,
+    "occurrenceRemarks" text,
+    "disposition" text,
+    "associatedReferences" text,
+    "associatedMedia" text,
+    "occurrenceID" text,
+    "associatedOccurrences" text,
+    "previousIdentifications" text,
+    "fieldNumber" text,
+    "day" text,
+    "month" text,
+    "year" text,
+    "eventTime" text,
+    "eventDate" text,
+    "verbatimEventDate" text,
+    "samplingProtocol" text,
+    "habitat" text,
+    "eventRemarks" text,
+    "fieldNotes" text,
+    "measurementRemarks" text,
+    "continent" text,
+    "country" text,
+    "countryCode" text,
+    "verbatimLocality" text,
+    "stateProvince" text,
+    "county" text,
+    "municipality" text,
+    "locality" text,
+    "decimalLatitude" text,
+    "decimalLongitude" text,
+    "verbatimLatitude" text,
+    "verbatimLongitude" text,
+    "coordinatePrecision" text,
+    "geodeticDatum" text,
+    "footprintWKT" text,
+    "minimumElevationInMeters" text,
+    "maximumElevationInMeters" text,
+    "waterBody" text,
+    "minimumDepthInMeters" text,
+    "maximumDepthInMeters" text,
+    "locationRemarks" text,
+    "identificationQualifier" text,
+    "identifiedBy" text,
+    "dateIdentified" text,
+    "typeStatus" text,
+    "scientificName" text,
+    "scientificNameAuthorship" text,
+    "acceptedNameUsage" text,
+    "subgenus" text,
+    "genus" text,
+    "artificial:subtribe" text,
+    "artificial:tribe" text,
+    "artificial:subfamily" text,
+    "family" text,
+    "artificial:superfamily" text,
+    "artifcial:infraorder" text,
+    "artificial:suborder" text,
+    "order" text,
+    "artificial:superorder" text,
+    "artificial:subclass" text,
+    "class" text,
+    "artificial:subphylum" text,
+    "phylum" text,
+    "kingdom" text,
+    "specificEpithet" text,
+    "infraspecificEpithet" text,
+    "taxonRank" text,
+    "taxonomicStatus" text,
+    "originalNameUsage" text,
+    "vernacularName" text,
+    "nomenclaturalCode" text,
+    "nameAccordingTo" text,
+    "relationshipOfResource" text
+);
+
 CREATE UNIQUE INDEX ON "country" ("value", "continent_id");
 
 CREATE UNIQUE INDEX ON "stateProvince" ("value", "country_id");
@@ -425,39 +509,39 @@ CREATE UNIQUE INDEX ON "county" ("value", "stateProvince_id");
 
 CREATE UNIQUE INDEX ON "municipality" ("value", "county_id");
 
-CREATE UNIQUE INDEX ON "locality" ("value", "decimalLatitude", "decimalLongitude");
-
-CREATE UNIQUE INDEX ON "identifiedBy_biological_occurrence" ("value", "biological_occurrence_id");
+CREATE UNIQUE INDEX ON "locality" ("value", "decimalLatitude", "decimalLongitude", "municipality_id");
 
 CREATE UNIQUE INDEX ON "phylum" ("value", "kingdom_id");
 
-CREATE UNIQUE INDEX ON "artificial:subPhylum" ("value", "phylum_id");
+CREATE UNIQUE INDEX ON "artificial:subphylum" ("value", "phylum_id");
 
 CREATE UNIQUE INDEX ON "class" ("value", "phylum_id");
 
-CREATE UNIQUE INDEX ON "artificial:subClass" ("value", "class_id");
+CREATE UNIQUE INDEX ON "artificial:subclass" ("value", "class_id");
 
-CREATE UNIQUE INDEX ON "artificial:superOrder" ("value", "class_id");
+CREATE UNIQUE INDEX ON "artificial:superorder" ("value", "class_id");
 
 CREATE UNIQUE INDEX ON "order" ("value", "class_id");
 
-CREATE UNIQUE INDEX ON "artificial:subOrder" ("value", "order_id");
+CREATE UNIQUE INDEX ON "artificial:suborder" ("value", "order_id");
 
-CREATE UNIQUE INDEX ON "artificial:infraOrder" ("value", "order_id");
+CREATE UNIQUE INDEX ON "artificial:infraorder" ("value", "order_id");
 
-CREATE UNIQUE INDEX ON "artificial:superFamily" ("value", "order_id");
+CREATE UNIQUE INDEX ON "artificial:superfamily" ("value", "order_id");
 
 CREATE UNIQUE INDEX ON "family" ("value", "order_id");
 
-CREATE UNIQUE INDEX ON "artificial:subFamily" ("value", "family_id");
+CREATE UNIQUE INDEX ON "artificial:subfamily" ("value", "family_id");
 
 CREATE UNIQUE INDEX ON "genus" ("value", "family_id");
 
 CREATE UNIQUE INDEX ON "artificial:tribe" ("value", "family_id");
 
-CREATE UNIQUE INDEX ON "artificial:subTribe" ("value", "tribe_id");
+CREATE UNIQUE INDEX ON "artificial:subtribe" ("value", "tribe_id");
 
-CREATE UNIQUE INDEX ON "subGenus" ("value", "genus_id");
+CREATE UNIQUE INDEX ON "subgenus" ("value", "genus_id");
+
+CREATE UNIQUE INDEX ON "specie" ("artificial:subfamily_id", "artificial:subtribe_id", "artificial:tribe_id", "artificial:superfamily_id", "artificial:subclass_id", "artificial:subphylum_id");
 
 COMMENT ON COLUMN "locality"."verbatimLatitude" IS 'virtual';
 
@@ -489,13 +573,13 @@ COMMENT ON COLUMN "biological_occurrence"."minimumDepthInMeters" IS 'validar nor
 
 COMMENT ON COLUMN "biological_occurrence"."maximumDepthInMeters" IS 'validar normalizacao (locality?)';
 
-ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
-
 ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("scope_id") REFERENCES "scope" ("id");
 
-ALTER TABLE "client_allowed_scope" ADD FOREIGN KEY ("client_id") REFERENCES "client" ("id");
+ALTER TABLE "user_allowed_scope" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "client_allowed_scope" ADD FOREIGN KEY ("scope_id") REFERENCES "scope" ("id");
+
+ALTER TABLE "client_allowed_scope" ADD FOREIGN KEY ("client_id") REFERENCES "client" ("id") ON DELETE CASCADE;
 
 ALTER TABLE "scope_closure_table" ADD FOREIGN KEY ("ancestor") REFERENCES "scope" ("id");
 
@@ -513,10 +597,6 @@ ALTER TABLE "otp" ADD FOREIGN KEY ("email") REFERENCES "user" ("email");
 
 ALTER TABLE "otp" ADD FOREIGN KEY ("requested_with_access_token") REFERENCES "access_token" ("jti");
 
-ALTER TABLE "recordedBy_biological_occurrence" ADD FOREIGN KEY ("recordedBy_id") REFERENCES "recordedBy" ("id");
-
-ALTER TABLE "recordedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
-
 ALTER TABLE "country" ADD FOREIGN KEY ("continent_id") REFERENCES "continent" ("id");
 
 ALTER TABLE "stateProvince" ADD FOREIGN KEY ("country_id") REFERENCES "country" ("countryCode");
@@ -531,59 +611,67 @@ ALTER TABLE "locality" ADD FOREIGN KEY ("municipality_id") REFERENCES "municipal
 
 ALTER TABLE "locality" ADD FOREIGN KEY ("verbatimLocality_id") REFERENCES "verbatimLocality" ("id");
 
-ALTER TABLE "identifiedBy_biological_occurrence" ADD FOREIGN KEY ("biological_occurrence_id") REFERENCES "biological_occurrence" ("occurrenceID");
-
-ALTER TABLE "identifiedBy_biological_occurrence" ADD FOREIGN KEY ("value") REFERENCES "identifiedBy" ("id");
-
 ALTER TABLE "phylum" ADD FOREIGN KEY ("kingdom_id") REFERENCES "kingdom" ("id");
 
-ALTER TABLE "artificial:subPhylum" ADD FOREIGN KEY ("phylum_id") REFERENCES "phylum" ("id");
+ALTER TABLE "artificial:subphylum" ADD FOREIGN KEY ("phylum_id") REFERENCES "phylum" ("id");
 
 ALTER TABLE "class" ADD FOREIGN KEY ("phylum_id") REFERENCES "phylum" ("id");
 
-ALTER TABLE "artificial:subClass" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
+ALTER TABLE "artificial:subclass" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
 
-ALTER TABLE "artificial:superOrder" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
+ALTER TABLE "artificial:superorder" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
 
 ALTER TABLE "order" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
 
-ALTER TABLE "artificial:subOrder" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
+ALTER TABLE "artificial:suborder" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
 
-ALTER TABLE "artificial:infraOrder" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
+ALTER TABLE "artificial:infraorder" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
 
-ALTER TABLE "artificial:superFamily" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
+ALTER TABLE "artificial:superfamily" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
 
 ALTER TABLE "family" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
 
-ALTER TABLE "artificial:subFamily" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
+ALTER TABLE "artificial:subfamily" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
 
 ALTER TABLE "genus" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
 
 ALTER TABLE "artificial:tribe" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
 
-ALTER TABLE "artificial:subTribe" ADD FOREIGN KEY ("tribe_id") REFERENCES "artificial:tribe" ("id");
+ALTER TABLE "artificial:subtribe" ADD FOREIGN KEY ("tribe_id") REFERENCES "artificial:tribe" ("id");
 
-ALTER TABLE "subGenus" ADD FOREIGN KEY ("genus_id") REFERENCES "genus" ("id");
+ALTER TABLE "subgenus" ADD FOREIGN KEY ("genus_id") REFERENCES "genus" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("subGenus_id") REFERENCES "subGenus" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("kingdom_id") REFERENCES "kingdom" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subFamily_id") REFERENCES "artificial:subFamily" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("phylum_id") REFERENCES "phylum" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subTribe_id") REFERENCES "artificial:subTribe" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subphylum_id") REFERENCES "artificial:subphylum" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("class_id") REFERENCES "class" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subclass_id") REFERENCES "artificial:subclass" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superorder_id") REFERENCES "artificial:superorder" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("order_id") REFERENCES "order" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:suborder_id") REFERENCES "artificial:suborder" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:infraorder_id") REFERENCES "artificial:infraorder" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superfamily_id") REFERENCES "artificial:superfamily" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("family_id") REFERENCES "family" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subfamily_id") REFERENCES "artificial:subfamily" ("id");
+
+ALTER TABLE "specie" ADD FOREIGN KEY ("genus_id") REFERENCES "genus" ("id");
 
 ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:tribe_id") REFERENCES "artificial:tribe" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superFamily_id") REFERENCES "artificial:superFamily" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subtribe_id") REFERENCES "artificial:subtribe" ("id");
 
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:infraOrder_id") REFERENCES "artificial:infraOrder" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subOrder_id") REFERENCES "artificial:subOrder" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:superOrder_id") REFERENCES "artificial:superOrder" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subClass_id") REFERENCES "artificial:subClass" ("id");
-
-ALTER TABLE "specie" ADD FOREIGN KEY ("artificial:subPhylum_id") REFERENCES "artificial:subPhylum" ("id");
+ALTER TABLE "specie" ADD FOREIGN KEY ("subgenus_id") REFERENCES "subgenus" ("id");
 
 ALTER TABLE "specie" ADD FOREIGN KEY ("taxonomicStatus_id") REFERENCES "taxonomicStatus" ("id");
 

@@ -1,4 +1,4 @@
-INSERT INTO "biological_occurrence_view" (
+/*INSERT INTO "biological_occurrence_view" (
     "artificial:section",
     "dcterms:modified",
     "informationWithheld",
@@ -68,14 +68,14 @@ INSERT INTO "biological_occurrence_view" (
     "scientificName",
     "scientificNameAuthorship",
     "acceptedNameUsage",
-    "subGenus",
+    "subgenus",
     "genus",
     "family",
     "order",
     "class",
     "phylum",
     "kingdom",
-    "artificial:subFamily",
+    "artificial:subfamily",
     "specificEpithet",
     "infraspecificEpithet",
     "taxonRank",
@@ -246,13 +246,13 @@ VALUES
         'Stimpson, 1861',
         'Dilocarcinus (Dilocarcinus) pagei pagei Stimpson, 1861',
         'Dilocarcinus',
-        'Dilocarcinus',
+       null,
         'Leptodactylidae',
         'Anura',
         'Reptilia',
         'Chordata',
         'Animalia',
-        'Leptodactylinae',
+       null,
         'pagei',
         'pagei',
         'subespécie',
@@ -263,3 +263,4 @@ VALUES
         'Frost, 2017',
         'presa'
     );
+*/

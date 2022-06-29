@@ -28,22 +28,24 @@ Route::middleware(['token', 'token.scope:users:read'])->group(function () {
 
 Route::middleware(['token', 'token.scope:users'])->group(function () {
     Route::post('/users', [UserController::class, 'createOne']);
+    Route::get('/users', [UserController::class, 'getAll']);
     Route::put('/users/{id}', [UserController::class, 'updateOne']);
     Route::delete('/users/{id}', [UserController::class, 'deleteOne']);
+    Route::get('/users/{id}', [UserController::class, 'getOne']);
 });
 
 Route::middleware(['token', 'token.scope:occurrences:read'])->group(function () {
     Route::get('/occurrences', [CollectionController::class, 'getAll']);
     Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
     Route::get('/occurrences/autocomplete', [CollectionController::class, 'getAutocomplete']);
-    Route::post('/occurrences/file/verify', [CollectionController::class, 'fileVerify']);
+    Route::post('/occurrences/file/verify', [CollectionController::class, 'uploadDocumentReturnJson']);
 });
 
 Route::middleware(['token', 'token.scope:occurrences'])->group(function () {
     Route::post('/occurrences', [CollectionController::class, 'createMany']);
+    Route::post('/occurrences/file', [CollectionController::class, 'file']);
     Route::put('/occurrences', [CollectionController::class, 'updateMany']);
     Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
     Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
     Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
-    Route::post('/occurrences/file', [CollectionController::class, 'file']);
 });

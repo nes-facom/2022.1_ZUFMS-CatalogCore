@@ -1,0 +1,1434 @@
+{
+    "$id": "https://inbio.ufms.br/zufms/zufmscore.schema.json",
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "title": "ZUFMS Darwin Core Subset",
+    "type": "object",
+    "required":[],
+    "properties": {
+        "artificial:section": {
+            "title": "Seção",
+            "description": "Grupo ao qual o registro faz parte",
+            "examples": [
+                "Amphibia",
+                "Chelicerata",
+                "Chiroptera",
+                "Crustacea",
+                "Diptera",
+                "Fósseis",
+                "Hemiptera",
+                "Hymenoptera",
+                "Mollusca",
+                "Nematoda",
+                "Odonata",
+                "Orthoptera",
+                "Peixes",
+                "Reptilia",
+                "Tecidos"
+            ],
+            "oneOf": [
+                {
+                    "$zufmscore:initials": "ACA",
+                    "const": "Acanthocephala"
+                },
+                {
+                    "$zufmscore:initials": "AMP",
+                    "const": "Amphibia"
+                },
+                {
+                    "$zufmscore:initials": "ANN",
+                    "const": "Annelida"
+                },
+                {
+                    "$zufmscore:initials": "ARC",
+                    "const": "Archaeognatha"
+                },
+                {
+                    "$zufmscore:initials": "AVE",
+                    "const": "Aves"
+                },
+                {
+                    "$zufmscore:initials": "BLA",
+                    "const": "Blattodea"
+                },
+                {
+                    "$zufmscore:initials": "CHE",
+                    "const": "Chelicerata"
+                },
+                {
+                    "$zufmscore:initials": "CHI",
+                    "const": "Chiroptera"
+                },
+                {
+                    "$zufmscore:initials": "COB",
+                    "const": "Collembola"
+                },
+                {
+                    "$zufmscore:initials": "COL",
+                    "const": "Coleoptera"
+                },
+                {
+                    "$zufmscore:initials": "CRU",
+                    "const": "Crustacea"
+                },
+                {
+                    "$zufmscore:initials": "DER",
+                    "const": "Dermaptera"
+                },
+                {
+                    "$zufmscore:initials": "DIP",
+                    "const": "Diptera"
+                },
+                {
+                    "$zufmscore:initials": "EMB",
+                    "const": "Embioptera"
+                },
+                {
+                    "$zufmscore:initials": "EPH",
+                    "const": "Ephemeroptera"
+                },
+                {
+                    "$zufmscore:initials": "FOS",
+                    "const": "Fósseis"
+                },
+                {
+                    "$zufmscore:initials": "HEM",
+                    "const": "Hemiptera"
+                },
+                {
+                    "$zufmscore:initials": "HYM",
+                    "const": "Hymenoptera"
+                },
+                {
+                    "$zufmscore:initials": "ISO",
+                    "const": "Isoptera"
+                },
+                {
+                    "$zufmscore:initials": "LEP",
+                    "const": "Lepidoptera"
+                },
+                {
+                    "$zufmscore:initials": "MAN",
+                    "const": "Mantodea"
+                },
+                {
+                    "$zufmscore:initials": "MEC",
+                    "const": "Mecoptera"
+                },
+                {
+                    "$zufmscore:initials": "MEG",
+                    "const": "Megaloptera"
+                },
+                {
+                    "$zufmscore:initials": "MID",
+                    "const": "Mídias Digitais"
+                },
+                {
+                    "$zufmscore:initials": "MNV",
+                    "const": "Mamíferos Não-Voadores"
+                },
+                {
+                    "$zufmscore:initials": "MOL",
+                    "const": "Mollusca"
+                },
+                {
+                    "$zufmscore:initials": "MYR",
+                    "const": "Myriapoda"
+                },
+                {
+                    "$zufmscore:initials": "NEM",
+                    "const": "Nematoda"
+                },
+                {
+                    "$zufmscore:initials": "NEU",
+                    "const": "Neuroptera"
+                },
+                {
+                    "$zufmscore:initials": "ODO",
+                    "const": "Odonata"
+                },
+                {
+                    "$zufmscore:initials": "ORT",
+                    "const": "Orthoptera"
+                },
+                {
+                    "$zufmscore:initials": "PHA",
+                    "const": "Phasmatodea"
+                },
+                {
+                    "$zufmscore:initials": "PIS",
+                    "const": "Pisces"
+                },
+                {
+                    "$zufmscore:initials": "PLA",
+                    "const": "Platyhelminthes"
+                },
+                {
+                    "$zufmscore:initials": "PLE",
+                    "const": "Plecoptera"
+                },
+                {
+                    "$zufmscore:initials": "PSO",
+                    "const": "Psocodea"
+                },
+                {
+                    "$zufmscore:initials": "REP",
+                    "const": "Reptilia"
+                },
+                {
+                    "$zufmscore:initials": "SIP",
+                    "const": "Siphonaptera"
+                },
+                {
+                    "$zufmscore:initials": "TEC",
+                    "const": "Tecidos"
+                },
+                {
+                    "$zufmscore:initials": "THY",
+                    "const": "Thysanoptera"
+                },
+                {
+                    "$zufmscore:initials": "TRI",
+                    "const": "Trichoptera"
+                },
+                {
+                    "$zufmscore:initials": "ZYG",
+                    "const": "Zygentoma"
+                }
+            ],
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:termclass": "zufmscore:management"
+        },
+        "dcterms:modified": {
+            "type": "string",
+            "description": "data que o registro foi criado ou alterado, no padrão AAAA-MM-DD",
+            "title": "Data da Última Modificação",
+            "format": "date",
+            "examples": [
+                "2017-08-28",
+                "2022-12-02"
+            ],
+            "$zufmscore:dynamic": "currentdate",
+            "$zufmscore:section": "recordLevel"
+        },
+        "informationWithheld": {
+            "type": "string",
+            "description": "informação que falta em uma das colunas e deve ser procurada",
+            "title": "Informação Retida",
+            "examples": [
+                "verificar amostra de tecido"
+            ],
+            "default": "nenhuma",
+            "$zufmscore:section": "recordLevel"
+        },
+        "basisOfRecord": {
+            "type": "string",
+            "description": "PreservedSpecimen: um recurso que descreve um espécime preservado. LivingSpecimen: um recurso que descreve um espécime vivo. HumanObservation: um recurso que descreve uma observação feita por uma ou mais pessoas. MachineObservation: um recurso que descreve uma observação feita por máquina. Sample: um recurso que descreve os resultados físicos de uma amostragem.",
+            "title": "Base do Registro",
+            "examples": [
+                "PreservedSpecimen",
+                "LivingSpecimen",
+                "HumanObservation",
+                "MachineObservation",
+                "Sample"
+            ],
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:highestoccurrence": true,
+            "$zufmscore:section": "recordLevel"
+        },
+        "institutionCode": {
+            "type": "string",
+            "description": "sigla da instituição",
+            "title": "Código da Instituição",
+            "default": "UFMS",
+            "examples": [
+                "UFMS"
+            ],
+            "$zufmscore:section": "recordLevel"
+        },
+        "collectionCode": {
+            "type": "string",
+            "description": "sigla da coleção",
+            "title": "Código da Coleção",
+            "default": "ZUFMS",
+            "examples": [
+                "ZUFMS"
+            ],
+            "$zufmscore:section": "recordLevel"
+        },
+        "dcterms:bibliographicCitation": {
+            "type": "string",
+            "description": "citação do artigo em que este exemplar foi utilizado, concatenar com \";\"",
+            "title": "Citação Bibliográfica",
+            "examples": [
+                "Oliver P. Pearson. 1985. Los tuco-tucos (genera Ctenomys) de los Parques Nacionales Lanin y Nahuel Huapi, Argentina Historia Natural, 5(37):337-343."
+            ],
+
+            "$zufmscore:repeat": true,
+            "$zufmscore:section": "recordLevel"
+        },
+        "datasetName": {
+            "type": "string",
+            "description": "o título do projeto no qual houve envolvimento de coletas",
+            "title": "Nome do Conjunto de Dados",
+            "examples": [
+                "Projeto Jauru",
+                "AQUARAP - Programa de Avaliação Rápida de Ambientes Aquáticos"
+            ],
+
+            "$zufmscore:repeat": true,
+            "$zufmscore:section": "recordLevel"
+        },
+        "artificial:shelfLocation": {
+            "type": "string",
+            "description": "local numerado onde o exemplar está armazenado (utilize ALT+0150 para inserir a \"meia-risca\" se forem várias prateleiras)",
+            "title": "Localização na Coleção (Prateleira)",
+            "examples": [
+                "P001",
+                "P020"
+            ],
+
+            "$zufmscore:repeat": true,
+            "$zufmscore:section": "zufmscore:management"
+        },
+        "artificial:flaskLocation": {
+            "type": "string",
+            "description": "acronímia da seção (ex.: AMP) que agrupa alfabeticamente vários tombos, desde que sejam mesmo táxon, local e ano de coleta",
+            "title": "Localização na Coleção (Frasco)",
+            "examples": [
+                "AMPAA",
+                "AMPVJ"
+            ],
+
+            "$zufmscore:repeat": true,
+            "$zufmscore:section": "zufmscore:management"
+        },
+        "artificial:shippingGuide": {
+            "type": "string",
+            "pattern": "^([A-Z][A-Z][0-9][0-9](\\\/)[0-9][0-9][0-9][0-9])$",
+            "description": "exemplar não disponível",
+            "title": "Guia de Remessa",
+            "examples": [
+                "GR07/2017",
+                "GR01/2022"
+            ],
+
+            "$zufmscore:section": "zufmscore:management"
+        },
+        "catalogNumber": {
+            "type": "string",
+            "description": "número de tombo do exemplar",
+            "pattern": "^ZUFMS-[A-Z][A-Z][A-Z][0-9][0-9][0-9][0-9][0-9]$",
+            "title": "Número de Catálogo",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:dynamic": "sectionIndex",
+            "examples": [
+                "ZUFMS-AMP00001",
+                "ZUFMS-BLA00001"
+            ]
+        },
+        "otherCatalogNumbers": {
+            "type": "string",
+            "description": "quando proveniente de outra coleção",
+            "title": "Número de Catálogo Anterior",
+            "examples": [
+                "AMP01765",
+                "AMP716"
+            ],
+
+            "$zufmscore:section": "occurence"
+        },
+        "recordedBy": {
+            "type": "string",
+            "description": "nome do coletor abreviado seguindo o exemplo \"SOBRENOME, N.\"",
+            "title": "Coletor",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:repeat": true,
+            "default": ""
+        },
+        "recordNumber": {
+            "type": "string",
+            "description": "número da etiqueta de campo, associada ao coletor",
+            "title": "Número da Etiqueta de Campo",
+            "pattern": "[0-9]",
+            "examples": [
+                "CH381",
+                "SF454"
+            ],
+            "$zufmscore:section": "occurence",
+            "$zufmscore:repeat": true,
+            "default": ""
+        },
+        "preparations": {
+            "type": "string",
+            "description": "tipo de preparação concatenado com \";\"",
+            "title": "Tipo de Preparação",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:highestoccurrence": true,
+            "examples": [
+                "animal inteiro (ETOH)",
+                "tecido (EDTA)"
+            ]
+        },
+        "individualCount": {
+            "type": ["string","integer"],
+            "description": "se for em lote, informar a quantidade",
+            "title": "Número de Indivíduos",
+            "$zufmscore:section": "occurence",
+            "default": "1",
+            "examples": [
+                147,
+                "1"
+            ]
+        },
+        "sex": {
+            "type": "string",
+            "description": "Campo informado com vocabulário",
+            "title": "Sexo",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:highestoccurrence": true,
+            "$zufmscore:section": "occurence",
+            "examples": [
+                "irreconhecível",
+                "indeterminado",
+                "macho",
+                "fêmea",
+                "hermafrodita",
+                "ginandromorfo"
+            ]
+        },
+        "lifeStage": {
+            "type": "string",
+            "description": "o estágio de vida do especime no momento do registro",
+            "title": "Fase da Vida",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:repeat": true,
+            "examples": [
+                "zigoto",
+                "embrião",
+                "adulto",
+                "juvenil",
+                "ovo",
+                "larva",
+                "pupa"
+            ]
+        },
+        "reproductiveCondition": {
+            "type": "string",
+            "description": "informa que fase reprodutiva se encontra",
+            "title": "Condição Reprodutiva",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:repeat": true,
+            "examples": [
+                "não reprodutivo",
+                "grávida",
+                "não informado"
+            ]
+        },
+        "establishmentMeans": {
+            "type": "string",
+            "description": "informa a real origem com vocabulário",
+            "title": "Modo de Estabelecimento",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:repeat": true,
+            "examples": [
+                "selvagem",
+                "nativa",
+                "introduzida",
+                "naturalizada",
+                "manejada",
+                "incerto",
+                "selvagem"
+            ]
+        },
+        "behavior": {
+            "type": "string",
+            "description": "a ação que o espécime realizava quando ainda vivo",
+            "title": "Comportamento",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:autocomplete": true,
+            "default": "não informado",
+            "examples": [
+                "selvagem",
+                "forrageando",
+                "correndo",
+                "não informado"
+            ]
+        },
+        "occurrenceRemarks": {
+            "type": "string",
+            "description": "observação ou comentário do espécime na hora da coleta",
+            "title": "Observações de Ocorrência",
+            "$zufmscore:section": "occurence",
+            "default": "não informado",
+            "examples": [
+                "espécime encontrado morto na estrada"
+            ]
+        },
+        "disposition": {
+            "type": "string",
+            "description": "informação do registro na coleção",
+            "title": "Disposição",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:autocomplete": true,
+            "default": "verificar",
+            "examples": [
+                "em coleção"
+            ]
+        },
+        "associatedReferences": {
+            "type": "string",
+            "description": "bibliografia relacionada ou direta",
+            "title": "Referências Associadas",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:repeat": true,
+
+            "examples": [
+                "GALLARDO, Fabiana E.; RECHE, Vanina A.; MONTEIRO, Ricardo Ferreira. New data on Marthiella Buffington (Hymenoptera, Cynipoidea, Figitidae), with description of a new species. Rev. Bras. entomol., São Paulo ,  v. 58, n. 2, jun.  2014"
+            ]
+        },
+        "associatedMedia": {
+            "type": "string",
+            "description": "o link ou pasta onde está a mídia associada",
+            "title": "Mídia Associada",
+            "$zufmscore:section": "occurence",
+
+            "examples": [
+                "inbio.br/photo.jpg"
+            ]
+        },
+        "occurrenceID": {
+            "type": "string",
+            "description": "identidade do exemplar, utilizado para evitar duplicações",
+            "pattern": "^br:UFMS:ZUFMS:ZUFMS-[A-Z][A-Z][A-Z][0-9][0-9][0-9][0-9][0-9]$",
+            "title": "ID da Ocorrência",
+            "$zufmscore:section": "occurence",
+            "$zufmscore:dynamic": "occurenceId",
+            "examples": [
+                "br:UFMS:ZUFMS-CRU00002",
+                "br:UFMS:ZUFMS-AMP00002"
+            ]
+        },
+        "associatedOccurrences": {
+            "type": "string",
+            "description": "espécime tombado que tenha relação com o registro",
+            "title": "Item Relacionado ao Catálogo",
+            "$zufmscore:section": "occurence",
+
+            "examples": [
+                "ZUFMS-LEP00001|ZUFMS-COL00002",
+                "ZUFMS-AMP00001|ZUFMS-TEC00002"
+            ]
+        },
+        "previousIdentifications": {
+            "type": "string",
+            "description": "identificações anteriores, informando táxon, determinador, data e método utilizado",
+            "title": "Identificações Anteriores",
+            "$zufmscore:section": "occurence",
+
+            "examples": [
+                "Anthus sp., ID de campo por G. Iglesias; Anthus correndera, ID do experto por C. Cicero 2009-02-12 baseado em morfologia"
+            ]
+        },
+        "fieldNumber": {
+            "type": "string",
+            "description": "",
+            "title": "Número do Campo",
+            "$zufmscore:section": "event",
+            "examples": [
+                "Pitfall0001Seca"
+            ]
+        },
+        "day": {
+            "type": "integer",
+            "description": "dia em algarismo arábico",
+            "title": "Dia da Coleta",
+            "$zufmscore:section": "event",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                1,
+                23,
+                10
+            ]
+        },
+        "month": {
+            "type": "integer",
+            "description": "mês em algarismo arábico",
+            "title": "Mês da Coleta",
+            "$zufmscore:section": "event",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                12,
+                7,
+                2
+            ]
+        },
+        "year": {
+            "type": "integer",
+            "description": "ano em algarismo arábico",
+            "title": "Ano da Coleta",
+            "$zufmscore:section": "event",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                2004,
+                1987,
+                2013
+            ]
+        },
+        "eventTime": {
+            "type": "string",
+            "pattern": "^((([0-1]\\d|2[0-3])(?::([0-5]\\d))(?::([0-5]\\d)))(\\\/)(([0-1]\\d|2[0-3])(?::([0-5]\\d))(?::([0-5]\\d))))$|^(([0-1]\\d|2[0-3])(?::([0-5]\\d))(?::([0-5]\\d)))$",
+            "description": "hora única (hh:mm) ou intervalo (hh:mm/hh:mm)",
+            "title": "Hora/Intervalo do Evento",
+            "$zufmscore:section": "event",
+
+            "examples": [
+                "19:00/21:00",
+                "22:23"
+            ]
+        },
+        "eventDate": {
+            "type": "string",
+            "pattern": "^([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012])\\-((0[1-9])|([1-2][0-9])|(3[01])))$|^([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012]))$|^(([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012])\\-((0[1-9])|([1-2][0-9])|(3[01])))((\\\/)([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012])\\-((0[1-9])|([1-2][0-9])|(3[01])))))$|^([1-2][0-9][0-9][0-9])$|^([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012])(\\\/)[1-2][0-9][0-9][0-9]-(0?[1-9]|1[012]))$",
+            "description": "data (aaaa-mm-dd) ou intervalo (aaaa-mm-dd/aaaa-mm-dd), mas se não houver todas informações informar apenas mês (aaaa-mm) ou ano (aaaa)",
+            "title": "Data/Intervalo do Evento",
+            "$zufmscore:section": "event",
+            "examples": [
+                "2010-06-30",
+                "2010-12-01/2010-12-31"
+            ]
+        },
+        "verbatimEventDate": {
+            "type": "string",
+            "pattern": "^(0[1-9]|[1-2][0-9]|31(?!(?:0[2469]|11))|30(?!02))\\.((I|V|X)?(I|V|X)?(I|V|X)?(I|V|X))\\.([12]\\d{3})$",
+            "description": "data clássica com mês em formato romano",
+            "title": "Data Coleta Textual",
+            "$zufmscore:section": "event",
+            "examples": [
+                "17.IV.2015",
+                "17.XI.2015"
+            ]
+        },
+        "samplingProtocol": {
+            "type": "string",
+            "description": "descrição sucinta do método de coleta",
+            "title": "Método de Coleta",
+            "$zufmscore:section": "event",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "busca ativa"
+            ]
+        },
+        "habitat": {
+            "type": "string",
+            "description": "pode ser bioma, ecorregião que caracterize o ambiente natural do espécime",
+            "title": "Habitat",
+            "$zufmscore:section": "event",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Pantanal"
+            ]
+        },
+        "eventRemarks": {
+            "type": "string",
+            "description": "comentários sobre o evento",
+            "title": "Observações do Evento",
+            "$zufmscore:section": "event",
+
+            "examples": [
+                "após das recentes chuvas o rio está quase na fase de inundação"
+            ]
+        },
+        "fieldNotes": {
+            "type": "string",
+            "description": "pode ser um indicador da existencia de, b) uma referência a (publicação, link), ou c) texto das notas tomadas no campo sobre o evento",
+            "title": "Anotações de Campo",
+            "$zufmscore:section": "event",
+
+            "examples": [
+                "notas disponíveis na Biblioteca Central"
+            ]
+        },
+        "measurementRemarks": {
+            "type": "string",
+            "description": "comentários ou notas que acompanham medições ou fatos; medidas concatenadas com \";\" informando unidade",
+            "title": "Medidas",
+            "$zufmscore:section": "measurementOrFact",
+
+            "examples": [
+                "peso (g): 23",
+                "antebraço (mm): 47,1"
+            ]
+        },
+        "continent": {
+            "type": "string",
+            "description": "apenas se for um divisão válida",
+            "title": "Continente/Oceano",
+            "$zufmscore:section": "location",
+            "default": "América do Sul",
+            "examples": [
+                "América do Sul",
+                "América do Norte",
+                "Ásia"
+            ]
+        },
+        "country": {
+            "type": "string",
+            "description": "nome do país",
+            "title": "País",
+            "$zufmscore:section": "location",
+            "default": "Brasil",
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Brasil",
+                "Paraguai",
+                "Bolívia"
+            ]
+        },
+        "countryCode": {
+            "type": "string",
+            "description": "codificação de acordo com ISO3166-1 e código alfa-3",
+            "title": "Código do País",
+            "$zufmscore:section": "location",
+            "$zufmscore:dynamic": "countryCode",
+            "examples": [
+                "BRA",
+                "PY",
+                "PE"
+            ]
+        },
+        "verbatimLocality": {
+            "type": "string",
+            "description": "utilizar quando se trata de organismos aquáticos",
+            "title": "Bacia Hidrográfica",
+            "$zufmscore:section": "location",
+            "default": "Brasil",
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Bacia do Paraguai",
+                "Bacia Hidrográfica Amazônica",
+                "Bacia Hidrográfica do Paraná "
+            ]
+        },
+        "stateProvince": {
+            "type": "string",
+            "description": "escrito por extenso, utilizar região quando são áreas de divisa entre estados",
+            "title": "Estado/Província/Região",
+            "$zufmscore:section": "location",
+            "default": "Mato Grosso do Sul",
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Mato Grosso do Sul",
+                "Paraná",
+                "São Paulo"
+            ]
+        },
+        "county": {
+            "type": "string",
+            "description": "o nome do município válido",
+            "title": "Município",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Campo Grande",
+                "Corguinho",
+                "Três Lagoas"
+            ]
+        },
+        "municipality": {
+            "type": "string",
+            "description": "quando há necessidade de informar distrito ou sub-região (ex.: Pantanal da Nhecolândia)",
+            "title": "Sub-Região/Distrito",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Taboco",
+                "Pedro Gomes"
+            ]
+        },
+        "locality": {
+            "type": "string",
+            "description": "a localidade abaixo de município ou distrito",
+            "title": "Localidade",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Fazenda Nhumirim",
+                "Fazenda Dois Irmãos"
+            ]
+        },
+        "decimalLatitude": {
+            "type": "number",
+            "pattern": "^((-[0-8]?[0-9].\\d\\d\\d\\d\\d\\d$)|([0-8]?[0-9].\\d\\d\\d\\d\\d\\d$)|(-?[9][0].[0][0][0][0][0][0]$))$",
+            "minimum": -90,
+            "maximum": 90,
+            "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
+            "title": "Latitude Decimal",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                -45.56732,
+                -30.24545,
+                -22.65665
+            ]
+        },
+        "decimalLongitude": {
+            "type": "number",
+            "minimum": -180,
+            "maximum": 180,
+            "pattern": "^(-?[1]?[0-7]?[0-9].\\d\\d\\d\\d\\d\\d)$|^(-?[1][8][0].[0][0][0][0][0][0])$|^(-?[0-9]?[0-9].\\d\\d\\d\\d\\d\\d)$",
+            "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
+            "title": "Longitude Decimal",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                -45.56732,
+                -30.24545,
+                -22.65665
+            ]
+        },
+        "verbatimLatitude": {
+            "type": "string",
+            "description": "informar se não houver decimal",
+            "title": "Latitude",
+            "$zufmscore:section": "location",
+            "$zufmscore:dynamic": "latitude",
+            "pattern": "^-?((([0-8]?\\d\u00B0(([0-5]\\d)|([6][0]))'(([0-5]\\d)|([6][0]))(.(([0-5]\\d)|([6][0])))?\"[NS]+)|([9]?[0]\u00B0(([0]\\d)|([0][0]))'(([0]\\d)|([0][0]))(.(([0]\\d)|([0][0])))?\"[NS]+)))$",
+            "examples": [
+                "21°31'23.40\"S",
+                "40°45'36.00\"N",
+                "32°31'23.40\"S"
+            ]
+        },
+        "verbatimLongitude": {
+            "type": "string",
+            "description": "informar se não houver decimal",
+            "title": "Longitude",
+            "$zufmscore:section": "location",
+            "$zufmscore:dynamic": "longitude",
+            "pattern": "^-?((([1]?[0-7]?\\d\u00B0(([0-5]\\d)|([6][0]))'(([0-5]\\d)|([6][0])).(([0-5]\\d)|([6][0]))\"[EW]+)|([1]?[8]?[0]\u00B0(([0]\\d)|([0][0]))'(([0]\\d)|([0][0])).(([0]\\d)|([0][0]))\"[EW]+)))$",
+            "examples": [
+                "21°31'23.40\"W",
+                "16°31'23.40\"E",
+                "32°31'23.40\"W"
+            ]
+        },
+        "coordinatePrecision": {
+            "type": "number",
+            "description": "precisão em metros",
+            "title": "Precisão da Coordenada (m)",
+            "$zufmscore:section": "location",
+            "default": 0,
+            "$zufmscore:repeat": true,
+            "examples": [
+                10,
+                24,
+                2
+            ]
+        },
+        "geodeticDatum": {
+            "type": "string",
+            "description": "informar somente se decimal",
+            "title": "Datum",
+            "$zufmscore:section": "location",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:repeat": true,
+            "$zufmscore:highestoccurrence": true,
+            "examples": [
+                "WGS84",
+                "NAD27",
+                "Campo Inchauspe"
+            ]
+        },
+        "footprintWKT": {
+            "type": "string",
+            "description": "quando não se sabe a coordenada exata; acesse http://boundingbox.klokantech.com/ para estimar o quadrante",
+            "title": "Retângulo Envolvente",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "GPS: 019°18'00\"S--021°39'00\"S/056°22'00\"W--053°34'00\"W",
+                "POLYGON((-54.9253 -20.1652, -53.5997 -20.1652, -53.5997 -21.5845, -54.9253 -21.5845, -54.9253 -20.1652))",
+                "POLYGON((-55.0794 -19.8, -54.6514 -19.8, -54.6514 -20.1022, -55.0794 -20.1022, -55.0794 -19.8))"
+            ]
+        },
+        "minimumElevationInMeters": {
+            "type": "number",
+            "description": "limite inferior do intervalo da elevação",
+            "title": "Altitude Mínima (m)",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                100,
+                517,
+                524
+            ]
+        },
+        "maximumElevationInMeters": {
+            "type": "number",
+            "description": "limite superior do intervalo da elevação",
+            "title": "Altitude Máxima (m)",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                100,
+                517,
+                524
+            ]
+        },
+        "waterBody": {
+            "type": "string",
+            "description": "o nome do corpo d'água lótico/lêntico onde foi coletado; mais detalhes acesse http://www.getty.edu/research/tools/vocabularies/tgn/",
+            "title": "Corpo D'Água",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Rio Salobra",
+                "Rio Paraguai",
+                "Rio Aquidauna"
+            ]
+        },
+        "minimumDepthInMeters": {
+            "type": "number",
+            "description": "a menor profundidade de um intervalo de profundidades abaixo da superfície do local, em metros",
+            "title": "Profundidade Mínima (m)",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                100,
+                30,
+                15
+            ]
+        },
+        "maximumDepthInMeters": {
+            "type": "number",
+            "description": "a maior profundidade de um intervalo de profundidades abaixo da superfície do local, em metros",
+            "title": "Profundidade Máxima (m)",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                100,
+                234,
+                15
+            ]
+        },
+        "locationRemarks": {
+            "type": "string",
+            "description": "comentários sobre o local onde foi coletado",
+            "title": "Observações do Local",
+            "$zufmscore:section": "location",
+
+            "$zufmscore:repeat": true,
+            "examples": [
+                "debaixo de água desde 2005",
+                "Mata Fechada",
+                "Pasto Verdejante"
+            ]
+        },
+        "identificationQualifier": {
+            "type": "string",
+            "description": "quando não se sabe ao certo a identificação ",
+            "title": "Imprecisão",
+            "$zufmscore:section": "identification",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:repeat": true,
+            "examples": [
+                "cf.",
+                "aff.",
+                "sp.",
+                "gr.",
+                "fo."
+            ]
+        },
+        "identifiedBy": {
+            "type": "string",
+            "description": "o sobrenome e nome abreviado em caixa alta segundo o exemplo de quem identificou o material",
+            "title": "Determinado Por",
+            "$zufmscore:section": "identification",
+            "$zufmscore:repeat": true,
+
+            "examples": [
+                "GRACIOLLI, G.",
+                "James L. Patton",
+                "Theodore Pappenfuss | Robert Macey"
+            ]
+        },
+        "dateIdentified": {
+            "type": "string",
+            "description": "data da determsinação no formato aaaa-mm-dd",
+            "pattern": "^([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012])\\-((0[1-9])|([1-2][0-9])|(3[01])))$|^([1-2][0-9][0-9][0-9]-(0?[1-9]|1[012]))$|^([1-2][0-9][0-9][0-9])$",
+            "title": "Data da Determinação",
+            "$zufmscore:section": "identification",
+            "$zufmscore:repeat": true,
+            "examples": [
+                "2012-03-27",
+                "2012-12-30",
+                "2022-02-20"
+            ]
+        },
+        "typeStatus": {
+            "type": "string",
+            "description": "informa se é tipo nomenclatural ou apenas voucher, se necessário concatenar com \";\"",
+            "title": "Tipo Nomenclatural",
+            "$zufmscore:section": "identification",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:repeat": true,
+            "examples": [
+                "Holótipo de Pinus abies | Holótipo de Picea abies",
+                "Holótipo"
+            ]
+        },
+        "scientificName": {
+            "type": "string",
+            "description": "similar ao Nome Científico Aceito, mas aqui utilizamos sem autoria",
+            "title": "Nome Científico",
+            "$zufmscore:section": "taxon",
+
+            "examples": [
+                "Lysapsus limellum",
+                "Leptodactylus labyrinthicus",
+                "Dendropsophus minutus"
+            ]
+        },
+        "scientificNameAuthorship": {
+            "type": "string",
+            "description": "autor e ano, segundo o código de nomenclatura seguido",
+            "title": "Autor do Nome Científico",
+            "$zufmscore:section": "taxon",
+
+            "examples": [
+                "(Cope, 1862)",
+                "(Spix, 1824)",
+                "(Peters, 1872)"
+            ]
+        },
+        "acceptedNameUsage": {
+            "type": "string",
+            "description": "identificação do táxon com autor até onde foi possível, não importando a categoria taxonômica",
+            "title": "Nome Científico Aceito",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "acceptedNameUsage",
+            "examples": [
+                "Lysapsus limellum (Cope, 1862)",
+                "Leptodactylus labyrinthicus (Spix, 1824)",
+                "Dendropsophus minutus (Peters, 1872)"
+            ]
+        },
+        "subgenus": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Subgênero",
+            "$zufmscore:autocomplete": true,
+            "$zufmscore:section": "taxon",
+            "examples": [
+                "Strobus",
+                "Amerigo",
+                "Pilosella"
+            ]
+        },
+        "genus": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Gênero",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Boana",
+                "Lysapsus",
+                "Leptodactylus"
+            ]
+        },
+        "artificial:subtribe": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Subtribo",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Coleoptera",
+                "Diptera",
+                "Hemiptera"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": []
+        },
+        "artificial:tribe": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Tribo",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Coleoptera",
+                "Diptera",
+                "Hemiptera",
+                "Isoptera",
+                "Lepidoptera",
+                "Mantodea",
+                "Mecoptera",
+                "Odonata",
+                "Orthoptera",
+                "Phasmatodea"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": []
+        },
+        "artificial:subfamily": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Subfamília",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Amphibia",
+                "Blattodea",
+                "Chelicerata",
+                "Chiroptera",
+                "Coleoptera",
+                "Diptera",
+                "Embioptera",
+                "Ephemeroptera",
+                "Fósseis",
+                "Hemiptera",
+                "Hymenoptera",
+                "Isoptera",
+                "Lepidoptera",
+                "Mantodea",
+                "Mecoptera",
+                "Megaloptera",
+                "Mamíferos Não-Voadores",
+                "Nematoda",
+                "Neuroptera",
+                "Odonata",
+                "Orthoptera",
+                "Phasmatodea",
+                "Pisces",
+                "Platyhelminthes",
+                "Siphonaptera",
+                "Thysanoptera"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Pseudinae",
+                "Leiuperinae",
+                "Dendropsophinae"
+            ]
+        },
+        "family": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Família",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Hylidae",
+                "Leptodactylidae",
+                "Bufonidae"
+            ]
+        },
+        "artificial:superfamily": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Superfamília",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Fósseis",
+                "Hymenoptera",
+                "Platyhelminthes",
+                "Siphonaptera",
+                "Thysanoptera"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": []
+        },
+        "artificial:infraorder": {
+            "type": "string",
+            "description": "campo obrigatório",
+            "title": "Infraordem",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Hemiptera"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": []
+        },
+        "artificial:suborder": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Subordem",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Annelida",
+                "Aves",
+                "Chelicerata",
+                "Coleoptera",
+                "Diptera",
+                "Embioptera",
+                "Ephemeroptera",
+                "Fósseis",
+                "Hemiptera",
+                "Hymenoptera",
+                "Isoptera",
+                "Lepidoptera",
+                "Mantodea",
+                "Mecoptera",
+                "Megaloptera",
+                "Neuroptera",
+                "Odonata",
+                "Orthoptera",
+                "Phasmatodea",
+                "Trichoptera"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Furcatergalia"
+            ]
+        },
+        "order": {
+            "type": "string",
+            "description": "campo obrigatório",
+            "title": "Ordem",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Anura",
+                "Embioptera",
+                "Ephemeroptera"
+            ]
+        },
+        "artificial:superorder": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Superordem",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Fósseis",
+                "Psocodea"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": []
+        },
+        "artificial:subclass": {
+            "type": "string",
+            "description": "campo obrigatório",
+            "title": "Subclasse",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Annelida",
+                "Myriapoda",
+                "Psocodea"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": []
+        },
+        "class": {
+            "type": "string",
+            "description": "campo obrigatório",
+            "title": "Classe",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Amphibia",
+                "Insecta",
+                "Mammalia"
+            ]
+        },
+        "artificial:subphylum": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Subfilo",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:sectionspecific": [
+                "Archaeognatha",
+                "Blattodea",
+                "Chelicerata",
+                "Collembola",
+                "Coleoptera",
+                "Crustacea",
+                "Dermaptera",
+                "Diptera",
+                "Embioptera",
+                "Ephemeroptera",
+                "Fósseis",
+                "Hemiptera",
+                "Hymenoptera",
+                "Isoptera",
+                "Lepidoptera",
+                "Mantodea",
+                "Mecoptera",
+                "Megaloptera",
+                "Myriapoda",
+                "Neuroptera",
+                "Odonata",
+                "Orthoptera",
+                "Plecoptera",
+                "Psocodea",
+                "Trichoptera",
+                "Zygentoma"
+            ],
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Hexapoda"
+            ]
+        },
+        "phylum": {
+            "type": "string",
+            "description": "campo obrigatório",
+            "title": "Filo",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Chordata",
+                "Arthropoda"
+            ]
+        },
+        "kingdom": {
+            "type": "string",
+            "description": "campo obrigatório",
+            "title": "Reino",
+            "$zufmscore:section": "taxon",
+            "$zufmscore:dynamic": "previousField",
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Animalia"
+            ]
+        },
+        "specificEpithet": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Epíteto Específico",
+            "$zufmscore:section": "taxon",
+
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "limellum",
+                "chaquensis",
+                "acuminatus"
+            ]
+        },
+        "infraspecificEpithet": {
+            "type": "string",
+            "description": "se identificado",
+            "title": "Epíteto Infraespecífico",
+            "$zufmscore:section": "taxon",
+
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "concolor",
+                "laxa",
+                "scaberrima"
+            ]
+        },
+        "taxonRank": {
+            "type": "string",
+            "description": "informa até que nível taxonômico foi identificado",
+            "title": "Nível do Táxon",
+            "$zufmscore:section": "taxon",
+
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "subespécie"
+            ]
+        },
+        "taxonomicStatus": {
+            "type": "string",
+            "description": "informa a condição taxonômica:",
+            "title": "Status Taxonômico",
+            "$zufmscore:section": "taxon",
+
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "em descrição",
+                "inválido",
+                "mal aplicado",
+                "sinônimo homotípico",
+                "aceito"
+            ]
+        },
+        "originalNameUsage": {
+            "type": "string",
+            "description": "se for um táxon com problemas, informar o original",
+            "title": "Nome Original Usado",
+            "$zufmscore:section": "taxon",
+
+            "examples": [
+                "Dilocarcinus pagei Stimpson, 1861"
+            ]
+        },
+        "vernacularName": {
+            "type": "string",
+            "description": "nome popular hifenizado",
+            "title": "Nome Vulgar",
+            "$zufmscore:section": "taxon",
+
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "caramujo-d'água"
+            ]
+        },
+        "nomenclaturalCode": {
+            "type": "string",
+            "description": "informa qual código ou sistema de classificação está sendo utilizado para o registro",
+            "title": "Código Nomenclatural",
+            "$zufmscore:section": "taxon",
+            "default": "ICZN",
+            "$zufmscore:repeat": true,
+            "examples": [
+                "ICZN",
+                "ICN",
+                "BC"
+            ]
+        },
+        "nameAccordingTo": {
+            "type": "string",
+            "description": "o sistema de classificação no qual este grupo está organizado",
+            "title": "Sistema de Classificação",
+            "$zufmscore:section": "taxon",
+
+            "$zufmscore:autocomplete": true,
+            "examples": [
+                "Frost, 2017"
+            ]
+        },
+        "relationshipOfResource": {
+            "type": "string",
+            "description": "informar a relação com o Item Relacionado ao Catálogo",
+            "title": "Tipo de Relacionamento",
+            "$zufmscore:section": "resourceRelationship",
+            "default": "nenhum",
+            "examples": [
+                "nenhum"
+            ]
+        }
+    }
+}
