@@ -5,6 +5,7 @@ import { userApi } from "@/api";
 import _ from "lodash";
 import { wait } from "@/util/async";
 import { descriptionFromResponseError, useToastStore } from "./toast";
+import { jsonToCSV } from "@/util/csv";
 
 export type ZUFMSCore = Required<ApiZUFMSCore>;
 
@@ -113,7 +114,7 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
       );
     },
 
-    async loadFromCsv(file: File) {
+    async createFromCsv(file: File) {
       const toastStore = useToastStore();
 
       try {
@@ -138,28 +139,41 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
     },
 
     async fetchOccurrences() {
-      const occurrencesCount = await fetch(
-        `https://localhost/v1/occurrences/count?artificial:section=${this.currentSection}`,
-        {
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("_at") ?? ""}`,
-          },
-        }
-      ).then((data) => data.json());
+      const toastStore = useToastStore();
 
-      this.pages = Math.ceil(occurrencesCount / this.occurrencesPerPage);
+      try {
+        const occurrencesCount = await fetch(
+          `https://localhost/v1/occurrences/count?artificial:section=${this.currentSection}`,
+          {
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("_at") ?? ""}`,
+            },
+          }
+        ).then((data) => data.json());
 
-      this.pageOccurrences.cache.clear?.();
+        this.pages = Math.ceil(occurrencesCount / this.occurrencesPerPage);
+
+        this.pageOccurrences.cache.clear?.();
+      } catch (err) {
+        toastStore.pushMessage({
+          title: "Erro ao carregar ocorrências",
+          iconName: "error",
+          description: descriptionFromResponseError(err),
+          time: 5000,
+        });
+      }
     },
 
     async fetchAutocompleteValues(term: keyof ZUFMSCore, value?: string) {
+      const toastStore = useToastStore();
+
       try {
         const autocompleteValues = (
           await userApi.occurrences.occurrencesAutocomplete(term, value ?? "")
         ).data;
 
         if ((autocompleteValues as any).errors) {
-          throw (autocompleteValues as any).errors;
+          throw { response: { data: autocompleteValues as any } };
         }
 
         this.autocompleteValues[term] = [
@@ -169,7 +183,12 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
           ]).values(),
         ].sort();
       } catch (err) {
-        console.error(err);
+        toastStore.pushMessage({
+          title: "Erro ao buscar dados",
+          iconName: "warning",
+          colorClass: "text-yellow-500",
+          description: descriptionFromResponseError(err),
+        });
       }
     },
 
@@ -207,47 +226,78 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
     },
 
     async deleteSelectedOccurrences() {
-      await userApi.occurrences.occurrencesDeleteMany(
-        Object.keys(this.selectedOccurrences)
-      );
+      const toastStore = useToastStore();
 
-      this.selectedOccurrences = {};
+      try {
+        await userApi.occurrences.occurrencesDeleteMany(
+          Object.keys(this.selectedOccurrences)
+        );
+
+        this.selectedOccurrences = {};
+      } catch (err) {
+        toastStore.pushMessage({
+          title: "Erro ao deletar ocorrências",
+          iconName: "error",
+          description: descriptionFromResponseError(err),
+        });
+      }
     },
 
     async updateChangedOccurrences() {
-      await userApi.occurrences.occurrencesUpdateMany(
-        Object.entries(this.occurrenceChanges).map(
-          ([occurrenceID, values]) => ({ occurrenceID, ...values })
-        )
-      );
+      const toastStore = useToastStore();
 
-      this.occurrenceChanges = {};
+      try {
+        await userApi.occurrences.occurrencesUpdateMany(
+          Object.entries(this.occurrenceChanges).map(
+            ([occurrenceID, values]) => ({ occurrenceID, ...values })
+          )
+        );
+
+        this.occurrenceChanges = {};
+      } catch (err) {
+        toastStore.pushMessage({
+          title: "Erro ao atualizar ocorrências",
+          iconName: "error",
+          description: descriptionFromResponseError(err),
+        });
+      }
     },
 
     async downloadSelectedOccurrences() {
-      /*
-      return this.occurrences.reduce(
-        (occurrences, occurrencesPage) => [
-          ...occurrences,
-          ...occurrencesPage
-            .filter(
-              (occurrence: ZUFMSCore) => this.selectedOccurrences[occurrence.occurrenceID]
-            )
-            .map((occurrence: ZUFMSCore) =>
-              this.hasSomeTermSelected
-                ? _.pick(occurrence, Object.keys(this.selectedTerms))
-                : occurrence
-            ),
-        ],
-        [] as Partial<ZUFMSCore>[]
-      );
-      */
+      const toastStore = useToastStore();
 
-      return [];
-    },
+      const occurrencesFetch = (await Promise.all(
+        Object.keys(this.selectedOccurrences).map((occurrenceID) =>
+          userApi.occurrences
+            .occurrencesGetOne(occurrenceID)
+            .then((response) => response.data)
+            .catch((err) => {
+              toastStore.pushMessage({
+                title: `Erro ao baixar a ocorrência ${occurrenceID}`,
+                iconName: "error",
+                description: descriptionFromResponseError(err),
+              });
 
-    async uploadOccurrences() {
-      return 0;
+              return undefined;
+            })
+        )
+      )) as (ZUFMSCore | undefined)[];
+
+      const occurrences = occurrencesFetch
+        .filter((data) => data !== undefined)
+        .map((occurrence) =>
+          _.pick(occurrence, Object.keys(this.selectedTerms))
+        );
+
+      const downloadLink = document.createElement("a");
+
+      downloadLink.download = `zufms_${Date.now()}.csv`;
+
+      downloadLink.href = `data:application/octet-stream,${encodeURI(
+        jsonToCSV(occurrences)
+      )}`;
+
+      downloadLink.click();
     },
   },
 });

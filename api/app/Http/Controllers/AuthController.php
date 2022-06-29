@@ -248,7 +248,7 @@ class AuthController
 
             $emailBodyVariables =[
                 'otp'=>$otp_value,
-                'callback_url'=> "http://localhost:3001/auth/cb", // $client_callback_url,
+                'callback_url'=> "https://localhost/auth/cb", // $client_callback_url,
                 'state'=>$otp_request->state
             ];
 

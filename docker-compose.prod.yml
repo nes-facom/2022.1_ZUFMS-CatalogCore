@@ -1,24 +1,19 @@
-version: '3'
+version: "3"
 
 volumes:
   web_build:
-
 
 services:
   db:
     container_name: zufms_db
     image: postgres:14.2-alpine
     env_file: ./infra/database/.env
-    ports:
-      - '5432:5432'
     volumes:
       - ./infra/database/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/:z
   db_admin:
     container_name: zufms_db_admin
-    image: dpage/pgadmin4:6.9
+    image: dpage/pgadmin4:6.10
     env_file: ./infra/database/.env
-    ports:
-      - "9090:80"
     volumes:
       - ./infra/database/pgadmin/servers.json:/pgadmin4/servers.json:z
     logging:
@@ -30,8 +25,6 @@ services:
     build: ./api
     depends_on:
       - db
-    volumes:
-      - ./api:/var/www:z
   api_docs:
     container_name: zufms_api_docs
     image: swaggerapi/swagger-ui
@@ -42,11 +35,28 @@ services:
     build: ./web
     volumes:
       - web_build:/app/dist:z
+  redis:
+    container_name: zufms_redis
+    image: redis:7.0-alpine
+    env_file: ./infra/database/.env
+    command: redis-server --loglevel warning --requirepass secret
+  redis_adapter:
+    container_name: zufms_redis_adapter
+    env_file: ./infra/database/.env
+    build:
+      context: ./infra/database/redis/http_adapter
+      args:
+        - REDIS_ADAPTER_PORT=$${REDIS_ADAPTER_PORT}
+        - REDIS_CONNECTION_URL=$${REDIS_CONNECTION_URL}
+    depends_on:
+      - redis
   http:
     container_name: zufms_http
     image: nginx:1.21
     ports:
       - "443:443"
+      - "80:80"
+      - "3030:3030"
     volumes:
       - ./infra/http/nginx/nginx.conf:/etc/nginx/nginx.conf:z
       - ./infra/http/nginx/conf.d/:/etc/nginx/conf.d/:z
@@ -56,3 +66,5 @@ services:
     depends_on:
       - api
       - web
+      - redis_adapter
+      - api_docs

@@ -20,10 +20,10 @@ export const useAuthStore = defineStore("authStore", {
   state: () =>
     ({
       userInfo: {},
+      accessToken: localStorage.getItem("_at") ?? "",
       loading: false,
     } as State),
   getters: {
-    accessToken: () => localStorage.getItem("_at") ?? "",
     parsedAccessToken: (state) => VueJwtDecode.decode(state.accessToken),
     scopes: (state) => state.parsedAccessToken.scope.split(" "),
     isAuthenticated: (state) =>
@@ -44,6 +44,7 @@ export const useAuthStore = defineStore("authStore", {
           scope,
         });
 
+        this.accessToken = response.data.access_token ?? "";
         localStorage.setItem("_at", response.data.access_token ?? "");
       } catch (err) {
         this.error =
@@ -76,6 +77,7 @@ export const useAuthStore = defineStore("authStore", {
     },
 
     logout() {
+      this.accessToken = "";
       localStorage.removeItem("_at");
     },
     async fetchUserInfo() {

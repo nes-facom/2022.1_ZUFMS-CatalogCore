@@ -34,7 +34,7 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
   (arr, [name, value]) => [
     ...arr,
     {
-      name,
+      name: name as keyof ZUFMSCore,
       placeholder: (value as any).examples?.[0],
       value: (value as any)["default"] ?? "",
       autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
@@ -44,11 +44,12 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
     },
   ],
   [] as {
-    name: string;
+    name: keyof ZUFMSCore;
     placeholder: string;
     value: string;
     autocomplete: boolean;
     autocompleteValues: string[];
+    pattern?: string;
     termclass: string;
   }[]
 );

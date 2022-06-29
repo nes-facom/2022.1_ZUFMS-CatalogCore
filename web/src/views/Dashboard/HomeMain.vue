@@ -27,7 +27,11 @@ const onSpreadSheetScroll = (ev: Event) => {
 };
 
 const onChangeFileUpload = (e: Event) => {
-  occurrencesStore.createFromCsv(e.target.files[0]);
+  const file = (e as any).target?.files?.[0] as File | undefined;
+
+  if (file) {
+    occurrencesStore.createFromCsv(file);
+  }
 };
 </script>
 
@@ -65,7 +69,7 @@ const onChangeFileUpload = (e: Event) => {
           <MaterialIcon name="file_upload" class="text-white" />
         </div>
         <button
-          @click="() => {}"
+          @click="occurrencesStore.downloadSelectedOccurrences()"
           :disabled="!occurrencesStore.hasSomeOccurrenceSelected"
           :class="`${
             occurrencesStore.hasSomeOccurrenceSelected
@@ -76,7 +80,7 @@ const onChangeFileUpload = (e: Event) => {
           <MaterialIcon name="download" />
         </button>
         <button
-          @click="() => {}"
+          @click="occurrencesStore.updateChangedOccurrences()"
           :disabled="!occurrencesStore.hasSomeOccurrenceChange"
           :class="`${
             occurrencesStore.hasSomeOccurrenceChange
@@ -87,7 +91,7 @@ const onChangeFileUpload = (e: Event) => {
           <MaterialIcon name="check" />
         </button>
         <button
-          @click="() => {}"
+          @click="occurrencesStore.deleteSelectedOccurrences()"
           :disabled="!occurrencesStore.hasSomeOccurrenceSelected"
           :class="`${
             occurrencesStore.hasSomeOccurrenceSelected

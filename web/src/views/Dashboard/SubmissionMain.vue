@@ -19,7 +19,11 @@ const showHeader = ref(true);
 const submissionStore = useSubmissionStore();
 
 const onChangeFileUpload = (e: Event) => {
-  submissionStore.loadFromCsv(e.target.files[0]);
+  const file = (e as any).target?.files?.[0] as File | undefined;
+
+  if (file) {
+    submissionStore.loadFromCsv(file);
+  }
 };
 </script>
 

@@ -25,13 +25,14 @@ watchEffect(() => {
 });
 
 const onInput =
-  (term: keyof ZUFMSCore, occurrenceID: ZUFMSCore["occurrenceID"]) =>
-  (ev: Event) => {
+  (term: any, occurrenceID: ZUFMSCore["occurrenceID"]) => (ev: Event) => {
     const value = (ev as any).target.value as string;
 
-    occurrencesStore.changeOccurrenceTermValue(occurrenceID, term, value);
+    occurrencesStore.changeOccurrenceTermValue(occurrenceID, term.name, value);
 
-    occurrencesStore.fetchAutocompleteValues(term, value);
+    if (term.autocomplete) {
+      occurrencesStore.fetchAutocompleteValues(term.name, value);
+    }
   };
 
 const onCheckboxChange = (occurrenceID: ZUFMSCore["occurrenceID"]) => () =>
@@ -80,7 +81,7 @@ const termValueIsInAutocomplete = (occurrence: ZUFMSCore, term: any) =>
             :placeholder="term.placeholder"
             :value="occurrencesStore.$state.occurrenceChanges?.[occurrence['occurrenceID']]?.[term.name as keyof ZUFMSCore] ?? occurrence[term.name as keyof ZUFMSCore]"
             :list="term.name"
-            @input="(ev) => onInput(term.name as keyof ZUFMSCore, occurrence['occurrenceID'])(ev)"
+            @input="(ev) => onInput(term, occurrence['occurrenceID'])(ev)"
             :name="`occurrence[${i}][${term.name}]`"
           />
           <datalist v-if="term.autocomplete" :id="term.name">

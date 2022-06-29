@@ -1,42 +1,39 @@
 <script setup lang="ts">
 import { otpRequestStorage, serviceApi } from "@/api";
 import router from "@/router";
+import { useAuthStore } from "@/store/auth";
 import { wait } from "@/util/async";
+import { ref } from "vue";
 
 const query = router.currentRoute.value.query;
 
 const state = query?.state;
 const otp = query?.otp;
 
+const loginErrorMessage = ref<string>();
+
 if (typeof state !== "string" || typeof otp !== "string") {
-  throw new Error();
+  loginErrorMessage.value = "URL inválida";
 }
 
-const fn = async () => {
-  const email = await otpRequestStorage.get(state);
+const authStore = useAuthStore();
 
-  try {
-    const tokenResponse = await serviceApi.auth.authToken({
-      type: "otp",
-      otp_method: "email",
-      email: email,
-      otp: otp,
-      scope: "admin",
-    });
+const loginCallback = async () => {
+  const email = await otpRequestStorage.get(state?.toString() ?? "");
 
-    localStorage.setItem("_at", tokenResponse.data.access_token ?? "");
+  await authStore.loginWithOtp(email ?? "", otp?.toString() ?? "", "admin");
 
-    await wait(1000);
-
+  if (!authStore.error) {
     router.replace("/");
-  } catch (err) {
-    console.error(err);
+  } else {
+    loginErrorMessage.value = authStore.error?.message;
   }
 };
 
-fn();
+loginCallback();
 </script>
 
 <template>
-  <div>Carregando</div>
+  <span v-if="loginErrorMessage">{{ loginErrorMessage }}</span>
+  <span v-else>Carregando</span>
 </template>

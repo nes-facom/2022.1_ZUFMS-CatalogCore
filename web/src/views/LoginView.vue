@@ -37,7 +37,7 @@ const loginStepCodeSubmit = async () => {
   );
 
   if (!authStore.error /*&& authStore.isAuthenticated*/) {
-    router.push("/");
+    router.replace("/");
   } else {
     loginErrorMessage.value = authStore.error.message;
   }
