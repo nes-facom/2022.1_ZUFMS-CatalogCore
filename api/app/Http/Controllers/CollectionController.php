@@ -15,6 +15,7 @@ class CollectionController extends CRUDController
 {
     private CollectionService  $collectionService;
     private $spreadSheetService;
+    private $avaliable_term_columns = [];
 
     /**
      * @param $spreadSheetService
@@ -26,6 +27,7 @@ class CollectionController extends CRUDController
         );
         $this->spreadSheetService = $spreadSheetService;
         $this->collectionService=$collectionService;
+        $this->setupAutoCompleteFields();
     }
 
     public function uploadDocumentReturnJson(Request $request){
@@ -90,18 +92,8 @@ class CollectionController extends CRUDController
     }
 
     public function getAutocomplete(Request $request) {
-        // TODO: Criar service para realizar a leitura do JSON Schema no
-        //       __construct para obter os termos pesquisáveis à partir dele
-        //
-        // $zufmsCoreSchemaPath = "";
-        // $zufmsCoreSchemaString = File::get($zufmsCoreSchemaPath);
-        // $zufmsCoreSchema = json_decode($zufmsCoreSchemaString, true);
-        // $avaliableTermColumns = array_keys($zufmsCoreSchema['properties']);
-
-        $avaliable_term_columns = ['lifeStage', 'sex'];
-
         $validator = Validator::make($request->all(), [
-            'term' => ['required', Rule::in($avaliable_term_columns)],
+            'term' => ['required', Rule::in($this->avaliable_term_columns)],
             'value' => 'required|string',
             'limit' => 'integer',
             'start' => 'integer'
@@ -135,5 +127,20 @@ class CollectionController extends CRUDController
             ->pluck('value');
 
         return response()->json($autocomplete_query_result->toArray());
+    }
+
+    private function setupAutoCompleteFields(){
+        $string = file_get_contents(base_path() . '/resources/assets/zufmscore.schema.json');
+        $json_a = json_decode($string, true);
+        $properties =$json_a['properties'];
+        foreach ($properties as $key => $innerList) {
+            $existKey = array_key_exists("\$zufmscore:autocomplete", $innerList);
+            if($existKey){
+                $isAutoComplete = $innerList["\$zufmscore:autocomplete"];
+                if($isAutoComplete == true){
+                    $this->avaliable_term_columns[] = $key;
+                }
+            }
+        }
     }
 }
