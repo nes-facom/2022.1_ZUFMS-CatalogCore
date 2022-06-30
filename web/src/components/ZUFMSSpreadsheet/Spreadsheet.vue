@@ -4,6 +4,7 @@ import { useSubmissionStore, termsInputs } from "@/store/submission";
 import type { ZUFMSCore } from "@/store/submission";
 import _ from "lodash";
 import { computed } from "vue";
+import router from "@/router";
 const props = defineProps<{
   terms: object;
   entries?: any;
@@ -44,7 +45,11 @@ const submit = (ev: Event) => {
   }
   */
 
-  submissionStore.createOccurrences();
+  submissionStore.createOccurrences().then((data) => {
+    if (data !== undefined) {
+      router.push("/");
+    }
+  });
 };
 
 termsInputs.forEach(

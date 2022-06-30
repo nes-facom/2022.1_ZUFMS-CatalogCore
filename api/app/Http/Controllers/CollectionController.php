@@ -131,7 +131,12 @@ class CollectionController extends CRUDController
     {
         unset($request['access_token']);
 
-        $validator = Validator::make($request->all(), [
+        $input = [
+            ...$request->all(), 
+            "occurrenceID" => $request->route('occurrenceID')
+        ];
+
+        $validator = Validator::make($input, [
             'occurrenceID' => 'required|string',
         ]);
 
@@ -149,10 +154,9 @@ class CollectionController extends CRUDController
 
         $validated = $validator->safe();
 
-        dd($validated['occurrenceID']);
-
         $occurrence = DB::table('biological_occurrence_view')
-            ->get($validated['occurrenceID']);
+            ->where("occurrenceID", $validated['occurrenceID'])
+            ->first();
 
         return response()->json($occurrence);
     }

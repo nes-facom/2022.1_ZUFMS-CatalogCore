@@ -162,7 +162,7 @@ export const useSubmissionStore = defineStore("submissionStore", {
           this.occurrences
         );
 
-        console.log(response.data);
+        return response;
       } catch (err) {
         toastStore.pushMessage({
           title: "Erro ao submeter ocorrências",

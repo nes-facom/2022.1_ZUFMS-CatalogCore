@@ -1,8 +1,5 @@
 version: "3"
 
-volumes:
-  web_build:
-
 services:
   db:
     container_name: zufms_db
@@ -39,8 +36,10 @@ services:
   web:
     container_name: zufms_web
     build: ./web
+    ports:
+      - "3000:3000"
     volumes:
-      - web_build:/app/dist:z
+      - ./web:/app:z
   redis:
     container_name: zufms_redis
     image: redis:7.0-alpine
@@ -67,7 +66,6 @@ services:
       - ./infra/http/nginx/nginx.conf:/etc/nginx/nginx.conf:z
       - ./infra/http/nginx/conf.d/:/etc/nginx/conf.d/:z
       - ./infra/http/certificates/:/etc/nginx/certificates/:z
-      - web_build:/app/web:z
       - ./docs/openapi.yml:/app/docs/openapi.yml:z
     depends_on:
       - api

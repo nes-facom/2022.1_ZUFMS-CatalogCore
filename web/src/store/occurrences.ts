@@ -58,7 +58,7 @@ type State = {
   occurrencesPerPage: number;
   currentPage: number;
   pages: number;
-  sections: ZUFMSCore["artificial:section"][]
+  sections: ZUFMSCore["artificial:section"][];
   selectedTerms: { [key in keyof ZUFMSCore]?: true };
   occurrenceChanges: Record<ZUFMSCore["occurrenceID"], Partial<ZUFMSCore>>;
   autocompleteValues: { [key in keyof ZUFMSCore]?: string[] };
@@ -74,19 +74,19 @@ type State = {
 
 export const useOccurrencesStore = defineStore("occurrencesStore", {
   state: () =>
-  ({
-    occurrences: {},
-    occurrencesPerPage: 10,
-    currentPage: 1,
-    pages: 0,
-    occurrenceChanges: {},
-    autocompleteValues: {},
-    selectedOccurrences: {},
-    selectedTerms: {},
-    currentSectionIndex: 0,
-    sections: [] as ZUFMSCore["artificial:section"][],
-    isFetchingPage: false,
-  } as State),
+    ({
+      occurrences: {},
+      occurrencesPerPage: 10,
+      currentPage: 1,
+      pages: 0,
+      occurrenceChanges: {},
+      autocompleteValues: {},
+      selectedOccurrences: {},
+      selectedTerms: {},
+      currentSectionIndex: 0,
+      sections: [] as ZUFMSCore["artificial:section"][],
+      isFetchingPage: false,
+    } as State),
 
   getters: {
     currentSection: (state) => state.sections[state.currentSectionIndex],
@@ -103,7 +103,10 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
           ).data as unknown as ZUFMSCore[]
       ),
     currentPageOccurrences: (state) =>
-      state.pageOccurrences(state.currentPage, state.currentSection),
+      state.pageOccurrences(
+        state.currentPage,
+        state.sections[state.currentSectionIndex]
+      ),
     hasSomeOccurrenceSelected: (state) =>
       Object.keys(state.selectedOccurrences).length > 0,
     hasSomeOccurrenceChange: (state) =>
@@ -136,9 +139,14 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
     },
 
     async fetchOccurrences() {
-      const toastStore = useToastStore();
-
       try {
+        const sections = await userApi.occurrences.occurrencesAutocomplete(
+          "artificial:section",
+          ""
+        );
+
+        this.sections = sections.data;
+
         const occurrencesCount = await fetch(
           `https://localhost/v1/occurrences/count?artificial:section=${this.currentSection}`,
           {
@@ -148,17 +156,16 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
           }
         ).then((data) => data.json());
 
+        if (occurrencesCount.errors) {
+          throw { response: { data: occurrencesCount } };
+        }
+
         this.pages = Math.ceil(occurrencesCount / this.occurrencesPerPage);
-
-        const sections = await userApi.occurrences.occurrencesAutocomplete(
-          "artificial:section",
-          ""
-        );
-
-        this.sections = sections.data;
 
         this.pageOccurrences.cache.clear?.();
       } catch (err) {
+        const toastStore = useToastStore();
+
         toastStore.pushMessage({
           title: "Erro ao carregar ocorrências",
           iconName: "error",
@@ -287,10 +294,14 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
         )
       )) as (ZUFMSCore | undefined)[];
 
+      const selectedTerms = Object.keys(this.selectedTerms);
+
       const occurrences = occurrencesFetch
         .filter((data) => data !== undefined)
         .map((occurrence) =>
-          _.pick(occurrence, Object.keys(this.selectedTerms))
+          selectedTerms.length > 0
+            ? _.pick(occurrence, selectedTerms)
+            : occurrence
         );
 
       const downloadLink = document.createElement("a");

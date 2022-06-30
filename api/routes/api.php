@@ -37,10 +37,10 @@ Route::middleware(['token', 'token.scope:users'])->group(function () {
 
 Route::middleware(['token', 'token.scope:occurrences:read'])->group(function () {
     Route::get('/occurrences', [CollectionController::class, 'getAll']);
-    // Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
     Route::get('/occurrences/count', [CollectionController::class, 'count']);
     Route::get('/occurrences/autocomplete', [CollectionController::class, 'getAutocomplete']);
     Route::post('/occurrences/file/verify', [CollectionController::class, 'uploadDocumentReturnJson']);
+    Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
 });
 
 Route::middleware(['token', 'token.scope:occurrences'])->group(function () {
