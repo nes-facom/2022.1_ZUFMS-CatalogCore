@@ -349,7 +349,6 @@
             "type": "string",
             "description": "número da etiqueta de campo, associada ao coletor",
             "title": "Número da Etiqueta de Campo",
-            "pattern": "[0-9]",
             "examples": [
                 "CH381",
                 "SF454"
@@ -583,7 +582,7 @@
         },
         "eventTime": {
             "type": "string",
-            "pattern": "^((([0-1]\\d|2[0-3])(?::([0-5]\\d))(?::([0-5]\\d)))(\\\/)(([0-1]\\d|2[0-3])(?::([0-5]\\d))(?::([0-5]\\d))))$|^(([0-1]\\d|2[0-3])(?::([0-5]\\d))(?::([0-5]\\d)))$",
+
             "description": "hora única (hh:mm) ou intervalo (hh:mm/hh:mm)",
             "title": "Hora/Intervalo do Evento",
             "$zufmscore:section": "event",
@@ -606,7 +605,7 @@
         },
         "verbatimEventDate": {
             "type": "string",
-            "pattern": "^(0[1-9]|[1-2][0-9]|31(?!(?:0[2469]|11))|30(?!02))\\.((I|V|X)?(I|V|X)?(I|V|X)?(I|V|X))\\.([12]\\d{3})$",
+            "pattern": "^([0-3]?\\d\\.)?([IVXivx]{1,4}\\.)?\\d{4}$",
             "description": "data clássica com mês em formato romano",
             "title": "Data Coleta Textual",
             "$zufmscore:section": "event",
@@ -806,7 +805,7 @@
             "title": "Latitude",
             "$zufmscore:section": "location",
             "$zufmscore:dynamic": "latitude",
-            "pattern": "^-?((([0-8]?\\d\u00B0(([0-5]\\d)|([6][0]))'(([0-5]\\d)|([6][0]))(.(([0-5]\\d)|([6][0])))?\"[NS]+)|([9]?[0]\u00B0(([0]\\d)|([0][0]))'(([0]\\d)|([0][0]))(.(([0]\\d)|([0][0])))?\"[NS]+)))$",
+            "pattern": "^-?((([0-8]?\\d\u00B0((\\d?\\d))'(\\d?\\d)(.\\d?\\d?\\d)?\"[NS]+)))$",
             "examples": [
                 "21°31'23.40\"S",
                 "40°45'36.00\"N",
@@ -819,7 +818,7 @@
             "title": "Longitude",
             "$zufmscore:section": "location",
             "$zufmscore:dynamic": "longitude",
-            "pattern": "^-?((([1]?[0-7]?\\d\u00B0(([0-5]\\d)|([6][0]))'(([0-5]\\d)|([6][0])).(([0-5]\\d)|([6][0]))\"[EW]+)|([1]?[8]?[0]\u00B0(([0]\\d)|([0][0]))'(([0]\\d)|([0][0])).(([0]\\d)|([0][0]))\"[EW]+)))$",
+            "pattern": "^-?([1]?\\d?\\d\u00B0\\d?\\d'(\\d?\\d).?(\\d\\d?\\d?)?\"[EW]+)$",
             "examples": [
                 "21°31'23.40\"W",
                 "16°31'23.40\"E",

@@ -59,6 +59,12 @@ class CollectionService
         $this->available_term_columns =  $availableColumns;
     }
 
+    public function occurrence_is_rascunho($array): bool
+    {
+        $rascunho_values = ['ocultar', 'tombar girino', 'fazer etiqueta', 'mapinguari'];
+        return in_array($array['informationWithheld'], $rascunho_values);
+    }
+
     public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse
     {
         try {
@@ -146,10 +152,14 @@ class CollectionService
 
             $key = $keys[$i];
             $jsonOccurrence = $body[$key];
-
+            $skip_validation = false;
+            if($this->occurrence_is_rascunho(json_decode(json_encode($jsonOccurrence),true))){
+                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
+                $skip_validation = true;
+            }
             $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
 
-            if ($result->isValid()) {
+            if ($result->isValid() || $skip_validation) {
                 $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
             } else {
                 $error = $result->error();
