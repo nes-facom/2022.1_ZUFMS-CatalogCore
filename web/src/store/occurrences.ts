@@ -58,11 +58,13 @@ type State = {
   occurrencesPerPage: number;
   currentPage: number;
   pages: number;
+  sections: ZUFMSCore["artificial:section"][]
   selectedTerms: { [key in keyof ZUFMSCore]?: true };
   occurrenceChanges: Record<ZUFMSCore["occurrenceID"], Partial<ZUFMSCore>>;
   autocompleteValues: { [key in keyof ZUFMSCore]?: string[] };
   selectedOccurrences: Record<ZUFMSCore["occurrenceID"], true>;
   currentSection: ZUFMSCore["artificial:section"];
+  currentSectionIndex: number;
   isFetchingPage: boolean;
   pageOccurrences: (
     page: number,
@@ -72,20 +74,22 @@ type State = {
 
 export const useOccurrencesStore = defineStore("occurrencesStore", {
   state: () =>
-    ({
-      occurrences: {},
-      occurrencesPerPage: 10,
-      currentPage: 1,
-      pages: 0,
-      occurrenceChanges: {},
-      autocompleteValues: {},
-      selectedOccurrences: {},
-      selectedTerms: {},
-      currentSection: "Amphibia",
-      isFetchingPage: false,
-    } as State),
+  ({
+    occurrences: {},
+    occurrencesPerPage: 10,
+    currentPage: 1,
+    pages: 0,
+    occurrenceChanges: {},
+    autocompleteValues: {},
+    selectedOccurrences: {},
+    selectedTerms: {},
+    currentSectionIndex: 0,
+    sections: [] as ZUFMSCore["artificial:section"][],
+    isFetchingPage: false,
+  } as State),
 
   getters: {
+    currentSection: (state) => state.sections[state.currentSectionIndex],
     pageOccurrences: (state) =>
       _.memoize(
         async (page: number, section: ZUFMSCore["artificial:section"]) =>
@@ -107,13 +111,6 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
     hasSomeTermSelected: (state) => Object.keys(state.selectedTerms).length > 0,
   },
   actions: {
-    async getSections() {
-      return await userApi.occurrences.occurrencesAutocomplete(
-        "artificial:section",
-        ""
-      );
-    },
-
     async createFromCsv(file: File) {
       const toastStore = useToastStore();
 
@@ -152,6 +149,13 @@ export const useOccurrencesStore = defineStore("occurrencesStore", {
         ).then((data) => data.json());
 
         this.pages = Math.ceil(occurrencesCount / this.occurrencesPerPage);
+
+        const sections = await userApi.occurrences.occurrencesAutocomplete(
+          "artificial:section",
+          ""
+        );
+
+        this.sections = sections.data;
 
         this.pageOccurrences.cache.clear?.();
       } catch (err) {

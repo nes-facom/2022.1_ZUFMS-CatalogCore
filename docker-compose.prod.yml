@@ -3,6 +3,7 @@ version: "3"
 volumes:
   web_build:
 
+
 services:
   db:
     container_name: zufms_db
@@ -10,16 +11,6 @@ services:
     env_file: ./infra/database/.env
     volumes:
       - ./infra/database/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/:z
-  db_admin:
-    container_name: zufms_db_admin
-    image: dpage/pgadmin4:6.10
-    env_file: ./infra/database/.env
-    volumes:
-      - ./infra/database/pgadmin/servers.json:/pgadmin4/servers.json:z
-    logging:
-      driver: none
-    depends_on:
-      - db
   api:
     container_name: zufms_api
     build: ./api

@@ -124,6 +124,39 @@ class CollectionController extends CRUDController
         return response()->json($occurrences);
     }
 
+    /*
+    * @Override
+    */
+    public function getOne(Request $request): \Illuminate\Http\JsonResponse
+    {
+        unset($request['access_token']);
+
+        $validator = Validator::make($request->all(), [
+            'occurrenceID' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = array_map(fn (string $description) => [
+                'code' => 2,
+                'title' => 'Dado inválido',
+                'description' => $description
+            ],  $validator->errors()->all());
+
+            return response()->json([
+                'errors' => $errors
+            ]);
+        }
+
+        $validated = $validator->safe();
+
+        dd($validated['occurrenceID']);
+
+        $occurrence = DB::table('biological_occurrence_view')
+            ->get($validated['occurrenceID']);
+
+        return response()->json($occurrence);
+    }
+
     public function getAutocomplete(Request $request) {
         // TODO: Criar service para realizar a leitura do JSON Schema no
         //       __construct para obter os termos pesquisáveis à partir dele
