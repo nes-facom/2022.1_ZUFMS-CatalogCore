@@ -308,90 +308,6 @@ class OccurrenceInputDTO
         $mapper->mapObject($jsonOccurrence, $uniqueOccurrence);
         $tempArrayOccurrence =  json_decode(json_encode($jsonOccurrence, true), true);
 
-
-
-
-        // $uniqueOccurrence->informationWithheld = $tempArrayOccurrence["informationWithheld"] ?? "";
-        // $uniqueOccurrence->basisOfRecord = $tempArrayOccurrence["basisOfRecord"] ?? "";
-        // $uniqueOccurrence->institutionCode = $tempArrayOccurrence["institutionCode"] ?? "";
-        // $uniqueOccurrence->collectionCode = $tempArrayOccurrence["collectionCode"] ?? "";
-        // $uniqueOccurrence->datasetName = $tempArrayOccurrence["datasetName"] ?? "";
-        // $uniqueOccurrence->catalogNumber = $tempArrayOccurrence["catalogNumber"] ?? "";
-        // $uniqueOccurrence->otherCatalogNumbers = $tempArrayOccurrence["otherCatalogNumbers"] ?? "";
-        // $uniqueOccurrence->recordedBy = $tempArrayOccurrence["recordedBy"] ?? "";
-        // $uniqueOccurrence->recordNumber = $tempArrayOccurrence["recordNumber"] ?? "";
-        // $uniqueOccurrence->preparations = $tempArrayOccurrence["preparations"] ?? "";
-        // $uniqueOccurrence->individualCount = $tempArrayOccurrence["individualCount"] ?? "";
-        // $uniqueOccurrence->sex = $tempArrayOccurrence["sex"] ?? "";
-        // $uniqueOccurrence->lifeStage = $tempArrayOccurrence["lifeStage"] ?? "";
-        // $uniqueOccurrence->reproductiveCondition = $tempArrayOccurrence["reproductiveCondition"] ?? "";
-        // $uniqueOccurrence->establishmentMeans = $tempArrayOccurrence["establishmentMeans"] ?? "";
-        // $uniqueOccurrence->behavior = $tempArrayOccurrence["behavior"] ?? "";
-        // $uniqueOccurrence->occurrenceRemarks = $tempArrayOccurrence["occurrenceRemarks"] ?? "";
-        // $uniqueOccurrence->disposition = $tempArrayOccurrence["disposition"] ?? "";
-        // $uniqueOccurrence->associatedReferences = $tempArrayOccurrence["associatedReferences"] ?? "";
-        // $uniqueOccurrence->associatedMedia = $tempArrayOccurrence["associatedMedia"] ?? "";
-        // $uniqueOccurrence->occurrenceID = $tempArrayOccurrence["occurrenceID"] ?? "";
-        // $uniqueOccurrence->associatedOccurrences = $tempArrayOccurrence["associatedOccurrences"] ?? "";
-        // $uniqueOccurrence->previousIdentifications = $tempArrayOccurrence["previousIdentifications"] ?? "";
-        // $uniqueOccurrence->fieldNumber = $tempArrayOccurrence["fieldNumber"] ?? "";
-        // $uniqueOccurrence->day = $tempArrayOccurrence["day"] ?? "";
-        // $uniqueOccurrence->month = $tempArrayOccurrence["month"] ?? "";
-        // $uniqueOccurrence->year = $tempArrayOccurrence["year"] ?? "";
-        // $uniqueOccurrence->eventTime = $tempArrayOccurrence["eventTime"] ?? "";
-        // $uniqueOccurrence->eventDate = $tempArrayOccurrence["eventDate"] ?? "";
-        // $uniqueOccurrence->verbatimEventDate = $tempArrayOccurrence["verbatimEventDate"] ?? "";
-        // $uniqueOccurrence->samplingProtocol = $tempArrayOccurrence["samplingProtocol"] ?? "";
-        // $uniqueOccurrence->habitat = $tempArrayOccurrence["habitat"] ?? "";
-        // $uniqueOccurrence->eventRemarks = $tempArrayOccurrence["eventRemarks"] ?? "";
-        // $uniqueOccurrence->fieldNotes = $tempArrayOccurrence["fieldNotes"] ?? "";
-        // $uniqueOccurrence->measurementRemarks = $tempArrayOccurrence["measurementRemarks"] ?? "";
-        // $uniqueOccurrence->continent = $tempArrayOccurrence["continent"] ?? "";
-        // $uniqueOccurrence->country = $tempArrayOccurrence["country"] ?? "";
-        // $uniqueOccurrence->countryCode = $tempArrayOccurrence["countryCode"] ?? "";
-        // $uniqueOccurrence->verbatimLocality = $tempArrayOccurrence["verbatimLocality"] ?? "";
-        // $uniqueOccurrence->stateProvince = $tempArrayOccurrence["stateProvince"] ?? "";
-        // $uniqueOccurrence->county = $tempArrayOccurrence["county"] ?? "";
-        // $uniqueOccurrence->municipality = $tempArrayOccurrence["municipality"] ?? "";
-        // $uniqueOccurrence->locality = $tempArrayOccurrence["locality"] ?? "";
-        // $uniqueOccurrence->decimalLatitude = $tempArrayOccurrence["decimalLatitude"] ?? "";
-        // $uniqueOccurrence->decimalLongitude = $tempArrayOccurrence["decimalLongitude"] ?? "";
-        // $uniqueOccurrence->verbatimLatitude = $tempArrayOccurrence["verbatimLatitude"] ?? "";
-        // $uniqueOccurrence->verbatimLongitude = $tempArrayOccurrence["verbatimLongitude"] ?? "";
-        // $uniqueOccurrence->coordinatePrecision = $tempArrayOccurrence["coordinatePrecision"] ?? "";
-        // $uniqueOccurrence->geodeticDatum = $tempArrayOccurrence["geodeticDatum"] ?? "";
-        // $uniqueOccurrence->footprintWKT = $tempArrayOccurrence["footprintWKT"] ?? "";
-        // $uniqueOccurrence->minimumElevationInMeters = $tempArrayOccurrence["minimumElevationInMeters"] ?? 0.0;
-        // $uniqueOccurrence->maximumElevationInMeters = $tempArrayOccurrence["maximumElevationInMeters"] ?? 0.0;
-        // $uniqueOccurrence->waterBody = $tempArrayOccurrence["waterBody"] ?? "";
-        // $uniqueOccurrence->minimumDepthInMeters = $tempArrayOccurrence["minimumDepthInMeters"] ?? 0.0;
-        // $uniqueOccurrence->maximumDepthInMeters = $tempArrayOccurrence["maximumDepthInMeters"] ?? 0.0;
-        // $uniqueOccurrence->locationRemarks = $tempArrayOccurrence["locationRemarks"] ?? "";
-        // $uniqueOccurrence->identificationQualifier = $tempArrayOccurrence["identificationQualifier"] ?? "";
-        // $uniqueOccurrence->identifiedBy = $tempArrayOccurrence["identifiedBy"] ?? "";
-        // $uniqueOccurrence->dateIdentified = $tempArrayOccurrence["dateIdentified"] ?? null;
-        // $uniqueOccurrence->typeStatus = $tempArrayOccurrence["typeStatus"] ?? "";
-        // $uniqueOccurrence->scientificName = $tempArrayOccurrence["scientificName"] ?? "";
-        // $uniqueOccurrence->scientificNameAuthorship = $tempArrayOccurrence["scientificNameAuthorship"] ?? "";
-        // $uniqueOccurrence->acceptedNameUsage = $tempArrayOccurrence["acceptedNameUsage"] ?? "";
-        // $uniqueOccurrence->subgenus = $tempArrayOccurrence["subgenus"] ?? "";
-        // $uniqueOccurrence->genus = $tempArrayOccurrence["genus"] ?? "";
-        // $uniqueOccurrence->family = $tempArrayOccurrence["family"] ?? "";
-        // $uniqueOccurrence->order = $tempArrayOccurrence["order"] ?? "";
-        // $uniqueOccurrence->class = $tempArrayOccurrence["class"] ?? "";
-        // $uniqueOccurrence->phylum = $tempArrayOccurrence["phylum"] ?? "";
-        // $uniqueOccurrence->kingdom = $tempArrayOccurrence["kingdom"] ?? "";
-        // $uniqueOccurrence->specificEpithet = $tempArrayOccurrence["specificEpithet"] ?? "";
-        // $uniqueOccurrence->infraspecificEpithet = $tempArrayOccurrence["infraspecificEpithet"] ?? "";
-        // $uniqueOccurrence->taxonRank = $tempArrayOccurrence["taxonRank"] ?? "";
-        // $uniqueOccurrence->taxonomicStatus = $tempArrayOccurrence["taxonomicStatus"] ?? "";
-        // $uniqueOccurrence->originalNameUsage = $tempArrayOccurrence["originalNameUsage"] ?? "";
-        // $uniqueOccurrence->vernacularName = $tempArrayOccurrence["vernacularName"] ?? "";
-        // $uniqueOccurrence->nomenclaturalCode = $tempArrayOccurrence["nomenclaturalCode"] ?? "";
-        // $uniqueOccurrence->nameAccordingTo = $tempArrayOccurrence["nameAccordingTo"] ?? "";
-        // $uniqueOccurrence->relationshipOfResource = $tempArrayOccurrence["relationshipOfResource"] ?? "";
-
-
         $uniqueOccurrence->dctermsModified = $tempArrayOccurrence["dcterms:modified"] ?? null;
         $uniqueOccurrence->artificialSection = $tempArrayOccurrence["artificial:section"] ?? null;
         $uniqueOccurrence->artificialShelfLocation = $tempArrayOccurrence["artificial:shelfLocation"] ?? null;
@@ -429,7 +345,6 @@ class OccurrenceInputDTO
         $tempArrayOccurrence["artificial:subclass"] = $uniqueOccurrence->artificialSubclass;
         $tempArrayOccurrence["artificial:subphylum"] = $uniqueOccurrence->artificialSubphylum;
         $tempArrayOccurrence["dcterms:bibliographicCitation"] = $uniqueOccurrence->dctermsBibliographicCitation;
-
 
 
         unset($tempArrayOccurrence["dctermsModified"]);

@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\DTO\Sheet\SheetDTO;
+use App\Exceptions\ValidationOccurrenceException;
 use Illuminate\Http\Request;
 use PhpOffice\PhpSpreadsheet\Reader\Csv as ReaderCsv;
 
@@ -15,9 +16,27 @@ class SpreadSheetService
         $this->collectionService = $collectionService;
     }
 
-    public function sheetToJson(Request $request)
+    public function sheetToJson(Request $request): \Illuminate\Http\JsonResponse
     {
-        return response()->json($this->generateJsonFromRequestFile($request), 200);
+        try {
+           $json_body = json_encode($this->generateJsonFromRequestFile($request));
+            $insertedOccurrences = $this->collectionService->validateJsonAndReturnListOccurrence($json_body);
+
+        }catch (ValidationOccurrenceException $e) {
+            return response()->json(
+                array('errors' => $e->errorsArray)
+                , 400);
+        }
+
+        if (!empty($insertedOccurrences)) {
+            return response()->json(
+                $insertedOccurrences
+                , 200);
+        } else {
+            return response()->json(
+                []
+                , 200);
+        }
     }
 
     private function generateJsonFromRequestFile(Request $request): array
@@ -36,6 +55,7 @@ class SpreadSheetService
             for ($col = 0; $col < count($tableHead); $col++) {
                 $value = $sheetDTO->getSheet()->getCellByColumnAndRow($col, $row)->getValue();
                 $value = trim($value);
+                $value = trim($value, " \t\n\r\0\x0B\xC2\xA0");
                 if ($value == 'x' || $value == '' || $value == 'nulo') {
                     $value = null;
                 }
