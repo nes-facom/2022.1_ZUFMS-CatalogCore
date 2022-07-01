@@ -1,0 +1,13 @@
+:directories:
+  - .github
+  - .git
+  - .idea
+  - .vscode
+  - public/system
+  - tmp
+  - api/vendor
+  - web/node_modules
+  - web/dist
+  - infra/database/seed
+:files:
+  - .code2pdf

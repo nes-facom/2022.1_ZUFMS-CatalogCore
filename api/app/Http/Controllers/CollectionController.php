@@ -167,7 +167,7 @@ class CollectionController extends CRUDController
     public function getAutocomplete(Request $request) {
         $validator = Validator::make($request->all(), [
             'term' => ['required', Rule::in($this->avaliable_term_columns)],
-            'value' => 'required|string',
+            'value' => 'nullable|string',
             'limit' => 'integer',
             'start' => 'integer'
         ]);

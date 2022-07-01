@@ -24,7 +24,7 @@ export const terms = Object.keys(zufmscore.terms) as (keyof ZUFMSCore)[];
 export const termsList = Object.entries(zufmscore.terms).map(
   ([key, value]) => ({
     name: key,
-    termclass: value["$zufmscore:termclass"],
+    termclass: (value as any)["$zufmscore:termclass"],
     ...value,
   })
 );
@@ -40,7 +40,7 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
       autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
       autocompleteValues: (value as any).examples,
       pattern: (value as any).pattern,
-      termclass: value["$zufmscore:termclass"],
+      termclass: (value as any)["$zufmscore:termclass"],
     },
   ],
   [] as {
@@ -74,19 +74,19 @@ type State = {
 
 export const useOccurrencesStore = defineStore("occurrencesStore", {
   state: () =>
-    ({
-      occurrences: {},
-      occurrencesPerPage: 10,
-      currentPage: 1,
-      pages: 0,
-      occurrenceChanges: {},
-      autocompleteValues: {},
-      selectedOccurrences: {},
-      selectedTerms: {},
-      currentSectionIndex: 0,
-      sections: [] as ZUFMSCore["artificial:section"][],
-      isFetchingPage: false,
-    } as State),
+  ({
+    occurrences: {},
+    occurrencesPerPage: 10,
+    currentPage: 1,
+    pages: 0,
+    occurrenceChanges: {},
+    autocompleteValues: {},
+    selectedOccurrences: {},
+    selectedTerms: {},
+    currentSectionIndex: 0,
+    sections: [] as ZUFMSCore["artificial:section"][],
+    isFetchingPage: false,
+  } as State),
 
   getters: {
     currentSection: (state) => state.sections[state.currentSectionIndex],
