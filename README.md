@@ -11,14 +11,15 @@ Coleção Zoológica – Incremento e movimentação do acervo
 
 </div>
 
-# Requisitos
+## Requisitos
 
 Docker version 20.10.17, build 100c701 (recomendado)
+
 Docker Compose version v2.6.0 (recomendado)
 
 https://docs.docker.com/engine/install/ubuntu/
 
-# Ambiente de desenvolvimento
+## Ambiente de desenvolvimento
 
 #### Geração do schema do banco
 
@@ -38,7 +39,8 @@ make gen_sql_schema > infra/database/postgres/docker-entrypoint-initdb.d/2schema
 ```bash
 make gen_sql_scopes > infra/database/postgres/docker-entrypoint-initdb.d/6seed_scopes.sql
 ```
-# Ambiente de produção
+## Ambiente de produção
 
 ```docker-compose -f docker-compose.yml```
+
 ```docker-compose.prod.yml up api```
