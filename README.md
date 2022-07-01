@@ -35,6 +35,8 @@ https://docs.docker.com/engine/install/ubuntu/
 make gen_sql_schema > infra/database/postgres/docker-entrypoint-initdb.d/2schema.sql
 ```
 
+```sudo docker-compose up --build```
+
 #### Geração da seed para popular o banco com os scopes
 ```bash
 make gen_sql_scopes > infra/database/postgres/docker-entrypoint-initdb.d/6seed_scopes.sql
