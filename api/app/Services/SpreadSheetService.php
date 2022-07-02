@@ -87,6 +87,8 @@ class SpreadSheetService
     public function parseValue($value, $head)
     {
         switch ($head) {
+            case "informationWithheld":
+                return strtolower($value) == "x" ? "nenhuma" : $value;
             case "day":
             case "month":
             case "year":

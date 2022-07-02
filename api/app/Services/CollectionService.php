@@ -62,7 +62,17 @@ class CollectionService
     public function occurrence_is_rascunho($array): bool
     {
         $rascunho_values = ['ocultar', 'tombar girino', 'fazer etiqueta', 'mapinguari'];
-        return in_array($array['informationWithheld'], $rascunho_values);
+
+        if(array_key_exists('informationWithheld', $array)){
+            foreach ($rascunho_values as &$rascunho){
+                if(  str_contains(  strtolower( $array['informationWithheld']), $rascunho)){
+                    return true;
+                }
+            }
+            return false;
+        }else{
+            return true;
+        }
     }
 
     public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse
@@ -149,15 +159,16 @@ class CollectionService
         $size = count($body);
 
         for ($i = 0; $i < $size; $i++) {
-
+            $result;
             $key = $keys[$i];
             $jsonOccurrence = $body[$key];
             $skip_validation = false;
             if($this->occurrence_is_rascunho(json_decode(json_encode($jsonOccurrence),true))){
-                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
                 $skip_validation = true;
+            }else{
+                $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
             }
-            $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
+
 
             if ($result->isValid() || $skip_validation) {
                 $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
@@ -192,13 +203,24 @@ class CollectionService
 
     public function insertListOccurrenceInDatabase(ListOccurrenceInputDTO $listOccurrence)
     {
+        $occurrencesError = [];
         $insertedOccurrences = [];
 
         foreach ($listOccurrence->occurrences as &$occurrence) {
 
             if (!$this->hasOccurrence($occurrence)) {
+                $isInserted ;
                 $occurrenceArray = $occurrence->toArray();
-                $isInserted = DB::table('biological_occurrence_view')->insert($occurrenceArray);
+                if($this->occurrence_is_rascunho($occurrenceArray)){
+                    $isInserted = DB::table('rascunho')->insert($occurrenceArray);
+                }else{
+                    try {
+                        $isInserted = DB::table('biological_occurrence_view')->insert($occurrenceArray);
+                    }catch (\Exception $e){
+                        $occurrencesError[] = $occurrenceArray['occurrenceID'];
+                    }
+                }
+
                 if ($isInserted) {
                     $insertedOccurrences[] = $occurrenceArray;
                 }
@@ -206,7 +228,7 @@ class CollectionService
                 throw new DuplicatedKeyException("Ocorrência [" . $occurrence->occurrenceID . "] já cadastrada na base de dados.");
             }
         }
-        return $insertedOccurrences;
+        return $occurrencesError;
 
 
     }

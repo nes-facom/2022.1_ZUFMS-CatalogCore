@@ -481,7 +481,7 @@ CREATE TABLE "rascunho" (
     "artificial:subfamily" text,
     "family" text,
     "artificial:superfamily" text,
-    "artifcial:infraorder" text,
+    "artificial:infraorder" text,
     "artificial:suborder" text,
     "order" text,
     "artificial:superorder" text,
