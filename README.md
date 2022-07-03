@@ -91,7 +91,6 @@ sudo docker volume rm zufms_web_build zufms_postgres_data
 sudo docker compose up --build
 ```
 
-
 ## Scripts auxiliares
 
 #### Geração do schema do banco
@@ -120,8 +119,24 @@ A geração inicial da seed desses escopos é feita através do consumo do arqui
 
 O script a seguir lê este arquivo, e gera os `INSERT`s necessários no banco para alimentar a (`Closure Table`)[https://www.slideshare.net/billkarwin/models-for-hierarchical-data] que armazena a hieraquia entre os escopos no banco de dados.
 
+##### Dependências
+
+- Python 3 
+
 ```bash
-make gen_sql_scopes > infra/database/postgres/docker-entrypoint-initdb.d/6seed_scopes.sql
+make gen_sql_scopes > infra/database/postgres/docker-entrypoint-initdb.d/7seed_scopes.sql
+```
+
+#### Atualização da lib client da API para a web
+
+```bash
+make gen_api_client
+```
+
+#### Geração do PDF contendo o código da aplicação
+
+```bash
+make gen_code_pdf
 ```
 
 ## Colaboradores
