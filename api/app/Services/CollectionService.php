@@ -68,7 +68,6 @@ class CollectionService
     public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse
     {
         $listOccurrences = $this->validateJsonAndReturnListOccurrence($jsonBody);
-        
         if ($listOccurrences["errors"]) {
             return response()->json([
                 'errors' => $listOccurrences["errors"]
@@ -152,9 +151,8 @@ class CollectionService
             $jsonOccurrence = $body[$key];
             $skip_validation = false;
 
-            $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
+            $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper)->toArray();
             $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
-            
             if($this->occurrence_is_rascunho(json_decode(json_encode($jsonOccurrence),true))){
                 $skip_validation = true;
             }
@@ -193,7 +191,7 @@ class CollectionService
         foreach ($listOccurrence->occurrences as &$occurrence) {
 
             if (!$this->hasOccurrence($occurrence)) {
-                $occurrenceArray = $occurrence->toArray();
+                $occurrenceArray = $occurrence;
                 $isInserted = DB::table('biological_occurrence_view')->insert($occurrenceArray);
                 if ($isInserted) {
                     $insertedOccurrences[] = $occurrenceArray;
@@ -207,9 +205,9 @@ class CollectionService
 
     }
 
-    function hasOccurrence(OccurrenceInputDto $occurrence): bool
+    function hasOccurrence( $occurrence): bool
     {
-        $occurrenceFounded = DB::table('biological_occurrence')->where('occurrenceID', $occurrence->occurrenceID)->first();
+        $occurrenceFounded = DB::table('biological_occurrence')->where('occurrenceID', $occurrence['occurrenceID'])->first();
         return $occurrenceFounded != null;
     }
 }
