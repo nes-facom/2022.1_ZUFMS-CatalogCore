@@ -2,7 +2,7 @@ version: "3"
 
 volumes:
   web_build:
-
+  postgres_data:
 
 services:
   db:
@@ -11,6 +11,7 @@ services:
     env_file: ./infra/database/.env
     volumes:
       - ./infra/database/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/:z
+      - postgres_data:/var/lib/postgresql/data:z
   api:
     container_name: zufms_api
     build: ./api

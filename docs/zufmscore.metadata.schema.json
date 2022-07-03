@@ -1,0 +1,57 @@
+{
+  "$id": "https://inbio.ufms.br/zufms/zufmscore.metadata.schema.json",
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "ZUFMS Darwin Core Subset Metadata",
+  "type": "object",
+  "required": ["$zufmscore:termclass"],
+  "properties": {
+    "$zufmscore:autocomplete": {
+      "type": "boolean",
+      "default": false,
+      "description": "Define se um campo terá sugestões baseadas na recorrência de valores para ele no banco de dados"
+    },
+    "$zufmscore:repeat": {
+      "type": "boolean",
+      "default": false,
+      "description": "Se, quando alterado, o valor deverá ser repetido para as demais linhas"
+    },
+    "$zufmscore:highestoccurence": {
+      "type": "boolean",
+      "default": false,
+      "description": "Define se um campo exibirá como valor default a maior ocorrência do banco"
+    },
+    "$zufmscore:termclass": {
+      "type": "string",
+      "enum": [
+        "recordLevel",
+        "zufmscore:management",
+        "occurrence",
+        "organism",
+        "event",
+        "measurementOrFact",
+        "location",
+        "identification",
+        "taxon",
+        "resourceRelationship"
+      ],
+      "description": "Classe do termo"
+    },
+    "$zufmscore:sectionspecific": {
+      "type": "array",
+      "description": "Se um termo pertence apenas a determinado conjunto de seções"
+    },
+    "$zufmscore:dynamic": {
+      "type": "string",
+      "description": "Se o seu valor deve ser gerado dinamicamente",
+      "$comment": "sectionIndex",
+      "$comment": "currentdate",
+      "$comment": "concat",
+      "$comment": "occurenceId",
+      "$comment": "countryCode",
+      "$comment": "latitude",
+      "$comment": "longitude",
+      "$comment": "acceptedNameUsage",
+      "$comment": "previousField"
+    }
+  }
+}
