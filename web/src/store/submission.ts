@@ -36,32 +36,38 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
     {
       name: name as keyof ZUFMSCore,
       placeholder: (value as any).examples?.[0],
+      type:
+        (value as any)["type"] === "number" ||
+        (value as any)["type"] === "integer"
+          ? (value as any)["type"]
+          : "text",
       value: (value as any)["default"] ?? "",
       autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
       autocompleteValues: (value as any).examples,
       pattern: (value as any).pattern,
-      termclass: value["$zufmscore:termclass"],
+      termclass: (value as any)["$zufmscore:termclass"],
     },
   ],
   [] as {
     name: keyof ZUFMSCore;
+    type: "text" | "number";
     placeholder: string;
     value: string;
     autocomplete: boolean;
+    pattern: string | undefined;
     autocompleteValues: string[];
-    pattern?: string;
     termclass: string;
   }[]
 );
 
 export const useSubmissionStore = defineStore("submissionStore", {
   state: () =>
-  ({
-    currentTermclassIndex: 0,
-    occurrences: [] as ZUFMSCore[],
-    rows: 1,
-    autocompleteValues: {},
-  } as State),
+    ({
+      currentTermclassIndex: 0,
+      occurrences: [] as ZUFMSCore[],
+      rows: 1,
+      autocompleteValues: {},
+    } as State),
   getters: {
     currentTermclass: (state) => ({
       ...(termclassesDescription[
@@ -85,12 +91,13 @@ export const useSubmissionStore = defineStore("submissionStore", {
       try {
         const response = await userApi.occurrences.occurrencesFileVerify(file);
 
-        const occurrences = (response.data as any).occurrences as Partial<ZUFMSCore>[];
-        const errors = (response.data as any).errors
+        const occurrences = (response.data as any)
+          .occurrences as Partial<ZUFMSCore>[];
+        const errors = (response.data as any).errors;
 
-        this.occurrences = occurrences
+        this.occurrences = occurrences;
         this.rows = this.occurrences.length;
-      
+
         if (errors) {
           toastStore.pushMessage({
             title: "Arquivo CSV carregado com erros",
@@ -143,7 +150,7 @@ export const useSubmissionStore = defineStore("submissionStore", {
     nextTermclass() {
       this.currentTermclassIndex +=
         Object.keys(termclassesDescription).length - 1 <
-          this.currentTermclassIndex
+        this.currentTermclassIndex
           ? 1
           : 0;
     },
@@ -171,8 +178,7 @@ export const useSubmissionStore = defineStore("submissionStore", {
       const toastStore = useToastStore();
 
       try {
-
-        console.log(this.occurrences)
+        console.log(this.occurrences);
         const response = await userApi.occurrences.occurrencesCreateMany(
           this.occurrences
         );

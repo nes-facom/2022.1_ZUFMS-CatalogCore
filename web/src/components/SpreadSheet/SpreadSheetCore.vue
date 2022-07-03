@@ -99,8 +99,10 @@ const termValueIsInAutocomplete = (occurrence: ZUFMSCore, term: any) =>
                 '!border-yellow-500'
               } text-white`"
               :placeholder="term.placeholder"
+              :type="term.type"
               :value="occurrencesStore.$state.occurrenceChanges?.[occurrence['occurrenceID']]?.[term.name as keyof ZUFMSCore] ?? occurrence[term.name as keyof ZUFMSCore]"
               :list="term.name"
+              :step="term.type === 'number' ? 'any' : undefined"
               @input="(ev) => onInput(term, occurrence['occurrenceID'])(ev)"
               :name="`occurrence[${i}][${term.name}]`"
             />

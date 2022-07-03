@@ -36,6 +36,11 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
     {
       name,
       placeholder: (value as any).examples?.[0],
+      type:
+        (value as any)["type"] === "number" ||
+        (value as any)["type"] === "integer"
+          ? (value as any)["type"]
+          : "text",
       value: (value as any)["default"] ?? "",
       autocomplete: (value as any)["$zufmscore:autocomplete"] ?? false,
       autocompleteValues: (value as any).examples,
@@ -45,8 +50,10 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
   ],
   [] as {
     name: string;
+    type: "text" | "number";
     placeholder: string;
     value: string;
+    pattern: string | undefined;
     autocomplete: boolean;
     autocompleteValues: string[];
     termclass: string;
@@ -74,19 +81,19 @@ type State = {
 
 export const useOccurrencesStore = defineStore("occurrencesStore", {
   state: () =>
-  ({
-    occurrences: {},
-    occurrencesPerPage: 10,
-    currentPage: 1,
-    pages: 0,
-    occurrenceChanges: {},
-    autocompleteValues: {},
-    selectedOccurrences: {},
-    selectedTerms: {},
-    currentSectionIndex: 0,
-    sections: [] as ZUFMSCore["artificial:section"][],
-    isFetchingPage: false,
-  } as State),
+    ({
+      occurrences: {},
+      occurrencesPerPage: 10,
+      currentPage: 1,
+      pages: 0,
+      occurrenceChanges: {},
+      autocompleteValues: {},
+      selectedOccurrences: {},
+      selectedTerms: {},
+      currentSectionIndex: 0,
+      sections: [] as ZUFMSCore["artificial:section"][],
+      isFetchingPage: false,
+    } as State),
 
   getters: {
     currentSection: (state) => state.sections[state.currentSectionIndex],

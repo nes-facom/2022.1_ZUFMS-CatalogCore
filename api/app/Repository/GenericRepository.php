@@ -18,7 +18,8 @@ class GenericRepository
 
     public function getOne($id) {
         return $this->db()
-            ->find($id);
+            ->where($this->entity_pk, $id)
+            ->first();
     }
 
     public function getAll() {
@@ -26,17 +27,20 @@ class GenericRepository
     }
 
     public function createOne($data) {
-        $id = $this->db()->insertGetId($data,);
+        $id = $this->db()->insertGetId($data);
 
-        return $this->db()->find($id);
+        return $this->db()
+            ->where($this->entity_pk, $id)
+            ->first();
     }
 
     public function deleteOne($id) {
         $data = $this->db()
-            ->find($this->$entity_pk, $id);
+            ->where($this->entity_pk, $id)
+            ->first();
 
         $this->db()
-            ->where($this->$entity_pk, $id)
+            ->where($this->entity_pk, $id)
             ->delete();
 
         return $data;
@@ -44,14 +48,15 @@ class GenericRepository
 
     public function updateOne($id, $data) {
         $this->db()
-            ->where($this->$entity_pk, $id)
+            ->where($this->entity_pk, $id)
             ->update($data);
 
         return $this->db()
-            ->find($this->$entity_pk, $id);
+            ->where($this->entity_pk, $id)
+            ->first();
     }
 
     public function count() {
-        return $this->db()->count('occurrenceID');
+        return $this->db()->count($this->entity_pk);
     }
 }

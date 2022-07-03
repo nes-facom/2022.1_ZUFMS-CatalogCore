@@ -106,6 +106,8 @@ const termValueIsInAutocomplete = computed(
             :autofocus="i === submissionStore.rows && j === 0"
             :placeholder="term.placeholder"
             :pattern="term.pattern"
+            :type="term.type"
+            :step="term.type === 'number' ? 'any' : undefined"
             :tabindex="
               props.currentTermclass !== undefined
                 ? termclassNamesDiff(term.termclass)

@@ -87,7 +87,7 @@ class AuthController
 
             $access_token_scope = implode(' ', $client_avaliable_scopes);
 
-            $ttl = config('jwt.ttl');
+            $ttl = 20160; // config('jwt.ttl');
             $expires_in = strtotime('+' . $ttl . ' minutes');
 
             $access_token_jti = DB::table('access_token')
