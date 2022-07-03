@@ -36,7 +36,7 @@ sudo docker compose up
 sudo docker compose down
 sudo docker compose up --build
 ```
-### Problemas conhecidos
+#### Problemas conhecidos
 
 Algumas distros linux possuem alguns problemas relacionados ao permissionamento dos volumes do Docker, como foi o caso do Ubuntu 20.04 utilizado na maioria das máquinas utilizadas no desenvolvimento do projeto.
 
@@ -58,7 +58,10 @@ Seguem algumas resoluções para problemas ocasionados por essa situação:
     depends_on:
       - db
     volumes:
-    # Comentar essa linha deixará de realizar a montagem dos dados da sua máquina no container, perdendo a funcionalidade de Hot Reload da API durante o desenvolvimento
+    # Comentar essa linha deixará de realizar a montagem dos dados da
+    # sua máquina no container, perdendo a funcionalidade de Hot Reload
+    # da API durante o desenvolvimento
+    #
     #  - ./api:/var/www:z
   ``` 
 
@@ -129,11 +132,17 @@ make gen_sql_scopes > infra/database/postgres/docker-entrypoint-initdb.d/7seed_s
 
 #### Atualização da lib client da API para a web
 
+O front-end da aplicação se comunica com a API através de um client gerado a partir da especificação openapi da aplicação (`docs/openapi.yml`). Quando essa documentação é alterada, faz-se necessário gerar um novo client, através do seguinte script:
+
 ```bash
 make gen_api_client
 ```
 
+Ps.: Algumas adaptações podem ser necessárias para que o client seja utilizavel. Testes são necessários.
+
 #### Geração do PDF contendo o código da aplicação
+
+Para registro da aplicação, foi necessário gerar um PDF contendo todo o código fonte da aplicação. Para tanto, utilize o seguinte script: 
 
 ```bash
 make gen_code_pdf
