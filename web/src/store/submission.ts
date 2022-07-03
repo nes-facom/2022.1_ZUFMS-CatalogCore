@@ -56,12 +56,12 @@ export const termsInputs = Object.entries(zufmscore.terms).reduce(
 
 export const useSubmissionStore = defineStore("submissionStore", {
   state: () =>
-    ({
-      currentTermclassIndex: 0,
-      occurrences: [] as ZUFMSCore[],
-      rows: 1,
-      autocompleteValues: {},
-    } as State),
+  ({
+    currentTermclassIndex: 0,
+    occurrences: [] as ZUFMSCore[],
+    rows: 1,
+    autocompleteValues: {},
+  } as State),
   getters: {
     currentTermclass: (state) => ({
       ...(termclassesDescription[
@@ -130,7 +130,7 @@ export const useSubmissionStore = defineStore("submissionStore", {
     nextTermclass() {
       this.currentTermclassIndex +=
         Object.keys(termclassesDescription).length - 1 <
-        this.currentTermclassIndex
+          this.currentTermclassIndex
           ? 1
           : 0;
     },

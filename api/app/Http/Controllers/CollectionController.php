@@ -27,7 +27,7 @@ class CollectionController extends CRUDController
             entity_pk: 'occurrenceID'
         );
         $this->spreadSheetService = $spreadSheetService;
-        $this->collectionService=$collectionService;
+        $this->collectionService = $collectionService;
         $this->setupAutoCompleteFields();
     }
 
@@ -107,6 +107,7 @@ class CollectionController extends CRUDController
                 'errors' => $errors
             ]);
         }
+        
         $validated = $validator->safe();
 
         $occurrences = [];

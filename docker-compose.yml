@@ -28,6 +28,7 @@ services:
       - db
     volumes:
       - ./api:/var/www:z
+      - ./docs/zufmscore.schema.json:/var/www/resources/assets/zufmscore.schema.json:z
   api_docs:
     container_name: zufms_api_docs
     image: swaggerapi/swagger-ui
@@ -40,6 +41,7 @@ services:
       - "3000:3000"
     volumes:
       - ./web:/app:z
+      - ./docs/zufmscore.schema.json:/app/src/assets/zufmscore.schema.json:z
   redis:
     container_name: zufms_redis
     image: redis:7.0-alpine
@@ -64,7 +66,7 @@ services:
       - "3030:3030"
     volumes:
       - ./infra/http/nginx/nginx.conf:/etc/nginx/nginx.conf:z
-      - ./infra/http/nginx/conf.d/:/etc/nginx/conf.d/:z
+      - ./infra/http/nginx/conf.d.dev/:/etc/nginx/conf.d/:z
       - ./infra/http/certificates/:/etc/nginx/certificates/:z
       - ./docs/openapi.yml:/app/docs/openapi.yml:z
     depends_on:
