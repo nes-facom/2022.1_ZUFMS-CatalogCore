@@ -62,7 +62,7 @@ class CollectionService
     public function occurrence_is_rascunho($array): bool
     {
         $rascunho_values = ['ocultar', 'tombar girino', 'fazer etiqueta', 'mapinguari'];
-        return in_array($array['informationWithheld'], $rascunho_values);
+        return isset($array['informationWithheld']) && in_array($array['informationWithheld'], $rascunho_values);
     }
 
     public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse

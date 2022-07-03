@@ -539,10 +539,8 @@
       "$zufmscore:termclass": "location"
     },
     "decimalLatitude": {
-      "type": "number",
+      "type": "string",
       "pattern": "^((-[0-8]?[0-9].\\d\\d\\d\\d\\d\\d$)|([0-8]?[0-9].\\d\\d\\d\\d\\d\\d$)|(-?[9][0].[0][0][0][0][0][0]$))$",
-      "minimum": -90,
-      "maximum": 90,
       "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
       "title": "Latitude Decimal",
       "$zufmscore:repeat": true,
@@ -554,9 +552,7 @@
       "$zufmscore:termclass": "location"
     },
     "decimalLongitude": {
-      "type": "number",
-      "minimum": -180,
-      "maximum": 180,
+      "type": "string",
       "pattern": "^(-?[1]?[0-7]?[0-9].\\d\\d\\d\\d\\d\\d)$|^(-?[1][8][0].[0][0][0][0][0][0])$|^(-?[0-9]?[0-9].\\d\\d\\d\\d\\d\\d)$",
       "description": "coordenada em formato decimal, a célula deve estar formatada em texto",
       "title": "Longitude Decimal",
