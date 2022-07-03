@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "client/**/*"],
+  "include": ["types.d.ts", "env.d.ts", "src/**/*", "src/**/*.vue", "client/**/*"],
   "compilerOptions": {
     "lib": ["ES2017"],
     "baseUrl": ".",
@@ -8,7 +8,8 @@
       "@/*": ["./src/*"]
     },
     "preserveValueImports": false,
-    "isolatedModules": false
+    "isolatedModules": false,
+    "importsNotUsedAsValues": "remove"
   },
 
   "references": [

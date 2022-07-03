@@ -20,6 +20,7 @@ use \App\Http\Controllers\UserController;
 Route::post('/auth/token', [AuthController::class, 'token']);
 Route::post('/auth/revoke', [AuthController::class, 'revoke']);
 Route::post('/auth/otp', [AuthController::class, 'otp']);
+Route::get('/auth/userinfo', [AuthController::class, 'userinfo']);
 
 Route::middleware(['token', 'token.scope:users:read'])->group(function () {
     Route::get('/users', [UserController::class, 'getAll']);
@@ -36,16 +37,17 @@ Route::middleware(['token', 'token.scope:users'])->group(function () {
 
 Route::middleware(['token', 'token.scope:occurrences:read'])->group(function () {
     Route::get('/occurrences', [CollectionController::class, 'getAll']);
-    Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
+    Route::get('/occurrences/count', [CollectionController::class, 'count']);
     Route::get('/occurrences/autocomplete', [CollectionController::class, 'getAutocomplete']);
     Route::post('/occurrences/file/verify', [CollectionController::class, 'uploadDocumentReturnJson']);
+    Route::get('/occurrences/{occurrenceID}', [CollectionController::class, 'getOne']);
 });
 
 Route::middleware(['token', 'token.scope:occurrences'])->group(function () {
     Route::post('/occurrences', [CollectionController::class, 'createMany']);
     Route::post('/occurrences/file', [CollectionController::class, 'file']);
-    Route::put('/occurrences', [CollectionController::class, 'updateMany']);
-    Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
-    Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
-    Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
+    // Route::put('/occurrences', [CollectionController::class, 'updateMany']);
+    // Route::delete('/occurrences', [CollectionController::class, 'deleteMany']);
+    // Route::put('/occurrences/{occurrenceID}', [CollectionController::class, 'updateOne']);
+    // Route::delete('/occurrences/{occurrenceID}', [CollectionController::class, 'deleteOne']);
 });

@@ -24,8 +24,17 @@ class UserController extends CRUDController
         );
     }
 
-    protected function mapEntity($user) {
-        return ArrayHelper::array_omit((array)$user, ['password']);
+    /*
+     * @Override
+     */
+    protected function mapEntity($entity) {
+        $user_scope_names = DB::table('user_allowed_scope')
+            ->join('scope', 'scope.id', '=', 'user_allowed_scope.scope_id')
+            ->where('user_id', $entity->id ?? null)
+            ->pluck('scope.name')
+            ->toArray();
+
+        return array_merge((array)$entity, ['allowed_scopes' => $user_scope_names]);
     }
 
     /*
@@ -41,16 +50,24 @@ class UserController extends CRUDController
                 'errors' => $e->errors
             ], 400);
         }
-        unset($input['access_token']);
+
         $newUser = ['email' => $input['email']];
+
         $data = $this->repository->createOne($newUser);
 
-        foreach ($input['scope_id'] as $scope_id){
+        if (isset($input['allowed_scopes'])) {
+            $allowed_scopes_ids = DB::table('scope')
+                ->whereIn('name', $input['allowed_scopes'])
+                ->pluck('id')
+                ->toArray();
+
             DB::table('user_allowed_scope')
-                ->insert([
-                    'user_id' => $data->id,
-                    'scope_id' => $scope_id
-                ]);
+                ->insert(
+                    array_map(
+                        fn($id) => ['user_id' => $data->id, 'scope_id' => $id ], 
+                        $allowed_scopes_ids
+                    )
+                );
         }
 
         $mapped_data = $this->mapEntity($data);
@@ -73,38 +90,42 @@ class UserController extends CRUDController
             ], 400);
         }
 
-        unset($input['access_token']);
-
-        if ($input['email'] != null) {
+        if (isset($input['email'])) {
             DB::table('user')
                 ->where('id', '=', $input['id'])
                 ->update(['email' => $input['email']]);
         }
 
-        if ($input['scope_id'] != null) {
+        if (isset($input['allowed_scopes'])) {
             DB::table('user_allowed_scope')
                 ->where('user_id', $input['id'])->delete();
 
-            foreach ($input['scope_id'] as $scope_id){
-                DB::table('user_allowed_scope')
-                    ->insert([
-                        'user_id' => $input['id'],
-                        'scope_id' => $scope_id
-                    ]);
-            }
+            $allowed_scopes_ids = DB::table('scope')
+                ->whereIn('name', $input['allowed_scopes'])
+                ->pluck('id')
+                ->toArray();
+
+            DB::table('user_allowed_scope')
+                ->insert(
+                    array_map(
+                        fn($id) => ['user_id' => $input['id'], 'scope_id' => $id], 
+                        $allowed_scopes_ids
+                    )
+                );
         }
-        return response()->json([
-            'message' => 'Update successful'
-        ], 200);
+
+        $data = DB::table('user')
+            ->where('id', $input['id'])
+            ->first();
+
+        $mapped_data = $this->mapEntity($data);
+
+        return response()->json($mapped_data);
     }
 
-    private function validatedIfNecessary(string $action, Request $request) {
+    protected function validatedIfNecessary(string $action, Request $request) {
         $request['id'] = $request->id;
-        if (isset($this->dtos[$action])) {
-            return $this->dtos[$action]::fromRequest($request)
-                ->toArray();
-        }
 
-        return $request->all();
+        return parent::validatedIfNecessary($action, $request);
     }
 }

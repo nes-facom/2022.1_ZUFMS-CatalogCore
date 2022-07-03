@@ -1,6 +1,7 @@
 FROM node:latest
 WORKDIR /app
-COPY package*.json ./
+COPY package.json yarn.lock ./
 RUN yarn
-COPY ./ .
-RUN yarn build
+COPY ./ . 
+EXPOSE 3000
+CMD ["yarn", "dev", "--host"]

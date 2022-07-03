@@ -7,8 +7,8 @@ use Illuminate\Support\Facades\DB;
 class GenericRepository
 {
     public function __construct(
-       public  string $table_name,
-       public string $entityPk = "id"
+       public string $table_name,
+       public string $entity_pk = "id"
     )
     { }
 
@@ -33,10 +33,10 @@ class GenericRepository
 
     public function deleteOne($id) {
         $data = $this->db()
-            ->find('id', $id);
+            ->find($this->$entity_pk, $id);
 
         $this->db()
-            ->where('id', $id)
+            ->where($this->$entity_pk, $id)
             ->delete();
 
         return $data;
@@ -44,10 +44,14 @@ class GenericRepository
 
     public function updateOne($id, $data) {
         $this->db()
-            ->where('id', $id)
+            ->where($this->$entity_pk, $id)
             ->update($data);
 
         return $this->db()
-            ->find('id', $id);
+            ->find($this->$entity_pk, $id);
+    }
+
+    public function count() {
+        return $this->db()->count('occurrenceID');
     }
 }

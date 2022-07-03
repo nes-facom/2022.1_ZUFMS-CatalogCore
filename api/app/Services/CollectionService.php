@@ -67,37 +67,36 @@ class CollectionService
 
     public function insertManyFromJson($jsonBody): \Illuminate\Http\JsonResponse
     {
+        $listOccurrences = $this->validateJsonAndReturnListOccurrence($jsonBody);
+        
+        if ($listOccurrences["errors"]) {
+            return response()->json([
+                'errors' => $listOccurrences["errors"]
+            ], 400);
+        }
+
         try {
-            $listOccurrences = $this->validateJsonAndReturnListOccurrence($jsonBody);
-
-            try {
-                $insertedOccurrences = $this->insertListOccurrenceInDatabase($listOccurrences);
-
-            } catch (Exception $e) {
-                $error_description = "Um erro interno inesperado ocorreu";
-                $error_title = "Erro interno";
-                if ($e instanceof DuplicatedKeyException) {
-                    $error_description = $e->getMessage();
-                }
-                $error_string = $e->getMessage();
-                $error_array = explode("\n", $error_string, 3);
-                if ($e->getCode() == 23505) {
-                    $error_description = $error_array[0] . $error_array[1];
-                } else {
-                    $error_description = $error_array[0];
-                }
-
-                return response()->json(
-                    array(
-                        "errors" => array(array("code" => 4,
-                            "title" => $error_title,
-                            "description" => $error_description)),), 500);
-
+            $insertedOccurrences = $this->insertListOccurrenceInDatabase(new ListOccurrenceInputDTO($listOccurrences['occurrences']));
+        } catch (Exception $e) {
+            $error_description = "Um erro interno inesperado ocorreu";
+            $error_title = "Erro interno";
+            if ($e instanceof DuplicatedKeyException) {
+                $error_description = $e->getMessage();
             }
-        } catch (ValidationOccurrenceException $e) {
+            $error_string = $e->getMessage();
+            $error_array = explode("\n", $error_string, 3);
+
+            if ($e->getCode() == 23505) {
+                $error_description = $error_array[0] . $error_array[1];
+            } else {
+                $error_description = $error_array[0];
+            }
+
             return response()->json(
-                array('errors' => $e->errorsArray)
-                , 400);
+                array(
+                    "errors" => array(array("code" => 4,
+                        "title" => $error_title,
+                        "description" => $error_description)),), 500);
         }
 
         if (!empty($insertedOccurrences)) {
@@ -111,11 +110,11 @@ class CollectionService
         }
     }
 
-    public function insertManyFromRequest(Request $request): void
+    public function insertManyFromRequest(Request $request): \Illuminate\Http\JsonResponse
     {
         $vl = $request->all();
         $jsonBody = json_encode($vl);
-        $this->insertManyFromJson($jsonBody);
+        return $this->insertManyFromJson($jsonBody);
     }
 
     public function getAll($input): array
@@ -137,7 +136,7 @@ class CollectionService
      * @return ListOccurrenceInputDTO list occurrence
      * @throws ValidationOccurrenceException if has validation error
      */
-    public function validateJsonAndReturnListOccurrence($jsonBody): ListOccurrenceInputDTO
+    public function validateJsonAndReturnListOccurrence($jsonBody)
     {
         $jsonBody = $this->remove_null_values($jsonBody);
         $validationErrors = [];
@@ -149,40 +148,37 @@ class CollectionService
         $size = count($body);
 
         for ($i = 0; $i < $size; $i++) {
-
             $key = $keys[$i];
             $jsonOccurrence = $body[$key];
             $skip_validation = false;
+
+            $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
+            $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
+            
             if($this->occurrence_is_rascunho(json_decode(json_encode($jsonOccurrence),true))){
-                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
                 $skip_validation = true;
             }
-            $result = OccurrenceInputDTO::validate($jsonOccurrence, $this->validator);
 
-            if ($result->isValid() || $skip_validation) {
-                $listOccurrence->occurrences[] = OccurrenceInputDTO::fromArray($jsonOccurrence, $this->mapper);
-            } else {
+            if (!$result->isValid() && !$skip_validation) {
                 $error = $result->error();
                 $formatter = new ErrorFormatter();
                 $errorDescription = $formatter->format($error, false);
                 $errorKeys = array_keys($errorDescription);
                 $term = $errorKeys[0];
-                $validationErrors[] =
-                    array(
+                $validationErrors[] = [
                         "code" => 2,
                         "title" => "Dado inválido",
                         "description" => $errorDescription[$term],
                         "_index" => $i,
                         "_term" => $term
-
-                    );
+                    ];
             }
         }
-        if (!empty($validationErrors)) {
-            throw new ValidationOccurrenceException($validationErrors);
-        } else {
-            return $listOccurrence;
-        }
+
+        return [
+            "errors" => $validationErrors,
+            "occurrences" => $listOccurrence->occurrences
+        ];
     }
 
     private function remove_null_values($json)

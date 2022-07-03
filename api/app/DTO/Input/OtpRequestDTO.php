@@ -13,7 +13,8 @@ class OtpRequestDTO extends DataTransferObject
     private function __construct(
         public $otp_method,
         public $email,
-        public $state
+        public $state,
+        public $scope
     )
     { }
 
@@ -24,6 +25,7 @@ class OtpRequestDTO extends DataTransferObject
             'otp_method' => ['required', Rule::in(self::available_otp_methods)],
             'email' => [$is_email, 'email', 'exists:user,email'],
             'state' => 'string',
+            'scope' => 'string'
         ];
     }
 
@@ -31,7 +33,8 @@ class OtpRequestDTO extends DataTransferObject
         return new OtpRequestDTO(
             $array['otp_method'],
             $array['email'],
-            $array['state']
+            $array['state'],
+            $array['scope']
         );
     }
 }

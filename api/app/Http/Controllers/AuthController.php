@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\EmailSenderService;
 use App\Helpers\JWTHelper;
 use App\Helpers\ArrayHelper;
 use App\Helpers\StringHelper;
@@ -10,11 +11,9 @@ use App\DTO\Input\OtpTokenRequestDTO;
 use App\DTO\Input\OtpRequestDTO;
 use App\DTO\Input\ClientCredentialsTokenRequestDTO;
 use App\DTO\DTOValidationException;
-use App\Services\EmailSenderService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\DB;
-
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Validator;
 
@@ -78,38 +77,22 @@ class AuthController
 
             $client_avaliable_scopes = DB::table('client_inherited_scope')
                 ->where('client_id', $client->id)
-                ->pluck('inherited_scope_name')
-                ->unique()
-                ->toArray();
-
-            if (!ArrayHelper::all_in_array($requested_scopes, $client_avaliable_scopes)) {
-                return response()->json([
-                    'errors' => [
-                        'code' => 1,
-                        'title' => 'Permissões Insuficientes',
-                        'description' => 'Você não possui as permissões necessárias para realizar esta operação',
-                    ]
-                ], 403);
-            }
-
-            // Store access_token
-            $refresh_token = "";
-
-            $access_token_scope_array = DB::table('client_inherited_scope')
-                ->where('client_id', $client->id)
                 ->whereIn('inherited_from_scope_name', $requested_scopes)
                 ->pluck('inherited_scope_name')
                 ->unique()
                 ->toArray();
 
-            $access_token_scope = implode(' ', $access_token_scope_array);
+
+            $refresh_token = "";
+
+            $access_token_scope = implode(' ', $client_avaliable_scopes);
 
             $ttl = config('jwt.ttl');
             $expires_in = strtotime('+' . $ttl . ' minutes');
 
             $access_token_jti = DB::table('access_token')
                 ->insertGetId([
-                    'sub_type' => 'client',
+                    'issuer' => $client->id,
                     'refresh_token' => $refresh_token,
                     'expires_in' => date("Y-m-d h:m:s", $expires_in),
                     'scope' => $access_token_scope
@@ -118,8 +101,6 @@ class AuthController
             $jwt = JWTHelper::generate([
                 'exp' => $expires_in,
                 'jti' => $access_token_jti,
-                'sub_type' => 'client',
-                'sub' => $client->id,
                 'iss' => $client->id,
                 'scope' => $access_token_scope
             ]);
@@ -131,7 +112,6 @@ class AuthController
                 "expires_in" => $expires_in
             ]);
         }
-
 
         if ($token_request->type == 'otp') {
             try {
@@ -156,7 +136,6 @@ class AuthController
 
             $access_token = JWTHelper::parse($jwt);
 
-            // TODO: Implement OTP retrieval and verification
             $otp = DB::table('otp')
                 ->where('value', '=', $token_request->otp)
                 ->where('email', '=', $token_request->email)
@@ -180,40 +159,23 @@ class AuthController
                 ->where('email', '=', $otp->email)
                 ->first();
 
-            // Check requested scopes availability
             $user_avaliable_scopes = DB::table('user_inherited_scope')
-                ->where('user_id', $user->id)
-                ->pluck('inherited_scope_name')
-                ->toArray();
-
-            if (!ArrayHelper::all_in_array($requested_scopes, $user_avaliable_scopes)) {
-                return response()->json([
-                    'errors' => [
-                        'code' => 1,
-                        'title' => 'Permissões Insuficientes',
-                        'description' => 'Você não possui as permissões necessárias para realizar esta operação',
-                    ]
-                ], 403);
-            }
-
-            // Store access_token
-            $refresh_token = "";
-
-            $access_token_scope_array = DB::table('user_inherited_scope')
                 ->where('user_id', $user->id)
                 ->whereIn('inherited_from_scope_name', $requested_scopes)
                 ->pluck('inherited_scope_name')
-                ->unique()
                 ->toArray();
 
-            $access_token_scope = implode(' ', $access_token_scope_array);
+            $refresh_token = "";
+
+            $access_token_scope = implode(' ', $user_avaliable_scopes);
 
             $ttl = config('jwt.ttl');
             $expires_in =  strtotime('+' . $ttl . ' minutes');
 
             $access_token_jti = DB::table('access_token')
                 ->insertGetId([
-                    'sub_type' => 'user',
+                    'subject' => $user->id,
+                    'issuer' => $access_token['payload']['iss'],
                     'refresh_token' => $refresh_token,
                     'expires_in' => date("Y-m-d h:m:s", $expires_in),
                     'scope' => $access_token_scope
@@ -222,9 +184,8 @@ class AuthController
             $jwt = JWTHelper::generate([
                 'exp' => $expires_in,
                 'jti' => $access_token_jti,
-                'sub_type' => 'user',
                 'sub' => $user->id,
-                'iss' => $access_token['payload']['sub'],
+                'iss' => $access_token['payload']['iss'],
                 'scope' => $access_token_scope
             ]);
 
@@ -264,8 +225,11 @@ class AuthController
 
         $access_token = JWTHelper::parse($jwt);
 
+        $ttl = config('jwt.ttl');
+        $expires_in =  strtotime('+' . $ttl . ' minutes');
+
         $client_callback_url = DB::table('client')
-            ->where('id', '=', $access_token['payload']['sub'])
+            ->where('id', '=', $access_token['payload']['iss'])
             ->pluck('callback_url')
             ->first();
 
@@ -277,18 +241,58 @@ class AuthController
                     'value' => $otp_value,
                     'email' => $otp_request->email,
                     'state' => $otp_request->state,
+                    'scope' => $otp_request->scope,
+                    'expires_in' => date("Y-m-d h:m:s", $expires_in),
                     'requested_with_access_token' => $access_token['payload']['jti']
                 ]);
 
             $emailBodyVariables =[
                 'otp'=>$otp_value,
-                'callback_url'=>$client_callback_url,
+                'callback_url'=> "https://localhost/auth/cb", // $client_callback_url,
                 'state'=>$otp_request->state
             ];
 
-            $this->emailSenderService->send('send-access-code', $otp_request->email, $emailBodyVariables, 'Codigo de acesso');
+            $this->emailSenderService->send(
+                'send-access-code', 
+                $otp_request->email,
+                $emailBodyVariables, 
+                'Codigo de acesso'
+            );
 
-            return response()->json(["message"=>"Email colocado na fila"], 200);
+            return response()->json(["message"=>"OTP enviado"], 200);
         }
     }
+
+    public function userinfo(Request $request) {
+        $jwt = $request->bearerToken();
+
+        if (is_null($jwt) || !JWTHelper::validate($jwt)['valid']) {
+            return response()->json([
+                'errors' => [
+                    'code' => 6,
+                    'title' => 'Credenciais inválidas',
+                    'description' => 'Não foi possível autenticar o usuário'
+                ]
+            ], 401);
+        }
+
+        $access_token = JWTHelper::parse($jwt);
+
+        if (isset($access_token['payload']['sub'])) {
+            $user = DB::table('user')
+                ->where('id', $access_token['payload']['sub'])
+                ->first();
+
+            return response()->json($user);
+        } else {
+            $client = DB::table('client')
+                ->where('id', $access_token['payload']['sub'])
+                ->first();
+
+            return response()->json($client);
+        }
+
+        // response()->json([]);
+    }
+    
 }

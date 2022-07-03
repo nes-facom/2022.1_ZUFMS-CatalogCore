@@ -1,38 +1,19 @@
 <script setup lang="ts">
-import MaterialIcon from "../icons/MaterialIcon.vue";
-import { ref } from "vue";
+import MaterialIcon from "@/components/MaterialIcon.vue";
+import { useSubmissionStore, termsInputs } from "@/store/submission";
+import type { ZUFMSCore } from "@/store/submission";
+import _ from "lodash";
+import { computed } from "vue";
+import router from "@/router";
 const props = defineProps<{
   terms: object;
-  submissionMode?: boolean;
   entries?: any;
   currentTermclass?: string;
 }>();
 
 const emit = defineEmits(["scrollY", "changeTermclass"]);
 
-const termsInputs = Object.entries(props.terms).reduce(
-  (arr, [name, value]) => [
-    ...arr,
-    {
-      name,
-      placeholder: value?.examples?.[0],
-      value: value["default"],
-      autocomplete: value["$zufmscore:autocomplete"],
-      autocompleteValues: value?.examples,
-      termclass: value["$zufmscore:termclass"],
-    },
-  ],
-  [] as {
-    name: string;
-    placeholder: string;
-    value: string;
-    autocomplete: boolean;
-    autocompleteValues: string[];
-    termclass: string;
-  }[]
-);
-
-const rows = ref(1);
+const submissionStore = useSubmissionStore();
 
 const diffValues = () => {
   const values: any[] = [];
@@ -49,37 +30,66 @@ const termclassNamesDiff = diffValues();
 const inputWidth = "20.75rem";
 
 const submit = (ev: Event) => {
+  /*
   const formData = ev.target
     ? new FormData(ev.target as HTMLFormElement)
     : new FormData();
 
-  /*
-  const submissionData = new Array(rows.value).fill({});
+  const submissionData = new Array(submissionStore.rows).fill({});
 
-  for (const [key, value] of formData.entries()) {
+  for (const [key, value] of (formData as any).entries()) {
     const [term, index] = key.split("_");
     const indexNumber = parseInt(index, 10) - 1;
+
     submissionData[indexNumber][term] = value;
   }
+  */
 
-console.log(submissionData);
-*/
-
-  fetch("http://localhost:8080", {
-    method: "POST",
-    body: formData,
+  submissionStore.createOccurrences().then((data) => {
+    if (data !== undefined) {
+      router.push("/");
+    }
   });
 };
-const onInput = (data: any) => {
-  console.log(data.target.value);
-};
+
+termsInputs.forEach(
+  (term) =>
+    term.autocomplete && submissionStore.fetchAutocompleteValues(term.name, "")
+);
+
+const onInput =
+  (term: keyof ZUFMSCore, occurrenceIndex: number) => (ev: Event) => {
+    const value = (ev as any).target.value as string;
+
+    submissionStore.changeOccurrenceTermValue(occurrenceIndex, term, value);
+
+    submissionStore.fetchAutocompleteValues(term, value);
+  };
+
+const termValueIsInAutocomplete = computed(
+  () => (occurrenceIndex: number, term: any) => {
+    if (!term.autocomplete) {
+      return true;
+    }
+
+    const occurrenceTermValue =
+      submissionStore.occurrences?.[occurrenceIndex]?.[
+        term.name as keyof ZUFMSCore
+      ] ?? "";
+
+    const autocompleteValues =
+      submissionStore.autocompleteValues[term.name as keyof ZUFMSCore] ?? [];
+
+    return autocompleteValues.includes(occurrenceTermValue.toString());
+  }
+);
 </script>
 
 <template>
   <section class="overflow-y-scroll" @scroll="(ev) => emit('scrollY', ev)">
     <form @submit.prevent="submit">
       <div
-        v-for="i in rows"
+        v-for="(__, i) in submissionStore.rows"
         :key="'row_' + i"
         class="w-full h-12 odd:bg-[#104F76] even:bg-[#0C496F]"
       >
@@ -87,32 +97,44 @@ const onInput = (data: any) => {
           <input
             :style="{ width: inputWidth }"
             :class="`${
-              props.currentTermclass !== term.termclass && 'opacity-10'
-            } transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
-            :autofocus="i === rows && j === 0"
+              props.currentTermclass !== undefined &&
+              props.currentTermclass !== term.termclass &&
+              'opacity-10'
+            } ${
+              !termValueIsInAutocomplete(i, term) && '!border-yellow-500'
+            } invalid:border-red-500 transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
+            :autofocus="i === submissionStore.rows && j === 0"
             :placeholder="term.placeholder"
-            :tabindex="termclassNamesDiff(term.termclass)"
-            :initialValue="term.value"
+            :pattern="term.pattern"
+            :tabindex="
+              props.currentTermclass !== undefined
+                ? termclassNamesDiff(term.termclass)
+                : 1
+            "
+            :value="submissionStore.occurrences?.[i]?.[term.name as keyof ZUFMSCore] ?? term.value"
             :list="term.name"
-            @input="onInput"
+            @input="ev => onInput(term.name as keyof ZUFMSCore, i)(ev)"
             @focus="
               () =>
+                props.currentTermclass !== undefined &&
                 props.currentTermclass !== term.termclass &&
                 emit('changeTermclass', term.termclass, j)
             "
-            :name="`entry[${i}][${term.name}]`"
+            :name="`${term.name}_${i}`"
           />
           <datalist v-if="term.autocomplete" :id="term.name">
-            <option v-for="value in term.autocompleteValues" :key="value">
+            <option
+              v-for="value in submissionStore.$state.autocompleteValues[term.name as keyof ZUFMSCore]"
+              :key="_.uniqueId(value)"
+            >
               {{ value }}
             </option>
           </datalist>
         </template>
       </div>
       <div
-        v-if="props.submissionMode"
         @click="
-          rows++;
+          submissionStore.rows++;
           emit('changeTermclass', 'zufmscore:management', 0);
         "
         class="w-full h-12 odd:bg-[#104F76] even:bg-[#0C496F] opacity-20"
@@ -127,7 +149,7 @@ const onInput = (data: any) => {
           tabindex="-1"
         />
       </div>
-      <div v-if="props.submissionMode" class="fixed right-16 bottom-16">
+      <div class="fixed right-16 bottom-16">
         <button
           type="submit"
           class="bg-[#52BD8F] transition-all hover:drop-shadow-xl hover:bg-[#369169] drop-shadow-md p-4 rounded-full flex items-center justify-center"

@@ -23,10 +23,11 @@ class CollectionController extends CRUDController
     public function __construct(SpreadSheetService $spreadSheetService, CollectionService  $collectionService)
     {
         parent::__construct(
-           new GenericRepository('biological_occurrence_view',"OccurrenceID"),
+            repository: new GenericRepository('biological_occurrence_view', "occurrenceID"),
+            entity_pk: 'occurrenceID'
         );
         $this->spreadSheetService = $spreadSheetService;
-        $this->collectionService=$collectionService;
+        $this->collectionService = $collectionService;
         $this->setupAutoCompleteFields();
     }
 
@@ -44,6 +45,40 @@ class CollectionController extends CRUDController
         unset($request['access_token']);
         return $this->collectionService->insertManyFromRequest($request);
     }
+    
+    /*
+    * @Override
+    */
+    public function count(Request $request) {
+        $available_sections = $this->collectionService->available_sections;
+
+        $validator = Validator::make($request->all(), [
+            'artificial:section' => [Rule::in($available_sections)],
+        ]);
+
+        if ($validator->fails()) {
+            $errors = array_map(fn (string $description) => [
+                'code' => 2,
+                'title' => 'Dado inválido',
+                'description' => $description
+            ],  $validator->errors()->all());
+
+            return response()->json([
+                'errors' => $errors
+            ]);
+        }
+        
+        $validated = $validator->safe();
+
+        $data = DB::table('biological_occurrence_view')
+            ->when($validated['artificial:section'], function ($query, $section) {
+                $query->where('artificial:section', $section);
+            })
+            ->count();
+
+        return response()->json($data);
+    }
+
     /*
     * @Override
     */
@@ -72,6 +107,7 @@ class CollectionController extends CRUDController
                 'errors' => $errors
             ]);
         }
+        
         $validated = $validator->safe();
 
         $occurrences = [];
@@ -91,10 +127,47 @@ class CollectionController extends CRUDController
         return response()->json($occurrences);
     }
 
+    /*
+    * @Override
+    */
+    public function getOne(Request $request): \Illuminate\Http\JsonResponse
+    {
+        unset($request['access_token']);
+
+        $input = [
+            ...$request->all(), 
+            "occurrenceID" => $request->route('occurrenceID')
+        ];
+
+        $validator = Validator::make($input, [
+            'occurrenceID' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            $errors = array_map(fn (string $description) => [
+                'code' => 2,
+                'title' => 'Dado inválido',
+                'description' => $description
+            ],  $validator->errors()->all());
+
+            return response()->json([
+                'errors' => $errors
+            ]);
+        }
+
+        $validated = $validator->safe();
+
+        $occurrence = DB::table('biological_occurrence_view')
+            ->where("occurrenceID", $validated['occurrenceID'])
+            ->first();
+
+        return response()->json($occurrence);
+    }
+
     public function getAutocomplete(Request $request) {
         $validator = Validator::make($request->all(), [
             'term' => ['required', Rule::in($this->avaliable_term_columns)],
-            'value' => 'required|string',
+            'value' => 'nullable|string',
             'limit' => 'integer',
             'start' => 'integer'
         ]);

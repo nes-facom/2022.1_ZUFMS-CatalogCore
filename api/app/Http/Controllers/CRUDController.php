@@ -12,7 +12,7 @@ class CRUDController extends Controller
     public function __construct(
         public GenericRepository $repository,
         public array $dtos = [],
-        public array $entity_pk = ['id'],
+        public string $entity_pk = 'id',
     )
     { }
 
@@ -20,7 +20,7 @@ class CRUDController extends Controller
         return $entity;
     }
 
-    private function validatedIfNecessary(string $action, Request $request) {
+    protected function validatedIfNecessary(string $action, Request $request) {
         if (isset($this->dtos[$action])) {
             return $this->dtos[$action]::fromRequest($request)
                     ->toArray();
@@ -105,5 +105,11 @@ class CRUDController extends Controller
         $mapped_data = array_map([$this, 'mapEntity'], $data);
 
         return response()->json($mapped_data);
+    }
+
+    public function count(Request $request) {
+        $data = $this->repository->count();
+
+        return response()->json($data);
     }
 }

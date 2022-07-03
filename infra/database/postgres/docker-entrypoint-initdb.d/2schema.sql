@@ -1,8 +1,3 @@
-CREATE TYPE "access_token_sub_type" AS ENUM (
-  'client',
-  'user'
-);
-
 CREATE TABLE "user" (
   "id" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
   "email" text UNIQUE NOT NULL
@@ -42,28 +37,19 @@ CREATE TABLE "scope_closure_table" (
 CREATE TABLE "access_token" (
   "jti" uuid PRIMARY KEY DEFAULT (uuid_generate_v4()),
   "refresh_token" text,
-  "sub_type" access_token_sub_type NOT NULL DEFAULT 'user',
+  "subject" uuid,
+  "issuer" uuid NOT NULL,
   "expires_in" timestamp NOT NULL,
   "issued_at" timestamp NOT NULL DEFAULT (now()),
   "scope" text NOT NULL
-);
-
-CREATE TABLE "access_token_user_sub" (
-  "access_token_jti" uuid,
-  "user_id" uuid,
-  PRIMARY KEY ("access_token_jti", "user_id")
-);
-
-CREATE TABLE "access_token_client_sub" (
-  "access_token_jti" uuid,
-  "client_id" uuid,
-  PRIMARY KEY ("access_token_jti", "client_id")
 );
 
 CREATE TABLE "otp" (
   "value" text PRIMARY KEY,
   "email" text NOT NULL,
   "state" text,
+  "scope" text NOT NULL,
+  "expires_in" timestamp NOT NULL,
   "issued_at" timestamp NOT NULL DEFAULT (now()),
   "requested_with_access_token" uuid NOT NULL
 );
@@ -585,13 +571,9 @@ ALTER TABLE "scope_closure_table" ADD FOREIGN KEY ("ancestor") REFERENCES "scope
 
 ALTER TABLE "scope_closure_table" ADD FOREIGN KEY ("descendant") REFERENCES "scope" ("id");
 
-ALTER TABLE "access_token_user_sub" ADD FOREIGN KEY ("access_token_jti") REFERENCES "access_token" ("jti");
+ALTER TABLE "access_token" ADD FOREIGN KEY ("subject") REFERENCES "user" ("id");
 
-ALTER TABLE "access_token_user_sub" ADD FOREIGN KEY ("user_id") REFERENCES "user" ("id");
-
-ALTER TABLE "access_token_client_sub" ADD FOREIGN KEY ("access_token_jti") REFERENCES "access_token" ("jti");
-
-ALTER TABLE "access_token_client_sub" ADD FOREIGN KEY ("client_id") REFERENCES "client" ("id");
+ALTER TABLE "access_token" ADD FOREIGN KEY ("issuer") REFERENCES "client" ("id");
 
 ALTER TABLE "otp" ADD FOREIGN KEY ("email") REFERENCES "user" ("email");
 
