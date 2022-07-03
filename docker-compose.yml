@@ -11,7 +11,7 @@ services:
       - ./infra/database/postgres/docker-entrypoint-initdb.d/:/docker-entrypoint-initdb.d/:z
   db_admin:
     container_name: zufms_db_admin
-    image: dpage/pgadmin4:6.10
+    image: dpage/pgadmin4:6.11
     env_file: ./infra/database/.env
     ports:
       - "9090:80"
@@ -27,6 +27,7 @@ services:
     depends_on:
       - db
     volumes:
+      - /var/www/vendor
       - ./api:/var/www:z
       - ./docs/zufmscore.schema.json:/var/www/resources/assets/zufmscore.schema.json:z
   api_docs:
@@ -40,6 +41,7 @@ services:
     ports:
       - "3000:3000"
     volumes:
+      - /app/node_modules/
       - ./web:/app:z
       - ./docs/zufmscore.schema.json:/app/src/assets/zufmscore.schema.json:z
   redis:

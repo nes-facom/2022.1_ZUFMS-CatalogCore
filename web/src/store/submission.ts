@@ -85,8 +85,21 @@ export const useSubmissionStore = defineStore("submissionStore", {
       try {
         const response = await userApi.occurrences.occurrencesFileVerify(file);
 
-        this.occurrences = response.data;
+        const occurrences = (response.data as any).occurrences as Partial<ZUFMSCore>[];
+        const errors = (response.data as any).errors
+
+        this.occurrences = occurrences
         this.rows = this.occurrences.length;
+      
+        if (errors) {
+          toastStore.pushMessage({
+            title: "Arquivo CSV carregado com erros",
+            iconName: "warning",
+            colorClass: "text-yellow-500",
+            description: descriptionFromResponseError(errors),
+            time: 5000,
+          });
+        }
       } catch (err) {
         toastStore.pushMessage({
           title: "Erro ao carregar CSV",
@@ -158,6 +171,8 @@ export const useSubmissionStore = defineStore("submissionStore", {
       const toastStore = useToastStore();
 
       try {
+
+        console.log(this.occurrences)
         const response = await userApi.occurrences.occurrencesCreateMany(
           this.occurrences
         );

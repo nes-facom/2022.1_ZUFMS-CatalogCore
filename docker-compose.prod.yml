@@ -2,7 +2,9 @@ version: "3"
 
 volumes:
   web_build:
+    name: zufms_web_build
   postgres_data:
+    name: zufms_postgres_data
 
 services:
   db:

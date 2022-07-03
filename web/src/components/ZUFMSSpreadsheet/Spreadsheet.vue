@@ -102,7 +102,7 @@ const termValueIsInAutocomplete = computed(
               'opacity-10'
             } ${
               !termValueIsInAutocomplete(i, term) && '!border-yellow-500'
-            } transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
+            } invalid:border-red-500 transition-colors h-full bg-transparent focus:outline-none border-2 border-[#528CB0] focus:border-[#52BD8F] px-3 placeholder:text-[#336B8E] focus-visible:border-[#52BD8F] text-white`"
             :autofocus="i === submissionStore.rows && j === 0"
             :placeholder="term.placeholder"
             :pattern="term.pattern"

@@ -18,25 +18,10 @@ class SpreadSheetService
 
     public function sheetToJson(Request $request): \Illuminate\Http\JsonResponse
     {
-        try {
-           $json_body = json_encode($this->generateJsonFromRequestFile($request));
-            $insertedOccurrences = $this->collectionService->validateJsonAndReturnListOccurrence($json_body);
+        $json_body = json_encode($this->generateJsonFromRequestFile($request));
+        $validatedOccurrences = $this->collectionService->validateJsonAndReturnListOccurrence($json_body);
 
-        }catch (ValidationOccurrenceException $e) {
-            return response()->json(
-                array('errors' => $e->errorsArray)
-                , 400);
-        }
-
-        if (!empty($insertedOccurrences)) {
-            return response()->json(
-                $insertedOccurrences
-                , 200);
-        } else {
-            return response()->json(
-                []
-                , 200);
-        }
+        return response()->json($validatedOccurrences, 200);
     }
 
     private function generateJsonFromRequestFile(Request $request): array
