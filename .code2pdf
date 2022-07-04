@@ -3,11 +3,12 @@
   - .git
   - .idea
   - .vscode
-  - public/system
-  - tmp
   - api/vendor
+  - web/.yarn
   - web/node_modules
   - web/dist
   - infra/database/seed
+  - docs/project
 :files:
   - .code2pdf
+  - docs/scopes.png
