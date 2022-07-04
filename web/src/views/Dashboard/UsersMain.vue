@@ -3,6 +3,7 @@ import DashboardHeader from "./DashboardHeader.vue";
 import MaterialIcon from "@/components/MaterialIcon.vue";
 import { ref, computed, watchEffect } from "vue";
 import { useUserStore, userProps, User } from "@/store/users";
+import { useToastStore } from "@/store/toast";
 
 const userPropsInfo = {
   id: { title: "Identificador", description: "" },
@@ -27,8 +28,6 @@ const onClickUpdate = () => usersStore.updateChangedUsers();
 const onClickDelete = () => usersStore.deleteSelectedUsers();
 const onCheckboxChange = (userId: User["id"]) => () =>
   usersStore.toggleSelectionUser(userId);
-
-watchEffect(() => console.log(usersStore.error));
 </script>
 
 <template>

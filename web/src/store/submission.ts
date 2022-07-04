@@ -178,7 +178,6 @@ export const useSubmissionStore = defineStore("submissionStore", {
       const toastStore = useToastStore();
 
       try {
-        console.log(this.occurrences);
         const response = await userApi.occurrences.occurrencesCreateMany(
           this.occurrences
         );

@@ -4,6 +4,7 @@
   - .idea
   - .vscode
   - api/vendor
+  - api/storage
   - web/.yarn
   - web/node_modules
   - web/dist
